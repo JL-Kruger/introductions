@@ -9,7 +9,7 @@
 /* ── Body background (content pages) ────────────────────────────────────── */
 body {
   background:
-    url('/Media/SVG-Assets/jl-site-background-desktop.svg') no-repeat center center fixed,
+    url('../Media/SVG-Assets/jl-site-background-desktop.svg') no-repeat center center fixed,
     linear-gradient(180deg, #010403 0%, #02130a 100%);
   background-size: cover, auto;
   background-attachment: fixed;
@@ -17,7 +17,7 @@ body {
 @media (max-width: 1023px) {
   body {
     background-image:
-      url('/Media/SVG-Assets/jl-site-background-mobile.svg'),
+      url('../Media/SVG-Assets/jl-site-background-mobile.svg'),
       linear-gradient(180deg, #010403 0%, #02130a 100%);
   }
 }

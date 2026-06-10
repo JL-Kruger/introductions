@@ -12,7 +12,7 @@
 body {
   margin: 0;
   padding: 0;
-  background: url('/Media/SVG-Assets/jl-site-background-desktop.svg') no-repeat center center fixed,
+  background: url('../Media/SVG-Assets/jl-site-background-desktop.svg') no-repeat center center fixed,
               linear-gradient(180deg, #010403 0%, #02130a 100%);
   background-size: cover, auto;
   background-attachment: fixed;
@@ -420,7 +420,7 @@ a:visited    { color: var(--rust); }
 
   body {
     background-image:
-      url('/Media/SVG-Assets/jl-site-background-mobile.svg'),
+      url('../Media/SVG-Assets/jl-site-background-mobile.svg'),
       linear-gradient(180deg, #010403 0%, #02130a 100%);
   }
 }
