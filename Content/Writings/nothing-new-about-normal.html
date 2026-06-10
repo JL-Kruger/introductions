@@ -1,0 +1,1508 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NOTHING NEW ABOUT THIS NORMAL // JL // 2020</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:       #070707;
+    --surface:  #0f0f0f;
+    --surface2: #161616;
+    --green:    #00ff41;
+    --green-dim:#005c18;
+    --red:      #d90429;
+    --red-dim:  #6b0114;
+    --magenta:  #ff006e;
+    --mag-dim:  #7a0034;
+    --cyan:     #00f5ff;
+    --cyan-dim: #006b70;
+    --amber:    #ffbe0b;
+    --amb-dim:  #7a5900;
+    --text:     #c8ffb8;
+    --muted:    #3a4a3a;
+    --border:   #1a2a1a;
+    --border2:  #2a4a2a;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'VT323', monospace;
+    font-size: 20px;
+    line-height: 1.65;
+    min-height: 100vh;
+  }
+
+  /* === CRT SCANLINES === */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(0,0,0,0.18) 2px,
+      rgba(0,0,0,0.18) 4px
+    );
+    pointer-events: none;
+    z-index: 9998;
+  }
+
+  /* CRT flicker + phosphor glow */
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: radial-gradient(ellipse at center, transparent 60%, rgba(0,0,0,0.5) 100%);
+    pointer-events: none;
+    z-index: 9997;
+  }
+
+  /* === PIXEL BORDER UTILITY === */
+  .px-border {
+    box-shadow:
+      0 -2px 0 0 var(--green-dim),
+      0  2px 0 0 var(--green-dim),
+      -2px 0 0 0 var(--green-dim),
+       2px 0 0 0 var(--green-dim);
+  }
+
+  .px-border-red {
+    box-shadow:
+      0 -2px 0 0 var(--red-dim),
+      0  2px 0 0 var(--red-dim),
+      -2px 0 0 0 var(--red-dim),
+       2px 0 0 0 var(--red-dim);
+  }
+
+  /* === BLINK === */
+  @keyframes blink {
+    0%, 100% { opacity: 1; }
+    49%       { opacity: 1; }
+    50%       { opacity: 0; }
+  }
+
+  .blink { animation: blink 1.1s step-start infinite; }
+
+  @keyframes scanroll {
+    0%   { background-position: 0 0; }
+    100% { background-position: 0 100px; }
+  }
+
+  /* === MASTHEAD === */
+  .masthead {
+    background: var(--bg);
+    border-bottom: 2px solid var(--green-dim);
+    padding: 0;
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* Soviet grid lines behind masthead */
+  .masthead-grid {
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(var(--green-dim) 1px, transparent 1px),
+      linear-gradient(90deg, var(--green-dim) 1px, transparent 1px);
+    background-size: 40px 40px;
+    opacity: 0.12;
+    pointer-events: none;
+  }
+
+  .masthead-inner {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 32px 24px 28px;
+    position: relative;
+  }
+
+  .masthead-boot {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 11px;
+    color: var(--green-dim);
+    letter-spacing: 1px;
+    margin-bottom: 20px;
+    line-height: 1.8;
+  }
+
+  .masthead-boot .ok { color: var(--green); }
+  .masthead-boot .err { color: var(--red); }
+
+  .masthead-title {
+    font-family: 'Press Start 2P', monospace;
+    font-size: clamp(12px, 2.4vw, 22px);
+    color: var(--green);
+    line-height: 1.6;
+    text-shadow: 0 0 20px rgba(0,255,65,0.5), 3px 3px 0 var(--green-dim);
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    word-break: break-word;
+  }
+
+  .masthead-subtitle {
+    font-family: 'VT323', monospace;
+    font-size: 22px;
+    color: var(--magenta);
+    text-shadow: 0 0 12px rgba(255,0,110,0.4);
+    margin-bottom: 20px;
+  }
+
+  .masthead-meta {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+
+  .masthead-meta-item {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 12px;
+    color: var(--muted);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+
+  .masthead-meta-item a {
+    color: var(--cyan);
+    text-decoration: none;
+  }
+
+  .masthead-meta-item a:hover {
+    color: var(--amber);
+    text-shadow: 0 0 8px var(--amb-dim);
+  }
+
+  .masthead-stars {
+    position: absolute;
+    right: 24px;
+    top: 32px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    opacity: 0.25;
+  }
+
+  .soviet-star {
+    font-size: 28px;
+    color: var(--red);
+    text-shadow: 0 0 10px var(--red);
+    display: block;
+  }
+
+  /* === TAB BAR === */
+  .tab-bar {
+    background: var(--surface);
+    border-bottom: 2px solid var(--green-dim);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .tab-bar-inner {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0 24px;
+    display: flex;
+    gap: 0;
+    overflow-x: auto;
+  }
+
+  .tab-btn {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 8px;
+    text-transform: uppercase;
+    color: var(--muted);
+    background: none;
+    border: none;
+    border-bottom: 3px solid transparent;
+    padding: 14px 14px 11px;
+    cursor: pointer;
+    white-space: nowrap;
+    letter-spacing: 1px;
+    transition: color 80ms;
+  }
+
+  .tab-btn:hover { color: var(--green); }
+
+  .tab-btn.active {
+    color: var(--green);
+    border-bottom-color: var(--green);
+    text-shadow: 0 0 10px rgba(0,255,65,0.6);
+  }
+
+  .tab-btn.active::before { content: '▶ '; }
+
+  /* === CONTENT === */
+  .tab-content {
+    display: none;
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 36px 24px 80px;
+  }
+
+  .tab-content.active { display: block; }
+
+  /* === ESSAY BYLINE === */
+  .essay-byline {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 12px;
+    color: var(--muted);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--border2);
+    margin-bottom: 32px;
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .essay-byline a { color: var(--cyan); text-decoration: none; }
+  .essay-byline a:hover { color: var(--amber); }
+
+  /* === ESSAY BODY === */
+  .essay-body p {
+    margin-bottom: 22px;
+    color: var(--text);
+  }
+
+  .essay-body h2 {
+    font-family: 'Press Start 2P', monospace;
+    font-size: clamp(9px, 1.6vw, 13px);
+    color: var(--amber);
+    text-transform: uppercase;
+    line-height: 1.8;
+    margin: 48px 0 20px;
+    text-shadow: 0 0 14px rgba(255,190,11,0.4), 2px 2px 0 var(--amb-dim);
+    word-break: break-word;
+  }
+
+  .essay-body em {
+    color: var(--amber);
+    font-style: italic;
+  }
+
+  .essay-body strong {
+    color: var(--green);
+    font-style: normal;
+    text-shadow: 0 0 8px rgba(0,255,65,0.3);
+  }
+
+  .essay-body a {
+    color: var(--cyan);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  .essay-body a:hover { color: var(--amber); }
+
+  /* Pull quote */
+  .pull-quote {
+    border-left: 4px solid var(--red);
+    padding: 14px 18px;
+    background: var(--surface);
+    margin: 24px 0;
+    position: relative;
+  }
+
+  .pull-quote p {
+    font-family: 'VT323', monospace;
+    font-size: 24px;
+    color: var(--text);
+    line-height: 1.4;
+    margin-bottom: 0;
+  }
+
+  .pull-quote cite {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    font-style: normal;
+    letter-spacing: 1px;
+    display: block;
+    margin-top: 8px;
+  }
+
+  /* Pixel divider */
+  .px-divider {
+    border: none;
+    border-top: 2px solid var(--border2);
+    margin: 32px 0;
+    position: relative;
+    text-align: center;
+  }
+
+  .px-divider::after {
+    content: '★';
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    background: var(--bg);
+    padding: 0 12px;
+    color: var(--red);
+    font-size: 14px;
+    text-shadow: 0 0 8px var(--red);
+  }
+
+  /* PS postscript */
+  .postscript {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 13px;
+    color: var(--muted);
+    border-top: 1px solid var(--border2);
+    padding-top: 20px;
+    margin-top: 32px;
+    line-height: 1.7;
+  }
+
+  .signoff {
+    font-family: 'VT323', monospace;
+    font-size: 22px;
+    color: var(--magenta);
+    margin-bottom: 16px;
+    text-shadow: 0 0 10px rgba(255,0,110,0.3);
+  }
+
+  /* === INFOBOX === */
+  .infobox {
+    background: var(--surface);
+    border-left: 3px solid var(--cyan);
+    padding: 14px 18px;
+    margin: 20px 0;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 13px;
+    line-height: 1.7;
+    color: var(--text);
+  }
+
+  .infobox strong {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 8px;
+    color: var(--cyan);
+    display: block;
+    margin-bottom: 8px;
+    letter-spacing: 1px;
+    text-shadow: 0 0 8px rgba(0,245,255,0.4);
+  }
+
+  /* === DECODER === */
+  .decoder {
+    display: inline;
+    position: relative;
+  }
+
+  .decoder-trigger {
+    background: var(--surface);
+    border: 1px solid var(--cyan-dim);
+    cursor: pointer;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 14px;
+    color: var(--cyan);
+    padding: 1px 6px;
+    letter-spacing: 1px;
+    transition: all 80ms;
+    vertical-align: baseline;
+    text-shadow: 0 0 6px rgba(0,245,255,0.3);
+  }
+
+  .decoder-trigger::before { content: '['; color: var(--cyan-dim); margin-right: 2px; }
+  .decoder-trigger::after  { content: ' ▾]'; color: var(--cyan-dim); font-size: 11px; }
+
+  .decoder-trigger.open {
+    background: #001a1c;
+    border-color: var(--cyan);
+    text-shadow: 0 0 12px rgba(0,245,255,0.7);
+  }
+
+  .decoder-trigger.open::after { content: ' ▴]'; }
+  .decoder-trigger:hover { color: var(--amber); border-color: var(--amb-dim); text-shadow: 0 0 8px rgba(255,190,11,0.4); }
+
+  .decoder-panel {
+    display: none;
+    position: absolute;
+    top: calc(100% + 6px);
+    left: 0;
+    z-index: 500;
+    padding: 16px;
+    font-family: 'VT323', monospace;
+    font-size: 18px;
+    color: var(--text);
+    border: 2px solid var(--cyan-dim);
+    border-top: 2px solid var(--cyan);
+    background: #020c0d;
+    width: 340px;
+    line-height: 1.55;
+    box-shadow: 0 0 30px rgba(0,245,255,0.08), 4px 4px 0 rgba(0,0,0,0.8);
+  }
+
+  .decoder-panel.flip-left { left: auto; right: 0; }
+  .decoder-panel.open { display: block; }
+
+  .decoder-panel .decode-label {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--cyan-dim);
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  .decoder-panel .decode-term {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 10px;
+    color: var(--amber);
+    display: block;
+    margin-bottom: 10px;
+    line-height: 1.7;
+    text-shadow: 0 0 10px rgba(255,190,11,0.3);
+    word-break: break-word;
+  }
+
+  .decoder-panel .decode-link {
+    display: inline-block;
+    margin-top: 8px;
+    margin-right: 4px;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 11px;
+    color: var(--magenta);
+    text-decoration: none;
+    border: 1px solid var(--mag-dim);
+    padding: 2px 7px;
+    transition: all 80ms;
+  }
+
+  .decoder-panel .decode-link:hover {
+    background: var(--magenta);
+    color: var(--bg);
+    text-shadow: none;
+  }
+
+  /* === LIGHTBOX TRIGGER === */
+  .lb-trigger {
+    display: inline;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-family: 'VT323', monospace;
+    font-size: inherit;
+    color: var(--magenta);
+    text-decoration: underline dotted;
+    text-underline-offset: 4px;
+    padding: 0;
+    text-shadow: 0 0 8px rgba(255,0,110,0.3);
+    transition: color 80ms;
+  }
+
+  .lb-trigger:hover { color: var(--amber); text-shadow: 0 0 8px rgba(255,190,11,0.4); }
+
+  /* === LIGHTBOX === */
+  .lightbox-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(2,2,2,0.95);
+    z-index: 9000;
+    justify-content: center;
+    align-items: center;
+    padding: 24px;
+  }
+
+  .lightbox-overlay.open { display: flex; }
+
+  .lightbox-box {
+    background: var(--surface);
+    border: 2px solid var(--amber);
+    max-width: 680px;
+    width: 100%;
+    max-height: 88vh;
+    overflow-y: auto;
+    box-shadow: 0 0 40px rgba(255,190,11,0.1), 4px 4px 0 rgba(0,0,0,0.9);
+  }
+
+  .lightbox-header {
+    background: var(--surface2);
+    border-bottom: 1px solid var(--border2);
+    padding: 12px 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .lightbox-title {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 9px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--amber);
+    text-shadow: 0 0 8px rgba(255,190,11,0.3);
+  }
+
+  .lightbox-close {
+    background: none;
+    border: 1px solid var(--border2);
+    cursor: pointer;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 16px;
+    color: var(--muted);
+    padding: 2px 7px;
+    transition: all 80ms;
+  }
+
+  .lightbox-close:hover { color: var(--red); border-color: var(--red-dim); }
+
+  .lightbox-body {
+    padding: 24px;
+    font-family: 'VT323', monospace;
+    font-size: 20px;
+    line-height: 1.6;
+    color: var(--text);
+  }
+
+  .lightbox-body h3 {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 11px;
+    color: var(--amber);
+    text-transform: uppercase;
+    line-height: 1.8;
+    margin-bottom: 16px;
+    text-shadow: 0 0 10px rgba(255,190,11,0.3);
+    word-break: break-word;
+  }
+
+  .lightbox-body p { margin-bottom: 14px; }
+
+  .lightbox-body a { color: var(--cyan); text-decoration: underline; text-underline-offset: 3px; }
+  .lightbox-body a:hover { color: var(--amber); }
+
+  .lb-source-btn {
+    display: inline-block;
+    margin-top: 10px;
+    margin-right: 6px;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 11px;
+    color: var(--magenta);
+    border: 1px solid var(--mag-dim);
+    padding: 4px 10px;
+    text-decoration: none;
+    transition: all 80ms;
+  }
+
+  .lb-source-btn:hover { background: var(--magenta); color: var(--bg); }
+
+  /* === ACCORDION === */
+  .accordion-item { border-bottom: 1px solid var(--border2); }
+
+  .accordion-trigger {
+    width: 100%;
+    background: none;
+    border: none;
+    padding: 16px 0;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 16px;
+    text-align: left;
+  }
+
+  .accordion-trigger-text {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 9px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--text);
+    line-height: 1.8;
+    transition: color 80ms;
+    word-break: break-word;
+  }
+
+  .accordion-trigger:hover .accordion-trigger-text { color: var(--green); }
+
+  .accordion-arrow {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 18px;
+    color: var(--green-dim);
+    flex-shrink: 0;
+    transition: transform 120ms;
+    padding-top: 2px;
+  }
+
+  .accordion-trigger.open .accordion-arrow { transform: rotate(180deg); color: var(--green); }
+
+  .accordion-panel {
+    display: none;
+    padding: 4px 0 20px;
+    font-family: 'VT323', monospace;
+    font-size: 20px;
+    color: var(--text);
+    line-height: 1.6;
+  }
+
+  .accordion-panel.open { display: block; }
+  .accordion-panel a { color: var(--cyan); text-decoration: underline; text-underline-offset: 3px; }
+  .accordion-panel a:hover { color: var(--amber); }
+  .accordion-panel strong { color: var(--green); }
+
+  /* === OTHER TAB CONTENT === */
+  .content-title {
+    font-family: 'Press Start 2P', monospace;
+    font-size: clamp(9px, 1.6vw, 12px);
+    color: var(--green);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin: 36px 0 16px;
+    line-height: 1.8;
+    text-shadow: 0 0 12px rgba(0,255,65,0.3);
+    word-break: break-word;
+  }
+
+  .content-title:first-child { margin-top: 0; }
+
+  .content-body {
+    font-family: 'VT323', monospace;
+    font-size: 20px;
+    line-height: 1.6;
+    color: var(--text);
+    margin-bottom: 18px;
+  }
+
+  .content-body a { color: var(--cyan); text-decoration: underline; text-underline-offset: 3px; }
+  .content-body a:hover { color: var(--amber); }
+
+  /* Stat cards */
+  .stat-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 12px;
+    margin: 20px 0 32px;
+  }
+
+  .stat-card {
+    background: var(--surface);
+    border-left: 3px solid var(--red);
+    padding: 16px;
+  }
+
+  .stat-number {
+    font-family: 'Press Start 2P', monospace;
+    font-size: clamp(14px, 3vw, 22px);
+    color: var(--red);
+    text-shadow: 0 0 16px rgba(217,4,41,0.5);
+    display: block;
+    margin-bottom: 6px;
+    line-height: 1.3;
+  }
+
+  .stat-label {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 12px;
+    color: var(--muted);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    display: block;
+    margin-bottom: 8px;
+  }
+
+  .stat-card p {
+    font-family: 'VT323', monospace;
+    font-size: 17px;
+    color: var(--text);
+    line-height: 1.5;
+  }
+
+  .stat-card a {
+    color: var(--cyan);
+    text-decoration: none;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 11px;
+    display: inline-block;
+    margin-top: 8px;
+    border-bottom: 1px solid var(--cyan-dim);
+  }
+
+  /* Timeline item */
+  .timeline-item {
+    display: flex;
+    gap: 16px;
+    padding: 14px 0;
+    border-bottom: 1px solid var(--border);
+    align-items: flex-start;
+  }
+
+  .timeline-date {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    min-width: 72px;
+    padding-top: 3px;
+    letter-spacing: 1px;
+    flex-shrink: 0;
+  }
+
+  .timeline-badge {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    border: 1px solid;
+    padding: 2px 6px;
+    flex-shrink: 0;
+    min-width: 72px;
+    text-align: center;
+    margin-top: 2px;
+  }
+
+  .timeline-badge.red     { color: var(--red);     border-color: var(--red-dim); }
+  .timeline-badge.green   { color: var(--green);   border-color: var(--green-dim); }
+  .timeline-badge.cyan    { color: var(--cyan);    border-color: var(--cyan-dim); }
+  .timeline-badge.amber   { color: var(--amber);   border-color: var(--amb-dim); }
+  .timeline-badge.magenta { color: var(--magenta); border-color: var(--mag-dim); }
+
+  .timeline-desc {
+    font-family: 'VT323', monospace;
+    font-size: 18px;
+    color: var(--text);
+    line-height: 1.55;
+    flex: 1;
+  }
+
+  .timeline-desc a { color: var(--cyan); text-decoration: none; }
+  .timeline-desc a:hover { color: var(--amber); }
+
+  /* Resource links */
+  .resource-section-title {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 9px;
+    color: var(--amber);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin: 28px 0 12px;
+    border-bottom: 1px solid var(--border2);
+    padding-bottom: 10px;
+    line-height: 1.8;
+  }
+
+  .resource-link {
+    display: block;
+    padding: 13px 0;
+    border-bottom: 1px solid var(--border);
+    text-decoration: none;
+    color: var(--text);
+    transition: color 80ms;
+  }
+
+  .resource-link:hover .resource-title { color: var(--green); text-shadow: 0 0 8px rgba(0,255,65,0.3); }
+
+  .resource-link-inner {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .resource-title {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 13px;
+    letter-spacing: 1px;
+    color: var(--text);
+    text-transform: uppercase;
+    margin-bottom: 4px;
+    transition: color 80ms;
+  }
+
+  .resource-desc {
+    font-family: 'VT323', monospace;
+    font-size: 17px;
+    color: var(--muted);
+    line-height: 1.5;
+  }
+
+  .resource-tag {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 1px;
+    color: var(--cyan);
+    border: 1px solid var(--cyan-dim);
+    padding: 2px 6px;
+    flex-shrink: 0;
+    text-transform: uppercase;
+    margin-top: 2px;
+  }
+
+  /* Footer */
+  footer {
+    background: var(--surface);
+    border-top: 2px solid var(--green-dim);
+    padding: 18px 24px;
+    text-align: center;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 1px;
+  }
+
+  footer a { color: var(--cyan); text-decoration: none; }
+  footer a:hover { color: var(--amber); }
+
+  .footer-pixel {
+    display: block;
+    font-size: 18px;
+    color: var(--red-dim);
+    letter-spacing: 10px;
+    margin-bottom: 8px;
+    text-shadow: 0 0 6px var(--red-dim);
+  }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--green-dim); }
+  ::-webkit-scrollbar-thumb:hover { background: var(--green); }
+</style>
+</head>
+<body>
+
+<!-- MASTHEAD -->
+<header class="masthead">
+  <div class="masthead-grid"></div>
+  <div class="masthead-inner">
+    <div class="masthead-boot">
+      <span class="ok">[OK]</span> LOADING ESSAY.DAT .............. DONE<br>
+      <span class="ok">[OK]</span> BULLSHIT DETECTOR .............. ARMED<br>
+      <span class="ok">[OK]</span> NORMALCY MODULE ................ REJECTED<br>
+      <span class="err">[!!]</span> NEW NORMAL SUBROUTINE .......... <span class="blink">TERMINATED_</span>
+    </div>
+    <h1 class="masthead-title">THERE IS<br>NOTHING NEW<br>ABOUT THIS<br>NORMAL</h1>
+    <p class="masthead-subtitle">// and why this bland brand irks me //</p>
+    <div class="masthead-meta">
+      <span class="masthead-meta-item">JL &nbsp;★&nbsp; SEP 23 2020</span>
+      <span class="masthead-meta-item"><a href="https://medium.com/@julianlkruger/there-is-nothing-new-about-this-normal-68077de0b3e7" target="_blank">READ ON MEDIUM →</a></span>
+    </div>
+    <div class="masthead-stars">
+      <span class="soviet-star">★</span>
+      <span class="soviet-star">★</span>
+      <span class="soviet-star">★</span>
+    </div>
+  </div>
+</header>
+
+<!-- TAB BAR -->
+<nav class="tab-bar">
+  <div class="tab-bar-inner">
+    <button class="tab-btn active" onclick="switchTab('essay', this)">THE ESSAY</button>
+    <button class="tab-btn" onclick="switchTab('language', this)">THE LANGUAGE</button>
+    <button class="tab-btn" onclick="switchTab('context', this)">THE CONTEXT</button>
+    <button class="tab-btn" onclick="switchTab('reading', this)">FURTHER READING</button>
+  </div>
+</nav>
+
+<!-- ================================================================ -->
+<!-- TAB: THE ESSAY -->
+<!-- ================================================================ -->
+<div id="tab-essay" class="tab-content active">
+
+  <div class="essay-byline">
+    <span>JL — <a href="https://medium.com/@julianlkruger/there-is-nothing-new-about-this-normal-68077de0b3e7" target="_blank">Medium, 23 Sep 2020</a></span>
+    <span>Written mid-pandemic &nbsp;·&nbsp; Six weeks before US election</span>
+  </div>
+
+  <div class="essay-body">
+
+    <div class="infobox">
+      <strong>// DECODER ACTIVE //</strong>
+      Annotated terms appear as <span style="font-family:'Share Tech Mono',monospace;color:var(--cyan);font-size:13px;">[inline chips ▾]</span> — click to decode the concept, reference, or history behind the phrase.
+    </div>
+
+    <div class="pull-quote">
+      <p>"… as we get used to the new normal…"<br>
+      "… as companies adapt to the new normal…"<br>
+      "… we just have to get used to the new normal…"</p>
+    </div>
+
+    <p>That's it. I'm calling bullshit on this emerging idiom. It is clearly an engineered, focus-tested phrase, that preys on praying idiots-with-faith-in-power. The world as it's shaping up to be for the next decade, is not a new one, a normal one, a normal new one, or even (and I hope by the end of this rant, I will be less annoyed with hearing it) a
+
+    <span class="decoder" id="dec-new-normal">
+      <button class="decoder-trigger" onclick="toggleDecoder('dec-new-normal', this)">new normal</button>
+      <span class="decoder-panel">
+        <span class="decode-label">Decoded Phrase</span>
+        <span class="decode-term">NEW NORMAL: ORIGIN &amp; WEAPONIZATION</span>
+        Originally a financial term from 2009/2010 — used by PIMCO's Mohamed El-Erian to describe post-GFC economic stagnation as a permanent condition, not a temporary slump. From there it migrated to management consulting, then to political speechwriting. By 2020, it had been deployed to frame the COVID pandemic's disruptions as something to adapt to rather than fix — shifting responsibility from institutions to individuals.
+        <a class="decode-link" href="https://en.wikipedia.org/wiki/New_normal_(business)" target="_blank">→ Wikipedia: New Normal</a>
+      </span>
+    </span>
+
+    one.</p>
+
+    <p><strong>And now, with your consent, let me tell you why.</strong></p>
+
+    <hr class="px-divider">
+
+    <h2>NEW FOR A GIVEN VALUE OF NEWNESS</h2>
+
+    <p>This is, at least on the surface, a semantic argument, but everything about humanity in the last three centuries has been some kind of "new" or another. On geological timescales humans are a fart in the wind, a speck of dust on the lens. Everything is new and it's been new for generations now.</p>
+
+    <p>Granted, humans have short lives and shorter memories. However, for a good long while now, we've been systematically unraveling our mechanisms of collective memory and replacing it with
+
+    <span class="decoder" id="dec-propaganda-history">
+      <button class="decoder-trigger" onclick="toggleDecoder('dec-propaganda-history', this)">propaganda that deigns to call itself history</button>
+      <span class="decoder-panel">
+        <span class="decode-label">Decoded Concept</span>
+        <span class="decode-term">MANUFACTURED HISTORICAL MEMORY</span>
+        The author is reaching toward what historians call "invented tradition" — the process by which powerful groups construct narratives about the past to legitimise present arrangements. The classic text is Hobsbawm &amp; Ranger's <em>The Invention of Tradition</em> (1983). Related: Walter Benjamin's argument that history is always written from the victors' perspective, suppressing counter-narratives. The author's point: what we call "normal" is often a story about the past engineered to make current power structures seem natural and inevitable.
+        <a class="decode-link" href="https://en.wikipedia.org/wiki/The_Invention_of_Tradition" target="_blank">→ Wikipedia: Invented Tradition</a>
+        <a class="decode-link" href="https://en.wikipedia.org/wiki/Historical_revisionism" target="_blank">→ Wikipedia: Historical Revisionism</a>
+      </span>
+    </span>.
+
+    I can confidently say though, that for most of the time that we monkeys-in-shoes have been running about and playing with fire, humanity hasn't looked anything like 21st century life. Everything is new.
+
+    <span class="decoder" id="dec-un-age">
+      <button class="decoder-trigger" onclick="toggleDecoder('dec-un-age', this)">The UN isn't even a century old yet.</button>
+      <span class="decoder-panel">
+        <span class="decode-label">Decoded Reference</span>
+        <span class="decode-term">UNITED NATIONS: 1945–PRESENT</span>
+        The United Nations was founded on 24 October 1945 — barely 75 years old when this essay was written. Its predecessor, the League of Nations, lasted from 1920 to 1946. The global financial architecture (IMF, World Bank, Bretton Woods system) was also established in 1944–45. The author's point: the institutions we treat as permanent features of civilisation are younger than many living people. None of them have survived a real civilizational stress test yet.
+        <a class="decode-link" href="https://en.wikipedia.org/wiki/United_Nations" target="_blank">→ Wikipedia: United Nations</a>
+        <a class="decode-link" href="https://en.wikipedia.org/wiki/Bretton_Woods_system" target="_blank">→ Wikipedia: Bretton Woods</a>
+      </span>
+    </span>
+
+    The global financial system hasn't been around nearly as long as its predecessors. Almost none of our current infrastructure, anywhere in the world, has stood any true test of time.</p>
+
+    <p>On top of that, for decades now (or at least the decades that I've been alive and conscious of my not-deadness), every damn day there is some "new" thing being sold, be it a product, a service or a concept… "New" has been a marketing go-to since before people called it marketing (and before people started making careers for themselves as marketers).</p>
+
+    <p>So what is new? Every-damned-thing-under-the-sun.</p>
+
+    <p>And what about this reality of uncertainty that everyone is running around calling the "new normal"… it isn't new. I would argue that it's the old normal. Survival. Mortality. Uncertainty. That's some old shit right there. People in power messing things up. Old shit. Poor folk having a hard time. Old shit. Having to deal with the risk of disease every time you walk outside.
+
+    <span class="decoder" id="dec-old-as-humanity">
+      <button class="decoder-trigger" onclick="toggleDecoder('dec-old-as-humanity', this)">Old as the human race</button>
+      <span class="decoder-panel">
+        <span class="decode-label">Decoded Concept</span>
+        <span class="decode-term">HUMANITY'S ACTUAL AGE &amp; NEAR-EXTINCTIONS</span>
+        Modern <em>Homo sapiens</em> have existed for roughly 300,000 years. For the vast majority of that time — disease, starvation, violence, and environmental catastrophe were everyday realities. Genetic evidence suggests the human population may have been reduced to as few as 1,000–10,000 breeding individuals around 70,000 years ago (the Toba bottleneck hypothesis). The "normal" of stable, disease-free suburban life is an anomaly of the last ~70 years in wealthy countries — less than 0.02% of human history.
+        <a class="decode-link" href="https://en.wikipedia.org/wiki/Toba_catastrophe_theory" target="_blank">→ Wikipedia: Toba Bottleneck</a>
+        <a class="decode-link" href="https://en.wikipedia.org/wiki/History_of_human_disease" target="_blank">→ Wikipedia: History of Disease</a>
+      </span>
+    </span>…</p>
+
+    <p>It's only "new" to us because we've had a few generations worth of propaganda blasted into our brain holes telling us that this world is forever and forever the same. Except for the folks who research and study things about the world… but most folks don't listen to them (to be fair, they're pretty boring when compared to all the things that tell you to buy, buy, buy).</p>
+
+    <p>Civilization is old. But it ain't as old as humanity. In the grand old scheme of things, all of this is new… and almost none of it is normal. Except sex, violence and food… oh, and taking a shit far away from the food… that's pretty normal.</p>
+
+    <p>But I'll get to the normal in a bit… But before I do…</p>
+
+    <hr class="px-divider">
+
+    <h2>BUYING IN TO BULLSHIT IS ONLY USEFUL TO FARMERS</h2>
+
+    <p>That's a lame joke, but I beg no forgiveness. Bullshit abounds and, instead of carting it off to some faraway field to feed the worms, most humans eat it up. The why is a bit too long a detour for us to depart on here, but suffice it to say that we eat it because we must. We're drowning in it, too much, too often, piling on and on and on. It is the sustenance of civilization, bullshit begotten by bullshitters. The effort of sifting through it, wading through it, ploughing through it, in the hopes of finding even the teensiest nugget of sustenance for our souls, is task that bleeds us dry. And so we eat it, until we become food for the worms.</p>
+
+    <p>That last paragraph is bullshit. I'm not asking you to eat it.</p>
+
+    <p>I am asking you to think. Think about the parts of human life that are not bullshit in a candy wrapper. None of those things are products of the 21st Century, or the 20th for that matter. The things that keep us going, that truly nourish and sustain our souls, the salves for our selves, and the cures for our communities… they're as old as the hills and humanity itself.</p>
+
+    <p>What about science and medicine and technology? All iterative, incremental processes of building on top of the wisdom that came before. Not bullshit. Not new. Normal is debatable.</p>
+
+    <p>I'm not looking to rain hellfire and brimstone upon the good people all around the world working hard to do good things in it and to it. Good people are not the problem. The bullshit is.</p>
+
+    <p>And for the purposes of this autofellatory exercise in imagined oratory, I shall restrict my bullshit-about-bullshit to this "new normal" bullshit.</p>
+
+    <p>This "new normal" bullshit, is a desperate appeal to keep shoveling. Adapt to what? A system held together with duct tape and prayers to the
+
+    <span class="decoder" id="dec-moneygod">
+      <button class="decoder-trigger" onclick="toggleDecoder('dec-moneygod', this)">moneygod</button>
+      <span class="decoder-panel">
+        <span class="decode-label">Decoded Concept</span>
+        <span class="decode-term">FINANCIALIZATION &amp; LATE CAPITALISM</span>
+        The author's recurring term for the quasi-religious status accorded to capital accumulation — where profit functions as both metric and moral justification. Economists call the broader process <em>financialization</em>: the shift in developed economies from productive industry to financial instrument returns. The moneygod "system held together with duct tape" is a reference to structural contradictions exposed by 2008 and COVID — sovereign debt, zombie corporations, asset bubbles inflated by quantitative easing.
+        <a class="decode-link" href="https://en.wikipedia.org/wiki/Financialization" target="_blank">→ Wikipedia: Financialization</a>
+        <a class="decode-link" href="https://en.wikipedia.org/wiki/Late_capitalism" target="_blank">→ Wikipedia: Late Capitalism</a>
+      </span>
+    </span>?
+
+    A system that not even the powerful seem to have faith in?</p>
+
+    <div class="pull-quote">
+      <p>Please keep shoveling the big boys' bullshit while the big boys figure out their escape.</p>
+    </div>
+
+    <p>Enough with the scatology, but not yet time for eschatology.</p>
+
+    <p>There is nothing new about this normal. But I don't believe I have convinced any beyond the choir yet. Am I preaching? I hope not.</p>
+
+    <hr class="px-divider">
+
+    <h2>OH, THE NORMALITY!</h2>
+
+    <p>I almost forgot… I fully intend to bitch about the concept of normal too. Thanks for reminding me.</p>
+
+    <p>Read <em>Snuff</em>, by
+
+    <span class="decoder" id="dec-pratchett">
+      <button class="decoder-trigger" onclick="toggleDecoder('dec-pratchett', this)">Sir Terry Pratchett</button>
+      <span class="decoder-panel">
+        <span class="decode-label">Decoded Reference</span>
+        <span class="decode-term">TERRY PRATCHETT (1948–2015)</span>
+        British author of the Discworld series — 41 novels of comic fantasy that consistently used absurdism and satire to interrogate real-world politics, economics, religion, and human nature. Often described as the best-selling author you weren't taught in school. <em>Snuff</em> (2011) is the 39th Discworld novel, featuring Commander Sam Vimes on a forced holiday that becomes a murder investigation touching on class, slavery, and the nature of law. Pratchett was knighted in 2009. He was diagnosed with early-onset Alzheimer's in 2007 and wrote publicly about dying until his death in 2015.
+        <a class="decode-link" href="https://en.wikipedia.org/wiki/Terry_Pratchett" target="_blank">→ Wikipedia: Pratchett</a>
+        <a class="decode-link" href="https://en.wikipedia.org/wiki/Snuff_(novel)" target="_blank">→ Wikipedia: Snuff</a>
+      </span>
+    </span>.
+
+    Read everything that man ever wrote (for sanity in such times as these, consider this sentence a friendly PSA). The plot of Snuff doesn't have any major bearing on the next phase of the ranty rant… but it is still well worth the hours. What is relevant, is this quote:</p>
+
+    <div class="pull-quote">
+      <p>"What is normal? Normal is yesterday and last week and last month taken together"</p>
+      <cite>— Terry Pratchett, Snuff</cite>
+    </div>
+
+    <p><button class="lb-trigger" onclick="openLightbox('lb-normal-pratchett')">Normal is a fluid concept</button>, bound by collective sense of time, and defined according to criteria set by a group of humans. Accepted norms are the yardsticks of culture. Culture is the fabric of society. And society makes up the fleshy, squishy bits of civilization. What we call "normal" is, in effect, whatever we damn well choose, for as long as other humans around us agree to call it normal too.</p>
+
+    <p>A good, healthy chunk of political discourse centers itself around negotiating what should and should not be considered normal.
+
+    <span class="decoder" id="dec-normalization">
+      <button class="decoder-trigger" onclick="toggleDecoder('dec-normalization', this)">Normalization</button>
+      <span class="decoder-panel">
+        <span class="decode-label">Decoded Concept</span>
+        <span class="decode-term">NORMALIZATION: POLITICAL PSYCHOLOGY</span>
+        In political science and psychology, normalization describes the process by which extreme, harmful, or previously unacceptable ideas or behaviours become gradually treated as ordinary. The Overton Window describes the range of policies considered politically acceptable at any moment — normalization shifts the window. After 2016, the term gained widespread use to describe how political rhetoric previously considered beyond the pale was brought into mainstream discourse through repetition and incremental escalation.
+        <a class="decode-link" href="https://en.wikipedia.org/wiki/Normalisation_(sociology)" target="_blank">→ Wikipedia: Normalization</a>
+        <a class="decode-link" href="https://en.wikipedia.org/wiki/Overton_window" target="_blank">→ Wikipedia: Overton Window</a>
+      </span>
+    </span>
+
+    is an activity we homo sapiens engage in, be it intentional or not.</p>
+
+    <p>So, perhaps, instead of asking whether this is normal, or that is normal, maybe we should ponder who wants this to be normal or that to be normal. In our present circumstances, who wants this normal that they are determined to call new? Who wanted the old normal, for that matter? Whom does this new normal serve?</p>
+
+    <p>And there's the rub.</p>
+
+    <p><strong>This "new normal" is mostly the old one, with a big ol' heaping of desperation thrown into the mix.</strong></p>
+
+    <p>I get it. I do. Things were working out pretty well for a lot of folks before it all went to hell in a hand basket. And then folks had the privilege of having a prominent voice in the public discourse. "Normal" served them well. From their perspective, normal was safe, predictable and dependable. It was normal.</p>
+
+    <p>Their normal, is the ongoing
+
+    <span class="decoder" id="dec-mass-extinction">
+      <button class="decoder-trigger" onclick="toggleDecoder('dec-mass-extinction', this)">mass extinction of Mother Earth's biodiversity</button>
+      <span class="decoder-panel">
+        <span class="decode-label">Decoded Concept</span>
+        <span class="decode-term">THE SIXTH MASS EXTINCTION</span>
+        Scientists call it the Holocene extinction or Sixth Mass Extinction: the ongoing, human-driven elimination of species at a rate 100–1000 times the natural background extinction rate. Previous mass extinctions (including the one that killed the non-avian dinosaurs) were caused by asteroid strikes, volcanic eruptions, or ice ages. This is the first caused by a single species. The WWF Living Planet Report 2020 estimated a 68% average decline in monitored vertebrate populations since 1970.
+        <a class="decode-link" href="https://en.wikipedia.org/wiki/Holocene_extinction" target="_blank">→ Wikipedia: Holocene Extinction</a>
+        <a class="decode-link" href="https://en.wikipedia.org/wiki/Biodiversity_loss" target="_blank">→ Wikipedia: Biodiversity Loss</a>
+      </span>
+    </span>.
+
+    Their normal is sitting silently while "shithole" countries suffer. Their normal is growing the
+
+    <span class="decoder" id="dec-garbage-patch">
+      <button class="decoder-trigger" onclick="toggleDecoder('dec-garbage-patch', this)">Great Pacific Garbage Patch</button>
+      <span class="decoder-panel">
+        <span class="decode-label">Decoded Reference</span>
+        <span class="decode-term">GREAT PACIFIC GARBAGE PATCH</span>
+        A gyre of marine plastic debris in the North Pacific Ocean, estimated at twice the size of Texas — approximately 1.6 million km². Not a solid island; more of a suspended plastic soup at various ocean depths. About 80% comes from land-based sources. It has been actively growing since plastic production scaled in the 1950s. The <em>Ocean Cleanup</em> project has attempted partial remediation since 2018.
+        <a class="decode-link" href="https://en.wikipedia.org/wiki/Great_Pacific_garbage_patch" target="_blank">→ Wikipedia: Garbage Patch</a>
+      </span>
+    </span>
+
+    daily. Their normal is donate to charity, pat your back and check that your asset and stock portfolios are still doing what they're supposed to. Their normal was, in the grand scheme of things, very new, very unsustainable, and awful for the rest of us.</p>
+
+    <p>Normal as defined and understood by the "new normal" crowd, is shit.</p>
+
+    <p>Normal is not what we need. And "new normal" is just normal with a mask on.</p>
+
+    <p>So no… fuck that shit. Toss it in the wildfires and burn it to the ground. Make it motherfuckin' worm food.</p>
+
+    <p>We don't need normal. We need whole lot of new, and a good dose of old too.</p>
+
+    <p>We need, as a species, to reckon with what our hubris has wrought on our home. It's the only one we have right now. How can we be trusted to venture forth to other worlds, when we simply destroy the one we're already on?</p>
+
+    <p>Humans have been around for 200,000ish years… we've faced extinction a few times and survived. We were here when the
+
+    <span class="decoder" id="dec-green-sahara">
+      <button class="decoder-trigger" onclick="toggleDecoder('dec-green-sahara', this)">Sahara was still green</button>
+      <span class="decoder-panel">
+        <span class="decode-label">Decoded Reference</span>
+        <span class="decode-term">THE AFRICAN HUMID PERIOD / GREEN SAHARA</span>
+        Between approximately 11,000 and 5,000 years ago, what is now the Sahara Desert was a lush, lake-filled savanna — the African Humid Period. Humans and megafauna (hippos, crocodiles, elephants) thrived across the region. The shift to desert conditions was caused by a shift in Earth's orbital cycle reducing monsoon intensity. Cave paintings in Algeria and Libya depict the environment. This periodically-green Sahara allowed human migration out of Africa along routes now buried under sand.
+        <a class="decode-link" href="https://en.wikipedia.org/wiki/African_humid_period" target="_blank">→ Wikipedia: Green Sahara</a>
+        <a class="decode-link" href="https://en.wikipedia.org/wiki/Prehistoric_North_Africa" target="_blank">→ Wikipedia: Prehistoric North Africa</a>
+      </span>
+    </span>.
+
+    I don't know about you, but the things that got humanity this far might be worth remembering, because putting all our trust in our toys and the moneygod… that is too new to be declared fully tested. And as far as the planet is concerned, it is abnormal AF.</p>
+
+    <p>We don't need a "new normal"… we need to catch a wake up and start fixing shit.</p>
+
+    <p>Mama Earth is pissed. Rightfully so, in my opinion. The reckoning is here, and it ain't gonna be letting up any time soon.</p>
+
+    <p>So let's dispense with the pretense that a "new normal" is anything but a bland brand put forward in desperation by the people whom the "old normal" served.</p>
+
+    <p>The politicians will play their games, the rich will guard their wealth, the media will yell about anything if it sells ads, and businesses will sell any bullshit that folks can be convinced to buy. That's why there is nothing new about this normal.</p>
+
+    <p>And this normal is about to die.</p>
+
+    <p>We're in for a wild ride kids, but we're the homos that survived. We'll survive again. If we don't, these words matter even less than they do now:</p>
+
+    <div class="pull-quote">
+      <p>History may be written by the victors, but evolution is the story of those that survive.</p>
+    </div>
+
+    <p>Keep the community alive, and the community keeps you alive.</p>
+
+    <p>Make that your "new normal"… maybe then you'll make it. There is always hope.</p>
+
+    <hr class="px-divider">
+
+    <div class="signoff">Peace, Joy and a Little Madness &nbsp;—&nbsp; JL</div>
+
+    <div class="postscript">
+      PS… this one was a little unhinged. I confess I am a little rusty. But it was fun to write and I think I like it. I'm not sure what I'll write next… so don't be thinking that I'll do another like this again for a while. I might, if I think it will surprise you. And by "you", I mean the imagined audience in my addled mind.<br><br>
+      I'm weird. Get used to it or go elsewhere.
+    </div>
+
+  </div>
+</div>
+
+<!-- ================================================================ -->
+<!-- TAB: THE LANGUAGE -->
+<!-- ================================================================ -->
+<div id="tab-language" class="tab-content">
+
+  <p class="content-title">// WHERE DID "NEW NORMAL" COME FROM? //</p>
+  <p class="content-body">The phrase didn't arise organically. It has a traceable history of institutional deployment — each iteration shifting responsibility away from those who caused the disruption and onto those experiencing it.</p>
+
+  <div class="timeline-item">
+    <div class="timeline-date">1918</div>
+    <div class="timeline-badge cyan">EARLY USE</div>
+    <div class="timeline-desc">Post-WWI usage in various newspapers to describe the return to peacetime conditions. Meaning: the old state of affairs has been disrupted; adjust your expectations.</div>
+  </div>
+  <div class="timeline-item">
+    <div class="timeline-date">2009</div>
+    <div class="timeline-badge amber">FINANCE</div>
+    <div class="timeline-desc"><a href="https://en.wikipedia.org/wiki/Mohamed_El-Erian" target="_blank">Mohamed El-Erian</a> of PIMCO coins the term for post-GFC economic conditions: low growth, high unemployment, and financial fragility as permanent features, not temporary disruptions. First major institutional deployment as a framing device.</div>
+  </div>
+  <div class="timeline-item">
+    <div class="timeline-date">2010s</div>
+    <div class="timeline-badge magenta">CONSULTING</div>
+    <div class="timeline-desc">McKinsey, Deloitte, and other firms adopt the phrase for change management literature. Meaning shifts to: adaptation to disruption is inevitable and desirable; organisations that resist the "new normal" will fail.</div>
+  </div>
+  <div class="timeline-item">
+    <div class="timeline-date">2020</div>
+    <div class="timeline-badge red">PANDEMIC</div>
+    <div class="timeline-desc">COVID-19 launches "new normal" into ubiquity. Governments, health organisations, and corporations deploy it simultaneously, with wildly inconsistent definitions. The author writes this essay at peak deployment. Google Trends shows the phrase at an all-time search high in April–May 2020.</div>
+  </div>
+
+  <p class="content-title">// NORMALIZATION: HOW IT WORKS //</p>
+
+  <div class="accordion-item">
+    <button class="accordion-trigger" onclick="toggleAccordion(this)">
+      <span class="accordion-trigger-text">The Overton Window &amp; Who Moves It</span>
+      <span class="accordion-arrow">▾</span>
+    </button>
+    <div class="accordion-panel">
+      The <a href="https://en.wikipedia.org/wiki/Overton_window" target="_blank">Overton Window</a> describes the narrow range of ideas a society considers acceptable at any given time. Policies outside the window are politically impossible regardless of their merit. The window moves — and normalisation is the mechanism. Repeat an idea often enough, in enough mainstream contexts, and it shifts from radical to debatable to acceptable to policy. The author's implicit point: the "new normal" phrase is itself a normalization move — framing post-pandemic conditions as fixed and permanent, rather than as a political choice about whose interests are prioritised in recovery.
+    </div>
+  </div>
+
+  <div class="accordion-item">
+    <button class="accordion-trigger" onclick="toggleAccordion(this)">
+      <span class="accordion-trigger-text">Pratchett's Definition vs. The Political One</span>
+      <span class="accordion-arrow">▾</span>
+    </button>
+    <div class="accordion-panel">
+      Pratchett's definition — <strong>"normal is yesterday and last week and last month taken together"</strong> — is descriptive and democratic: normal is whatever a community has recently experienced, collectively. It is fluid, local, and temporary. The political use of "new normal" is prescriptive and top-down: it tells communities what their new shared experience should be considered, and implicitly that they should stop expecting the previous one. These are opposite operations dressed in the same language.
+    </div>
+  </div>
+
+  <div class="accordion-item">
+    <button class="accordion-trigger" onclick="toggleAccordion(this)">
+      <span class="accordion-trigger-text">The Essay's Central Rhetorical Move</span>
+      <span class="accordion-arrow">▾</span>
+    </button>
+    <div class="accordion-panel">
+      The author's argument operates on two levels simultaneously. Level one: the "new" in "new normal" is false — the conditions being described (disease, instability, inequality, environmental degradation) are not new; they are the historical default. Level two: the "normal" in "new normal" is a political claim — a bid to establish whose conditions get treated as the baseline. The punchline is that both words in the phrase are doing ideological work while pretending to be neutral description. This is what the author means by "engineered, focus-tested" — not that there was a meeting where it was invented, but that its structure functions to serve specific interests regardless of intent.
+    </div>
+  </div>
+
+  <div class="accordion-item">
+    <button class="accordion-trigger" onclick="toggleAccordion(this)">
+      <span class="accordion-trigger-text">Whose Normal Was It, Anyway?</span>
+      <span class="accordion-arrow">▾</span>
+    </button>
+    <div class="accordion-panel">
+      The author does something precise when listing the "old normal": <strong>mass extinction, environmental destruction, growing wealth inequality, geopolitical indifference to suffering in the Global South.</strong> These aren't aberrations from the normal — they are its constitutive features. The "new normal" crowd's grief is not for the loss of a genuinely good world, but for the loss of conditions that were only good <em>for them</em>. The rest of the world had already been living in the crisis for decades. This is the argument the author is making when he says "I am othering the shit out of them folks right now."
+    </div>
+  </div>
+
+</div>
+
+<!-- ================================================================ -->
+<!-- TAB: THE CONTEXT -->
+<!-- ================================================================ -->
+<div id="tab-context" class="tab-content">
+
+  <p class="content-title">// 23 SEPTEMBER 2020 — GROUND TRUTH //</p>
+  <p class="content-body">The essay was written into a specific moment. Here is what that moment actually looked like in data.</p>
+
+  <div class="stat-grid">
+    <div class="stat-card">
+      <span class="stat-number">~1M</span>
+      <span class="stat-label">COVID deaths globally</span>
+      <p>The world crossed 1 million confirmed COVID-19 deaths in late September 2020. The actual toll was estimated at 2–3x that figure.</p>
+      <a href="https://en.wikipedia.org/wiki/COVID-19_pandemic_by_country_and_territory" target="_blank">→ Pandemic data</a>
+    </div>
+    <div class="stat-card">
+      <span class="stat-number">42 DAYS</span>
+      <span class="stat-label">to US election</span>
+      <p>The essay was written six weeks before the most contested US presidential election in modern history, amid active attempts to undermine postal voting.</p>
+      <a href="https://en.wikipedia.org/wiki/2020_United_States_presidential_election" target="_blank">→ 2020 Election</a>
+    </div>
+    <div class="stat-card">
+      <span class="stat-number">10M+</span>
+      <span class="stat-label">US jobs lost (net, 2020)</span>
+      <p>By September 2020, the US had lost roughly 10 million jobs net compared to pre-pandemic levels. Global unemployment hit a 25-year high.</p>
+      <a href="https://en.wikipedia.org/wiki/Economic_impact_of_the_COVID-19_pandemic" target="_blank">→ Economic impact</a>
+    </div>
+    <div class="stat-card">
+      <span class="stat-number">2020</span>
+      <span class="stat-label">Hottest year on record (tied)</span>
+      <p>2020 tied 2016 as the hottest year in recorded history. Siberia hit 38°C. The Arctic was on fire.</p>
+      <a href="https://en.wikipedia.org/wiki/2020_in_the_environment" target="_blank">→ Climate 2020</a>
+    </div>
+  </div>
+
+  <p class="content-title">// THE "OLD NORMAL" BY THE NUMBERS //</p>
+  <p class="content-body">The conditions the author identifies as the "old normal" — the ones being mourned and preserved by the phrase "new normal" — were not neutral or good for most of the planet.</p>
+
+  <div class="timeline-item">
+    <div class="timeline-date">1970–2020</div>
+    <div class="timeline-badge red">EXTINCTION</div>
+    <div class="timeline-desc"><a href="https://en.wikipedia.org/wiki/Holocene_extinction" target="_blank">68% average decline</a> in monitored vertebrate populations (WWF Living Planet Report 2020). That's the "old normal" in biodiversity terms.</div>
+  </div>
+  <div class="timeline-item">
+    <div class="timeline-date">1950–2020</div>
+    <div class="timeline-badge red">PLASTIC</div>
+    <div class="timeline-desc">Global plastic production grew from near-zero to 367 million tonnes per year. The <a href="https://en.wikipedia.org/wiki/Great_Pacific_garbage_patch" target="_blank">Great Pacific Garbage Patch</a> is approximately twice the size of Texas and growing.</div>
+  </div>
+  <div class="timeline-item">
+    <div class="timeline-date">1980–2020</div>
+    <div class="timeline-badge amber">INEQUALITY</div>
+    <div class="timeline-desc">Global wealth inequality rose sharply. By 2020, the <a href="https://en.wikipedia.org/wiki/Wealth_inequality" target="_blank">top 1% held more wealth than the bottom 50%</a> of humanity combined. This was the normal being defended.</div>
+  </div>
+  <div class="timeline-item">
+    <div class="timeline-date">2020</div>
+    <div class="timeline-badge green">AUTHOR'S POINT</div>
+    <div class="timeline-desc">The "new normal" phrase asked people to restore conditions that were catastrophic for most of the planet. The author's counterproposal: "we need a whole lot of new, and a good dose of old" — meaning genuine structural change plus recovery of older, more durable human values.</div>
+  </div>
+
+</div>
+
+<!-- ================================================================ -->
+<!-- TAB: FURTHER READING -->
+<!-- ================================================================ -->
+<div id="tab-reading" class="tab-content">
+
+  <div class="resource-section-title">// ON THE PHRASE ITSELF //</div>
+
+  <a class="resource-link" href="https://en.wikipedia.org/wiki/New_normal_(business)" target="_blank">
+    <div class="resource-link-inner">
+      <div>
+        <div class="resource-title">New Normal (Business) — Wikipedia</div>
+        <div class="resource-desc">The phrase's history in business and economic contexts, from post-GFC to pandemic deployment.</div>
+      </div>
+      <div><div class="resource-tag">Wiki</div></div>
+    </div>
+  </a>
+
+  <a class="resource-link" href="https://en.wikipedia.org/wiki/Overton_window" target="_blank">
+    <div class="resource-link-inner">
+      <div>
+        <div class="resource-title">Overton Window — Wikipedia</div>
+        <div class="resource-desc">The mechanics of how acceptable ideas shift — and how language like "new normal" moves the window.</div>
+      </div>
+      <div><div class="resource-tag">Wiki</div></div>
+    </div>
+  </a>
+
+  <div class="resource-section-title">// ON NORMALIZATION &amp; POWER //</div>
+
+  <a class="resource-link" href="https://en.wikipedia.org/wiki/The_Invention_of_Tradition" target="_blank">
+    <div class="resource-link-inner">
+      <div>
+        <div class="resource-title">The Invention of Tradition — Hobsbawm &amp; Ranger</div>
+        <div class="resource-desc">The foundational text on how powerful groups construct narratives about the past to legitimise present arrangements.</div>
+      </div>
+      <div><div class="resource-tag">Book</div></div>
+    </div>
+  </a>
+
+  <a class="resource-link" href="https://en.wikipedia.org/wiki/The_Shock_Doctrine" target="_blank">
+    <div class="resource-link-inner">
+      <div>
+        <div class="resource-title">The Shock Doctrine — Naomi Klein</div>
+        <div class="resource-desc">How disaster capitalism exploits crisis to restructure societies. The "new normal" argument's macro-economic twin.</div>
+      </div>
+      <div><div class="resource-tag">Book</div></div>
+    </div>
+  </a>
+
+  <div class="resource-section-title">// ON THE OLD &amp; THE ACTUALLY OLD //</div>
+
+  <a class="resource-link" href="https://en.wikipedia.org/wiki/African_humid_period" target="_blank">
+    <div class="resource-link-inner">
+      <div>
+        <div class="resource-title">African Humid Period (Green Sahara) — Wikipedia</div>
+        <div class="resource-desc">When the Sahara was a savanna. The deep past the author invokes as evidence that "normal" is always temporary.</div>
+      </div>
+      <div><div class="resource-tag">Wiki</div></div>
+    </div>
+  </a>
+
+  <a class="resource-link" href="https://en.wikipedia.org/wiki/Toba_catastrophe_theory" target="_blank">
+    <div class="resource-link-inner">
+      <div>
+        <div class="resource-title">Toba Catastrophe Theory — Wikipedia</div>
+        <div class="resource-desc">The supervolcanic eruption that may have reduced humanity to a few thousand individuals ~70,000 years ago. We've survived worse.</div>
+      </div>
+      <div><div class="resource-tag">Wiki</div></div>
+    </div>
+  </a>
+
+  <a class="resource-link" href="https://en.wikipedia.org/wiki/Terry_Pratchett" target="_blank">
+    <div class="resource-link-inner">
+      <div>
+        <div class="resource-title">Terry Pratchett — Wikipedia</div>
+        <div class="resource-desc">The man whose definition of "normal" is the only one in this essay the author agrees with. Read everything he wrote.</div>
+      </div>
+      <div><div class="resource-tag">Wiki</div></div>
+    </div>
+  </a>
+
+  <a class="resource-link" href="https://medium.com/@julianlkruger/there-is-nothing-new-about-this-normal-68077de0b3e7" target="_blank">
+    <div class="resource-link-inner">
+      <div>
+        <div class="resource-title">There Is Nothing New About This Normal — Medium</div>
+        <div class="resource-desc">The original essay. Written September 23, 2020.</div>
+      </div>
+      <div><div class="resource-tag">Original</div></div>
+    </div>
+  </a>
+
+</div>
+
+<!-- ================================================================ -->
+<!-- LIGHTBOXES -->
+<!-- ================================================================ -->
+
+<div class="lightbox-overlay" id="lb-normal-pratchett" onclick="closeLightboxOnOverlay(event, 'lb-normal-pratchett')">
+  <div class="lightbox-box">
+    <div class="lightbox-header">
+      <span class="lightbox-title">// WHAT IS NORMAL? //</span>
+      <button class="lightbox-close" onclick="closeLightbox('lb-normal-pratchett')">✕</button>
+    </div>
+    <div class="lightbox-body">
+      <h3>Pratchett's Definition vs. The Political Deployment</h3>
+      <p>Pratchett's definition is disarmingly simple: <em>"Normal is yesterday and last week and last month taken together."</em> It is descriptive, democratic, and temporary. Normal is what a community has collectively experienced recently — it has no authority beyond shared memory, and it shifts constantly as days accumulate.</p>
+      <p>The political phrase "new normal" does the opposite. It is prescriptive and top-down. It tells a community what they should collectively accept as their new baseline — and by doing so, forecloses the question of whether that baseline is just, sustainable, or chosen. It converts a political decision into a fact of nature.</p>
+      <p>The author's anger at the phrase is partly this inversion: a Pratchettian normal is something that emerges from lived experience. The "new normal" is something imposed from above, packaged as adaptation, and sold as inevitable.</p>
+      <p>Pratchett's deeper argument — made across 41 novels — is that power always tries to make its arrangements look permanent and natural. The job of thinking people is to notice when this is happening. "Normal is whatever we damn well choose, for as long as other humans around us agree to call it normal too" is not a statement of relativism. It is a statement of political agency: we can choose differently.</p>
+      <a class="lb-source-btn" href="https://en.wikipedia.org/wiki/Snuff_(novel)" target="_blank">→ Wikipedia: Snuff</a>
+      <a class="lb-source-btn" href="https://en.wikipedia.org/wiki/Normalisation_(sociology)" target="_blank">→ Wikipedia: Normalization</a>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <span class="footer-pixel">★ ★ ★</span>
+  <span>NOTHING NEW ABOUT THIS NORMAL &nbsp;·&nbsp; JL &nbsp;·&nbsp; SEP 2020</span><br><br>
+  <span>Essay reproduced for educational annotation. <a href="https://medium.com/@julianlkruger/there-is-nothing-new-about-this-normal-68077de0b3e7" target="_blank">Original on Medium →</a></span>
+</footer>
+
+<script>
+  function switchTab(id, btn) {
+    document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+    document.getElementById('tab-' + id).classList.add('active');
+    btn.classList.add('active');
+    window.scrollTo({ top: 0 });
+  }
+
+  function toggleDecoder(id, btn) {
+    const wrapper = document.getElementById(id);
+    const panel = wrapper.querySelector('.decoder-panel');
+    const isOpen = panel.classList.contains('open');
+
+    document.querySelectorAll('.decoder-panel.open').forEach(p => p.classList.remove('open'));
+    document.querySelectorAll('.decoder-trigger.open').forEach(b => b.classList.remove('open'));
+
+    if (!isOpen) {
+      panel.classList.add('open');
+      btn.classList.add('open');
+      const rect = panel.getBoundingClientRect();
+      if (rect.right > window.innerWidth - 16) {
+        panel.classList.add('flip-left');
+      } else {
+        panel.classList.remove('flip-left');
+      }
+    }
+  }
+
+  document.addEventListener('click', function(e) {
+    if (!e.target.closest('.decoder')) {
+      document.querySelectorAll('.decoder-panel.open').forEach(p => p.classList.remove('open'));
+      document.querySelectorAll('.decoder-trigger.open').forEach(b => b.classList.remove('open'));
+    }
+  });
+
+  function toggleAccordion(btn) {
+    const panel = btn.nextElementSibling;
+    const isOpen = btn.classList.contains('open');
+    document.querySelectorAll('.accordion-trigger.open').forEach(b => {
+      b.classList.remove('open');
+      b.nextElementSibling.classList.remove('open');
+    });
+    if (!isOpen) {
+      btn.classList.add('open');
+      panel.classList.add('open');
+    }
+  }
+
+  function openLightbox(id) {
+    document.getElementById(id).classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeLightbox(id) {
+    document.getElementById(id).classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  function closeLightboxOnOverlay(e, id) {
+    if (e.target === document.getElementById(id)) closeLightbox(id);
+  }
+
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+      document.querySelectorAll('.lightbox-overlay.open').forEach(el => {
+        el.classList.remove('open');
+      });
+      document.body.style.overflow = '';
+    }
+  });
+</script>
+</body>
+</html>

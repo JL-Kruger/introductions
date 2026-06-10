@@ -1,0 +1,404 @@
+/* styles.css — JL Kruger Homepage
+   tags: homepage layout desktop-fit mobile shimmer responsive */
+
+/* ── Tokens ─────────────────────────────────────────────────────────────── */
+/* Palette + layout custom properties live in /css/tokens.css, generated from
+   Toolbox/Python/variables.yaml and linked before this file. Edit colours there. */
+
+/* ── Reset ───────────────────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+
+/* ── Body ────────────────────────────────────────────────────────────────── */
+body {
+  margin: 0;
+  padding: 0;
+  background: url('/Media/SVG-Assets/jl-site-background-desktop.svg') no-repeat center center fixed,
+              linear-gradient(180deg, #010403 0%, #010403 50%, #02130a 100%);
+  background-size: cover, auto;
+  background-attachment: fixed;
+  color: var(--light);
+  font-family: 'Overlock', serif;
+  font-size: 20px;
+  line-height: 1.25;
+  font-feature-settings: "kern" 1, "liga" 1;
+  text-rendering: optimizeLegibility;
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── Typography ──────────────────────────────────────────────────────────── */
+h1, h2, h3, h4, h5, h6 { margin: 0; hyphens: none; }
+
+h1 {
+  font-family: 'Tagesschrift', serif;
+  color: var(--fire);
+  line-height: 1.15;
+  letter-spacing: 0.02em;
+}
+h2, h3 {
+  font-family: 'Walter Turncoat', cursive;
+  color: var(--meadow);
+  line-height: 1.25;
+  letter-spacing: 0.04em;
+}
+h4, h5, h6 {
+  font-family: 'Walter Turncoat', cursive;
+  color: var(--rust);
+}
+blockquote { color: var(--sun); }
+
+a            { color: var(--meadow); text-decoration: none; }
+a:hover      { color: var(--fire); }
+a:visited    { color: var(--pigment); }
+
+.special {
+  font-family: 'Protest Revolution', sans-serif;
+  color: var(--sun);
+  font-size: clamp(3.6rem, 3.6vw, 2.4rem);
+  letter-spacing: 0.03em;
+  line-height: 1.2;
+}
+
+/* ── Sticky nav ──────────────────────────────────────────────────────────── */
+.sticky-nav {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: rgba(1, 4, 3, 0.88);
+  /* keep blur modest — heavy blur + rAF loop = dropped frames */
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  padding: 0.9rem 2rem;
+  display: flex;
+  justify-content: center;
+  /* border via shimmer-nav SVG line in index.html rather than border-image */
+  border-bottom: 2px solid transparent;
+  border-image: linear-gradient(to right, rgba(7,55,32,0) 0%, rgba(14,77,14,.44) 16.7%, rgba(94,154,14,.88) 33.3%, rgba(242,198,42,1) 50%, rgba(235,117,19,.88) 66.7%, rgba(105,25,13,.44) 83.3%, rgba(7,55,32,0) 100%) 1;
+  flex-shrink: 0; /* don't shrink in the flex column */
+}
+
+/* shimmer-nav separator line rendered via inline SVG in markup;
+   fallback: a static semi-transparent rule */
+.nav-separator {
+  width: 100%;
+  height: 2px;
+  display: block;
+  flex-shrink: 0;
+}
+
+.link-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5em 1.5em;
+}
+
+.nav-links {
+  font-family: 'Walter Turncoat', cursive;
+  font-size: clamp(1.4rem, 2vw, 2.1rem);
+}
+.nav-links a        { color: var(--light); opacity: 0.85; }
+.nav-links a:hover  { color: var(--fire);  opacity: 1; }
+
+/* ── Main scroll container ───────────────────────────────────────────────── */
+#scroll-container {
+  flex: 1;
+  display: flex;
+  overflow-y: auto; /* mobile: scrolls; desktop: content fits so no scroll bar */
+  min-height: 0;
+}
+
+/* ── Hero / bento layout ─────────────────────────────────────────────────── */
+.hero-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 2rem;
+  min-height: 0;
+}
+
+.bento-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 2rem;
+  flex: 1;
+  min-height: 0;
+  align-items: start;
+  padding: 8% 8%;
+}
+
+.bento-col {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+  min-height: 0;
+}
+
+.bento-center {
+  align-items: center;
+  text-align: center;
+}
+.bento-right {
+  text-align: right;
+}
+
+/* ── Feature buttons row ─────────────────────────────────────────────────── */
+.hero-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+  justify-content: center;
+  flex-shrink: 0;
+  max-width: 66vw;
+  margin-left: auto;
+  margin-right: auto;
+  margin-bottom: 1.5rem;
+}
+
+/* ── Button component ────────────────────────────────────────────────────── */
+.media-btn-wrap {
+  position: relative;
+  display: inline-flex;
+  height: 2.4rem;
+}
+.media-btn-border {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  pointer-events: none;
+}
+.media-btn-rect {
+  fill: transparent;
+  stroke: url(#shimmer-org-h);
+  stroke-width: 1.5;
+  transition: fill 0.25s ease;
+}
+.media-btn-wrap:hover .media-btn-rect { fill: var(--light); }
+.media-btn-wrap:hover .media-btn      { color: var(--pigment); }
+
+.media-btn {
+  display: inline-flex;
+  align-items: center;
+  height: 100%;
+  padding: 0 1.4em;
+  background: transparent;
+  border: none;
+  border-radius: 3px;
+  color: var(--light);
+  font-family: 'Walter Turncoat', cursive;
+  font-size: clamp(0.9rem, 1.1vw, 1.1rem);
+  cursor: pointer;
+  transition: color 0.25s ease;
+  white-space: nowrap;
+  position: relative;
+  text-decoration: none;
+}
+
+/* ── Paragraph sizing ────────────────────────────────────────────────────── */
+.hero-content p {
+  font-size: clamp(1.25rem, 1.2vw, 1.15rem);
+  margin: 0;
+  max-width: 65ch;
+}
+
+/* ── Desktop: scale-to-fit viewport (no scroll) ──────────────────────────── */
+@media (min-width: 1024px) {
+  html, body {
+    height: 100dvh;
+    overflow: hidden; /* body clips to viewport */
+  }
+
+  #scroll-container {
+    overflow: hidden; /* content is sized to fit — no scrollbar needed */
+  }
+
+  .hero-content {
+    justify-content: space-between;
+  }
+
+  .bento-grid {
+    grid-template-columns: repeat(3, 1fr);
+    align-items: center;
+  }
+
+  /* Desktop: render headings prettier on Desktop */
+  .hero-content h1,
+  .hero-content h2,
+  .hero-content h3 {
+    font-size: clamp(1.25rem, 1.2vw, 1.1rem);
+    letter-spacing: normal;
+    line-height: 1.15;
+  }
+  .hero-content h1         { font-size: clamp(1.5rem, 1.4vw, 1.5rem);         color: var(--fire);   }
+  .hero-content h2,
+  .hero-content h3         { font-style: italic; color: var(--meadow); }
+  .hero-content .special   { font-style: italic; color: var(--sun);
+                             font-size: clamp(1.75rem, 1.2vw, 1.1rem); }
+
+  /* Tighten button row for the full-row 5-up layout */
+  .hero-buttons {
+    flex-wrap: nowrap;
+    gap: 1rem;
+    margin-top: 1rem;
+  }
+  .media-btn-wrap {
+    flex: 1;
+    max-width: 280px;
+  }
+  .media-btn {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+/* ── Mobile / narrow ─────────────────────────────────────────────────────── */
+@media (max-width: 1023px) {
+  .bento-grid {
+    grid-template-columns: 1fr;
+    align-items: center;
+    text-align: center;
+  }
+  .bento-col { align-items: center; }
+
+  .hero-buttons {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .hero-content .special,
+  .hero-content p  { text-align: center; }
+
+  .media-btn-wrap {
+    display: flex;
+    width: 100%;
+    height: 3rem;
+  }
+  .media-btn {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+/* ── Reduced motion ──────────────────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  .media-btn-rect,
+  .media-btn,
+  .card-border-rect { transition: none !important; }
+}
+
+/* ── Bento center assets ─────────────────────────────────────────────────── */
+.logo-wrap {
+  width: 100%;
+  max-width: 100%;
+  will-change: opacity;
+}
+.logo-wrap svg {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* logo wrapped in a shimmer-nav link — keep intrinsic size + centering */
+.logo-link {
+  display: inline-block;
+  line-height: 0;
+  color: inherit;
+  text-decoration: none;
+  cursor: pointer;
+}
+/* Homepage logo: scale the SVG to the column (it carries an intrinsic 904px
+   width). CSS sizing — never the invalid height="auto" SVG attribute. */
+.bento-center .logo-link { display: block; }
+#logo-svg {
+  width: 110%;
+  max-width: 110%;
+  height: auto;
+  display: block;
+}
+
+.thumbnail-wrap {
+  width: clamp(100px, 8vh, 120px);
+  height: auto;
+  margin: 1.5rem auto;
+}
+.thumb-border {
+  width: 100%;
+  height: auto;
+  display: block;
+  overflow: visible;
+}
+
+.critter-wrap {
+  width: clamp(80px, 8vh, 140px);
+  height: auto;
+  margin: 0 auto;
+  will-change: opacity;
+}
+.critter-wrap svg {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* Homepage decorative critter — matches the old 120×120 inline scale */
+.decor-critter {
+  width: 120px;
+  height: 120px;
+  margin: 1.5rem auto;
+}
+.decor-critter svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+/* ── Buttons: shine default → shimmer + fill on hover ────────────────────── */
+/* Override from styles.css base — shine stroke at rest */
+.media-btn-rect {
+  fill: transparent;
+  stroke: url(#shine-org-h);
+  stroke-width: 1.5;
+  transition: fill 0.25s ease;
+  /* Note: stroke cannot transition between url() values via CSS —
+     the swap is instant; only fill animates */
+}
+.media-btn-wrap:hover .media-btn-rect,
+.media-btn-wrap:focus-within .media-btn-rect {
+  stroke: url(#shimmer-org-h);
+  fill: var(--light);
+}
+.media-btn-wrap:hover .media-btn,
+.media-btn-wrap:focus-within .media-btn {
+  color: var(--pigment);
+}
+
+/* ── Mobile: swap to mobile background + frame ───────────────────────────── */
+@media (max-width: 1023px) {
+  body {
+    background-image:
+      url('/Media/SVG-Assets/jl-site-background-mobile.svg'),
+      linear-gradient(180deg, #010403 0%, #010403 50%, #02130a 100%);
+  }
+}
+
+/* ── Frame overlays (inlined SVG, replaces background-image frames) ─────── */
+.frame-overlay {
+  position: fixed;
+  inset: 1%;
+  width: 98%;
+  height: 98%;
+  pointer-events: none;
+  z-index: 10;
+  margin: 8px 8px 8px 8px;
+}
+.frame-desktop { display: block; }
+.frame-mobile  { display: none;  }
+
+@media (max-width: 1023px) {
+  .frame-desktop { display: none;  }
+  .frame-mobile  { display: block; }
+}

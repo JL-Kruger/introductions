@@ -1,0 +1,1665 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Whoniverse Stories — Annotated</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400;1,600&family=Courier+Prime:ital@0;1&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{font-size:16px;scroll-behavior:smooth;}
+
+body {
+  background-color: #06101f;
+  color: #ccd6e8;
+  font-family: 'Rajdhani', sans-serif;
+  min-height: 100vh;
+  background-image:
+    radial-gradient(ellipse at 20% 0%, rgba(0,60,130,0.18) 0%, transparent 60%),
+    radial-gradient(ellipse at 80% 100%, rgba(0,40,100,0.12) 0%, transparent 60%),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='52'%3E%3Ccircle cx='30' cy='26' r='11' fill='none' stroke='%23003870' stroke-opacity='0.10' stroke-width='1'/%3E%3Ccircle cx='0' cy='0' r='11' fill='none' stroke='%23003870' stroke-opacity='0.10' stroke-width='1'/%3E%3Ccircle cx='60' cy='0' r='11' fill='none' stroke='%23003870' stroke-opacity='0.10' stroke-width='1'/%3E%3Ccircle cx='0' cy='52' r='11' fill='none' stroke='%23003870' stroke-opacity='0.10' stroke-width='1'/%3E%3Ccircle cx='60' cy='52' r='11' fill='none' stroke='%23003870' stroke-opacity='0.10' stroke-width='1'/%3E%3C/svg%3E");
+}
+
+/* ─── HEADER ─────────────────────────────────────────── */
+.site-header {
+  background: linear-gradient(180deg, #00091a 0%, #000e26 70%, #06101f 100%);
+  border-bottom: 1px solid #0a2548;
+  padding: 2.8rem 1.5rem 2.2rem;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+.site-header::before {
+  content:'';
+  position:absolute;
+  inset:0;
+  background: radial-gradient(ellipse at 50% 0%, rgba(0,90,200,0.18) 0%, transparent 65%);
+  pointer-events:none;
+}
+.header-badge {
+  display:inline-block;
+  font-size:0.7rem;
+  letter-spacing:0.35em;
+  text-transform:uppercase;
+  color:#1a6ab0;
+  margin-bottom:0.9rem;
+  border:1px solid #0c2e58;
+  padding:0.25rem 0.9rem;
+  border-radius:1px;
+}
+.site-header h1 {
+  font-family:'Rajdhani',sans-serif;
+  font-size:clamp(1.5rem,4vw,2.4rem);
+  font-weight:700;
+  letter-spacing:0.18em;
+  text-transform:uppercase;
+  color:#d8e8f8;
+  position:relative;
+  line-height:1.15;
+}
+.site-header h1 span { color:#3da8ff; }
+.header-sub {
+  font-size:0.82rem;
+  letter-spacing:0.22em;
+  text-transform:uppercase;
+  color:#264a6c;
+  margin-top:0.6rem;
+  position:relative;
+}
+
+/* ─── STORY SELECTOR ─────────────────────────────────── */
+.story-selector {
+  display:flex;
+  gap:0;
+  justify-content:center;
+  padding:1.4rem 1rem;
+  background:#030b18;
+  border-bottom:1px solid #0a2040;
+  flex-wrap:wrap;
+}
+.story-btn {
+  background:transparent;
+  border:1px solid #0d2e50;
+  color:#4a7a9a;
+  font-family:'Rajdhani',sans-serif;
+  font-size:0.92rem;
+  font-weight:600;
+  letter-spacing:0.14em;
+  text-transform:uppercase;
+  padding:0.7rem 1.8rem;
+  cursor:pointer;
+  transition:all 0.22s;
+  position:relative;
+}
+.story-btn:first-child { border-radius:2px 0 0 2px; }
+.story-btn:last-child  { border-radius:0 2px 2px 0; }
+.story-btn:hover { background:rgba(0,55,110,0.3); color:#9ac8e8; border-color:#1a4a70; }
+.story-btn.active {
+  background:#002e5c;
+  border-color:#1a6ab0;
+  color:#7ecfff;
+  box-shadow:0 0 16px rgba(0,100,200,0.25), inset 0 1px 0 rgba(100,180,255,0.12);
+}
+.story-btn.active::after {
+  content:'';
+  position:absolute;
+  bottom:-2px;
+  left:0;right:0;
+  height:2px;
+  background:linear-gradient(90deg,transparent,#1a80c4,transparent);
+}
+.story-btn .story-num {
+  display:block;
+  font-size:0.65rem;
+  letter-spacing:0.3em;
+  color:inherit;
+  opacity:0.55;
+  margin-bottom:0.1rem;
+}
+
+/* ─── STORY CONTAINER ────────────────────────────────── */
+.story { display:none; }
+.story.active { display:block; }
+
+/* ─── TAB NAV ────────────────────────────────────────── */
+.tab-nav {
+  display:flex;
+  background:#020810;
+  border-bottom:1px solid #0a1e38;
+  padding:0 1rem;
+  overflow-x:auto;
+  scrollbar-width:none;
+}
+.tab-nav::-webkit-scrollbar{display:none;}
+.tab-btn {
+  background:transparent;
+  border:none;
+  border-bottom:2px solid transparent;
+  color:#3a607c;
+  font-family:'Rajdhani',sans-serif;
+  font-size:0.82rem;
+  font-weight:600;
+  letter-spacing:0.18em;
+  text-transform:uppercase;
+  padding:0.85rem 1.2rem;
+  cursor:pointer;
+  transition:all 0.18s;
+  white-space:nowrap;
+  margin-bottom:-1px;
+}
+.tab-btn:hover { color:#7ab0ce; }
+.tab-btn.active { color:#3da8ff; border-bottom-color:#1a70b4; }
+
+/* ─── TAB CONTENT ────────────────────────────────────── */
+.tab-content { display:none; }
+.tab-content.active { display:block; }
+
+/* ─── PROSE ──────────────────────────────────────────── */
+.prose-wrap {
+  max-width:680px;
+  margin:0 auto;
+  padding:2.5rem 1.5rem 4rem;
+}
+.story-title {
+  font-family:'Rajdhani',sans-serif;
+  font-size:clamp(1.6rem,4vw,2.2rem);
+  font-weight:700;
+  letter-spacing:0.1em;
+  text-transform:uppercase;
+  color:#c8daf0;
+  margin-bottom:0.25rem;
+}
+.story-meta {
+  font-size:0.72rem;
+  letter-spacing:0.22em;
+  text-transform:uppercase;
+  color:#1e4870;
+  margin-bottom:2.2rem;
+  padding-bottom:1.2rem;
+  border-bottom:1px solid #0a1e38;
+}
+.story-meta a { color:#1a6ab0; text-decoration:none; }
+.story-meta a:hover { color:#3da8ff; }
+
+.prose-wrap p {
+  font-family:'Crimson Text',serif;
+  font-size:1.12rem;
+  line-height:1.88;
+  color:#b8ccdf;
+  margin-bottom:1.3rem;
+}
+.prose-wrap p em { font-style:italic; }
+
+.section-break {
+  text-align:center;
+  color:#0d2e52;
+  margin:2.5rem 0;
+  font-size:1.1rem;
+  letter-spacing:0.6em;
+}
+
+/* ─── DECODER ────────────────────────────────────────── */
+.decoder { display:inline; position:relative; }
+.decoder-trigger {
+  background:none;
+  border:none;
+  border-bottom:1px dotted #1a70b4;
+  color:#3da8ff;
+  cursor:pointer;
+  font-family:inherit;
+  font-size:inherit;
+  line-height:inherit;
+  padding:0;
+  display:inline;
+}
+.decoder-trigger::after {
+  content:'▾';
+  font-size:0.6em;
+  margin-left:1px;
+  vertical-align:super;
+  opacity:0.7;
+}
+.decoder-trigger.open { border-bottom-style:solid; }
+.decoder-trigger.open::after { content:'▴'; }
+
+.decoder-panel {
+  display:none;
+  position:absolute;
+  top:calc(100% + 6px);
+  left:0;
+  z-index:500;
+  width:290px;
+  background:#030c1e;
+  border:1px solid #0e3060;
+  border-top:2px solid #1a70b4;
+  padding:0.85rem 1rem;
+  box-shadow:0 6px 28px rgba(0,30,80,0.7);
+  border-radius:0 2px 2px 2px;
+}
+.decoder-panel.open  { display:block; }
+.decoder-panel.flip-left { left:auto; right:0; border-radius:2px 0 2px 2px; }
+
+.decode-label {
+  display:block;
+  font-family:'Rajdhani',sans-serif;
+  font-size:0.65rem;
+  letter-spacing:0.28em;
+  text-transform:uppercase;
+  color:#1a70b4;
+  margin-bottom:0.25rem;
+}
+.decode-term {
+  display:block;
+  font-family:'Rajdhani',sans-serif;
+  font-size:0.95rem;
+  font-weight:700;
+  color:#3da8ff;
+  margin-bottom:0.4rem;
+}
+.decoder-panel .panel-body {
+  display:block;
+  font-family:'Rajdhani',sans-serif;
+  font-size:0.82rem;
+  color:#6898b8;
+  line-height:1.6;
+}
+.decode-link {
+  display:block;
+  margin-top:0.5rem;
+  font-family:'Rajdhani',sans-serif;
+  font-size:0.72rem;
+  letter-spacing:0.12em;
+  color:#1a5a90;
+  text-decoration:none;
+}
+.decode-link:hover { color:#3da8ff; }
+
+/* ─── MARGIN NOTE ────────────────────────────────────── */
+.marginnote { display:inline; position:relative; }
+.marginnote-trigger {
+  background:none;
+  border:none;
+  border-bottom:1px dotted #a07820;
+  color:inherit;
+  cursor:pointer;
+  font-family:inherit;
+  font-size:inherit;
+  line-height:inherit;
+  padding:0;
+  display:inline;
+}
+.marginnote-trigger::after {
+  content:'✎';
+  font-size:0.6em;
+  margin-left:2px;
+  vertical-align:super;
+  color:#c8991a;
+  opacity:0.85;
+}
+
+.marginnote-panel {
+  display:none;
+  position:absolute;
+  top:calc(100% + 6px);
+  left:0;
+  z-index:500;
+  width:290px;
+  background:#0d0900;
+  border:1px solid #4a3800;
+  border-top:2px solid #a07820;
+  padding:0.85rem 1rem;
+  box-shadow:0 6px 28px rgba(60,30,0,0.6);
+  border-radius:0 2px 2px 2px;
+}
+.marginnote-panel.open { display:block; }
+.marginnote-panel.flip-left { left:auto; right:0; border-radius:2px 0 2px 2px; }
+
+.mn-label {
+  display:block;
+  font-family:'Rajdhani',sans-serif;
+  font-size:0.65rem;
+  letter-spacing:0.28em;
+  text-transform:uppercase;
+  color:#a07820;
+  margin-bottom:0.25rem;
+}
+.marginnote-panel .panel-body {
+  display:block;
+  font-family:'Rajdhani',sans-serif;
+  font-size:0.82rem;
+  color:#8a7040;
+  line-height:1.6;
+}
+
+/* ─── LIGHTBOX TRIGGER ───────────────────────────────── */
+.lb-trigger {
+  background:none;
+  border:none;
+  border-bottom:1px solid rgba(50,160,80,0.5);
+  color:inherit;
+  cursor:pointer;
+  font-family:inherit;
+  font-size:inherit;
+  line-height:inherit;
+  padding:0;
+  display:inline;
+}
+.lb-trigger::after {
+  content:'⊕';
+  font-size:0.6em;
+  margin-left:2px;
+  vertical-align:super;
+  color:#40a860;
+  opacity:0.85;
+}
+
+/* ─── LIGHTBOX ───────────────────────────────────────── */
+.lb-overlay {
+  display:none;
+  position:fixed;
+  inset:0;
+  background:rgba(1,5,18,0.9);
+  z-index:1000;
+  align-items:center;
+  justify-content:center;
+  padding:1rem;
+  backdrop-filter:blur(2px);
+}
+.lb-overlay.open { display:flex; }
+.lb-box {
+  background:#030c1e;
+  border:1px solid #0e3060;
+  border-top:3px solid #1a70b4;
+  max-width:620px;
+  width:100%;
+  max-height:88vh;
+  overflow-y:auto;
+  border-radius:2px;
+  box-shadow:0 0 60px rgba(0,60,160,0.35);
+}
+.lb-header {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:1rem 1.3rem;
+  border-bottom:1px solid #0a2040;
+  background:#020a18;
+  position:sticky;
+  top:0;
+}
+.lb-title {
+  font-family:'Rajdhani',sans-serif;
+  font-size:1rem;
+  font-weight:700;
+  letter-spacing:0.12em;
+  text-transform:uppercase;
+  color:#3da8ff;
+}
+.lb-close {
+  background:none;
+  border:1px solid #0e3060;
+  color:#3da8ff;
+  cursor:pointer;
+  font-size:0.9rem;
+  width:26px;height:26px;
+  display:flex;align-items:center;justify-content:center;
+  border-radius:1px;
+  transition:all 0.15s;
+}
+.lb-close:hover { background:#001830; }
+.lb-body { padding:1.5rem; }
+.lb-body h3 {
+  font-family:'Rajdhani',sans-serif;
+  font-size:0.82rem;
+  font-weight:700;
+  letter-spacing:0.22em;
+  text-transform:uppercase;
+  color:#1a70b4;
+  margin:1.3rem 0 0.4rem;
+  padding-bottom:0.3rem;
+  border-bottom:1px solid #0a2040;
+}
+.lb-body h3:first-child { margin-top:0; }
+.lb-body p {
+  font-family:'Rajdhani',sans-serif;
+  font-size:0.88rem;
+  color:#5a88a8;
+  line-height:1.7;
+  margin-bottom:0.6rem;
+}
+.lb-body a { color:#1a6ab0; font-size:0.82rem; }
+.lb-body a:hover { color:#3da8ff; }
+
+/* ─── EDUCATIONAL TABS ───────────────────────────────── */
+.edu-wrap {
+  max-width:680px;
+  margin:0 auto;
+  padding:2.5rem 1.5rem 4rem;
+}
+.edu-wrap h2 {
+  font-family:'Rajdhani',sans-serif;
+  font-size:1.5rem;
+  font-weight:700;
+  letter-spacing:0.1em;
+  text-transform:uppercase;
+  color:#c8daf0;
+  margin-bottom:0.2rem;
+}
+.edu-intro {
+  font-family:'Rajdhani',sans-serif;
+  font-size:0.8rem;
+  color:#1e4870;
+  letter-spacing:0.1em;
+  margin-bottom:2rem;
+  padding-bottom:1rem;
+  border-bottom:1px solid #0a1e38;
+}
+
+/* ─── ACCORDION ──────────────────────────────────────── */
+.acc-item {
+  border:1px solid #0a1e38;
+  border-radius:2px;
+  margin-bottom:0.4rem;
+  overflow:hidden;
+}
+.acc-trigger {
+  background:#020b18;
+  border:none;
+  width:100%;
+  text-align:left;
+  padding:0.85rem 1rem;
+  cursor:pointer;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  font-family:'Rajdhani',sans-serif;
+  font-size:0.88rem;
+  font-weight:600;
+  letter-spacing:0.08em;
+  color:#4a7a9a;
+  transition:all 0.18s;
+  gap:1rem;
+}
+.acc-trigger:hover { background:#030e1e; color:#8ab8d4; }
+.acc-trigger.open { color:#3da8ff; background:#030e22; }
+.acc-arrow { font-size:0.9rem; flex-shrink:0; transition:transform 0.2s; }
+.acc-trigger.open .acc-arrow { transform:rotate(180deg); }
+.acc-panel {
+  display:none;
+  padding:1rem 1.2rem;
+  border-top:1px solid #0a1e38;
+  background:#020810;
+}
+.acc-panel.open { display:block; }
+.acc-panel p {
+  font-family:'Rajdhani',sans-serif;
+  font-size:0.88rem;
+  color:#5a88a8;
+  line-height:1.7;
+  margin-bottom:0.6rem;
+}
+.acc-panel p:last-child { margin-bottom:0; }
+.acc-panel a { color:#1a6ab0; }
+.acc-panel a:hover { color:#3da8ff; }
+.acc-panel strong { color:#7ab0ce; font-weight:600; }
+
+/* ─── FURTHER READING ─────────────────────────────────── */
+.reading-section h3 {
+  font-family:'Rajdhani',sans-serif;
+  font-size:0.72rem;
+  font-weight:700;
+  letter-spacing:0.28em;
+  text-transform:uppercase;
+  color:#1a6ab0;
+  margin:1.8rem 0 0.6rem;
+  padding-bottom:0.3rem;
+  border-bottom:1px solid #0a1e38;
+}
+.reading-section h3:first-child { margin-top:0; }
+.reading-link {
+  display:block;
+  padding:0.55rem 0;
+  border-bottom:1px solid #06101f;
+  text-decoration:none;
+  transition:all 0.15s;
+}
+.reading-link:hover .rl-title { color:#3da8ff; }
+.rl-title {
+  display:block;
+  font-family:'Rajdhani',sans-serif;
+  font-size:0.92rem;
+  font-weight:600;
+  color:#4488aa;
+  transition:color 0.15s;
+}
+.rl-desc {
+  display:block;
+  font-family:'Rajdhani',sans-serif;
+  font-size:0.78rem;
+  color:#2a4a60;
+  margin-top:0.1rem;
+}
+
+/* ─── CHALLENGE BOX ───────────────────────────────────── */
+.challenge-box {
+  background:#020810;
+  border:1px solid #0a1e38;
+  border-left:3px solid #0e3060;
+  padding:1rem 1.2rem;
+  margin-top:3rem;
+  border-radius:0 2px 2px 0;
+}
+.challenge-box .ch-label {
+  font-family:'Rajdhani',sans-serif;
+  font-size:0.65rem;
+  letter-spacing:0.28em;
+  text-transform:uppercase;
+  color:#1a3e60;
+  margin-bottom:0.5rem;
+}
+.challenge-box p {
+  font-family:'Courier Prime',monospace;
+  font-size:0.8rem;
+  color:#2a4a60;
+  line-height:1.7;
+  margin-bottom:0;
+}
+
+.author-note {
+  margin-top:1.5rem;
+  font-family:'Crimson Text',serif;
+  font-style:italic;
+  font-size:0.9rem;
+  color:#2a4a60;
+  padding-top:1rem;
+  border-top:1px solid #060f1e;
+}
+
+/* ─── SCROLLBAR ───────────────────────────────────────── */
+::-webkit-scrollbar { width:5px; height:5px; }
+::-webkit-scrollbar-track { background:#020810; }
+::-webkit-scrollbar-thumb { background:#0e3060; border-radius:2px; }
+::-webkit-scrollbar-thumb:hover { background:#1a5090; }
+</style>
+</head>
+<body>
+
+<!-- ════════════════════════════ HEADER ════════════════════════════ -->
+<header class="site-header">
+  <div class="header-badge">Renegade Storyteller · Fan-Fiction · Annotated Edition</div>
+  <h1>The <span>Whoniverse</span> Stories</h1>
+  <p class="header-sub">Annotated · Interactive · Educational</p>
+</header>
+
+<!-- ════════════════════════════ STORY SELECTOR ════════════════════ -->
+<div class="story-selector">
+  <button class="story-btn active" onclick="selectStory('reiteration',this)">
+    <span class="story-num">Story I</span>
+    Re-Iteration
+  </button>
+  <button class="story-btn" onclick="selectStory('exterminate',this)">
+    <span class="story-num">Story II</span>
+    Exterminate!
+  </button>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════════
+     STORY 1: RE-ITERATION
+     ══════════════════════════════════════════════════════════════════ -->
+<div id="story-reiteration" class="story active">
+
+  <nav class="tab-nav">
+    <button class="tab-btn active"  onclick="switchTab('ri','story',this)">The Story</button>
+    <button class="tab-btn"         onclick="switchTab('ri','world',this)">The Wibbly Wobbly</button>
+    <button class="tab-btn"         onclick="switchTab('ri','craft',this)">The Craft</button>
+    <button class="tab-btn"         onclick="switchTab('ri','reading',this)">Further Reading</button>
+  </nav>
+
+  <!-- ── TAB 1: THE STORY ─────────────────────────────── -->
+  <div id="ri-story" class="tab-content active">
+    <div class="prose-wrap">
+      <h2 class="story-title">Re-Iteration</h2>
+      <p class="story-meta">
+        Published: <a href="https://renegadestoryteller.tumblr.com/post/59612390837/re-iteration?" target="_blank">renegadestoryteller.tumblr.com</a>
+        &nbsp;·&nbsp; Doctor Who fan-fiction &nbsp;·&nbsp; JL
+      </p>
+
+      <p>
+        <span class="marginnote" id="mn-ri-opening">
+          <button class="marginnote-trigger" onclick="togglePanel('mn-ri-opening',this)">"I wonder what she'll be wearing tonight."</button>
+          <span class="marginnote-panel">
+            <span class="mn-label">Craft Note</span>
+            <span class="panel-body">The story opens in medias res — we don't know who "she" is, who's asking, or who's being asked. This confusion is precise: it mirrors Barry's own state of not-knowing. The line will recur, word-for-word, as the final sentence, spoken now by Barry himself. The opening is already the ending.</span>
+          </span>
+        </span>
+      </p>
+
+      <p>The man had simply strolled up and said it. Barry thought that was weird, but didn't say anything. In truth, he wasn't sure that the weird man was even talking to him, so he was more than a little surprised when he found himself responding to the weird man's weird statement.</p>
+
+      <p>"Gold" said Barry, knowing exactly who 'she' was, without knowing why.</p>
+
+      <p>He could even picture her. A gold dress with a leafy type of embroidery on the corset, augmented by a simple gold necklace bearing a tiny, diamond encrusted amulet. Barry thought he sounded like a fashion designer, in his mind.</p>
+
+      <p>"Aha!" cried the weird man, "I had a feeling it would be you. You seemed a little… Out of… Space? Dimension? Place?… Yes place. That works."</p>
+
+      <p>"Sorry," retorted Barry, who had found that last statement a little on the stinging side, "But who are you to-"</p>
+
+      <p>
+        "<span class="decoder" id="dec-ri-johnsmith">
+          <button class="decoder-trigger" onclick="togglePanel('dec-ri-johnsmith',this)">John Smith</button>
+          <span class="decoder-panel">
+            <span class="decode-label">Doctor's Alias</span>
+            <span class="decode-term">John Smith</span>
+            <span class="panel-body">The most commonly used human alias of the Doctor. First used in Classic Who and carried through the revival; it appears across dozens of stories. The name is deliberately ordinary — almost aggressively so — which is precisely the point. The Doctor is anything but ordinary, and the gap between name and person is where the comedy and the mystery live.</span>
+            <a class="decode-link" href="https://tardis.wiki/wiki/John_Smith_(alias)" target="_blank">→ TARDIS Wiki: John Smith</a>
+          </span>
+        </span>… Well, that's what it says on my invitation."</p>
+
+      <p>Barry was about to continue his objection, when Mr. Smith procured a
+
+        <span class="decoder" id="dec-ri-doodad">
+          <button class="decoder-trigger" onclick="togglePanel('dec-ri-doodad',this)">funny little doo-dad with a blue light on one end</button>
+          <span class="decoder-panel">
+            <span class="decode-label">World-Internal · Unnamed</span>
+            <span class="decode-term">The Doo-Dad</span>
+            <span class="panel-body">This is unmistakably the sonic screwdriver — the Doctor's multi-function tool, present in virtually every story. The story never names it. We see it entirely through Barry's baffled eyes: "funny little doo-dad." The refusal to name it is a craft choice: it keeps us inside Barry's perspective, and underscores how alien the Doctor's world is to an ordinary person.</span>
+            <a class="decode-link" href="https://tardis.wiki/wiki/Sonic_screwdriver" target="_blank">→ TARDIS Wiki: Sonic Screwdriver</a>
+          </span>
+        </span>
+
+        , and started waving it at him.</p>
+
+      <p>"Excuse me! But who do you think you are?" whined Barry, now thoroughly unsettled, "And what is that?"</p>
+
+      <p>"I told you, I'm John Smith," said 'John Smith' as he examined the doo-dad in a very detached manner before returning it to his coat pocket. "This little beauty is not important, and you, Mr. Barry Lipton, are my ticket out of this party."</p>
+
+      <p>It was too much for poor Barry to process, so he just said "How do you know my name?"</p>
+
+      <p>"Never mind that now, I'll tell you everything in a minute, first I need to ask you a question."</p>
+
+      <p>"Okay," said Barry, but only because all this strangeness was starting to affect his digestion, and the promised explanation was the only thing he could think that might prevent him being sick.</p>
+
+      <p>Smith looked at him intently, searching his eyes. Barry didn't like that, so he looked away.</p>
+
+      <p>"What did you have for breakfast this morning?"</p>
+
+      <p>
+        <span class="marginnote" id="mn-ri-breakfast">
+          <button class="marginnote-trigger" onclick="togglePanel('mn-ri-breakfast',this)">Barry tried. He really did. But he couldn't remember anything before Smith's statement</button>
+          <span class="marginnote-panel">
+            <span class="mn-label">Craft Note</span>
+            <span class="panel-body">Barry's missing memory isn't a quirk — it's structural evidence. The loop has already been running before this conversation; Barry's consciousness was reset along with everything else. Smith's breakfast question is a diagnostic, not small talk. The reader understands this before Barry does.</span>
+          </span>
+        </span>
+        about what 'she' would be wearing. This confession prompted the reappearance of the doo-dad, which Smith started waving at everything and examining periodically.</p>
+
+      <p>"One more question, Barry. What is her name?"</p>
+
+      <p>"Emma." Barry replied before suddenly gasping and gripping his mouth as if Liverpool had suddenly won the Treble. "How do I know her name?!"</p>
+
+      <p>"Because you've already met her."</p>
+
+      <p>"I have?"</p>
+
+      <p>"Yes."</p>
+
+      <p>"When?"</p>
+
+      <p>"Tonight."</p>
+
+      <p>"What do you mean tonight? I've only been here ten minutes. Haven't met anyone except you."</p>
+
+      <p>Smith returned the doo-dad to his coat pocket and turned to Barry.</p>
+
+      <p>"Look, it's all very wibbly wobbly right now and I haven't quite figured out who, where, how, what, or why yet. But I'm quite sure that right now, you and I, and everyone at this party, including dear Emma, are stuck in a
+
+        <span class="decoder" id="dec-ri-bubble">
+          <button class="decoder-trigger" onclick="togglePanel('dec-ri-bubble',this)">temporal re-alignment… uh… bubble?</button>
+          <span class="decoder-panel">
+            <span class="decode-label">World-Internal</span>
+            <span class="decode-term">Temporal Re-Alignment Bubble</span>
+            <span class="panel-body">The story's central invented concept. A fixed point in time (this party) has been enclosed in a loop — a bubble "attached to, but also separate from time and space." Events can be iterated and adjusted inside the bubble without affecting the broader timeline. The "uh… bubble?" hedge is also characteristically Doctorish: naming things with cheerful imprecision.</span>
+          </span>
+        </span>"</p>
+
+      <p>"Bubble?"</p>
+
+      <p>Smith was crazy, Barry was sure of it. Crazy people always ended up making a scene, and with this being the first celebrity party Barry had ever actually been invited to, Barry was determined not to be party to this madman's making of any scene whatsoever. But Barry couldn't leave, he just couldn't. As crazy as Smith evidently was, Barry was just intrigued enough to decide that if a scene started being made, he would leave before anyone noticed, but until then, he would indulge Smith's eccentric behaviour.</p>
+
+      <p>Smith continued:</p>
+
+      <p>"Well, sort of. This party, tonight, just happens to be a
+
+        <button class="lb-trigger" onclick="openLightbox('lb-ri-fixedpoint')">fixed point in time</button>.
+
+        Whatever happens tonight, has to happen. If it doesn't, the universe collapses in on itself and it just gets very, very messy. Romans riding mammoths while updating their Twitter feeds kind of messy."</p>
+
+      <p>The last part didn't make sense, but Barry understood everything else so far, so he nodded. Whether or not he agreed with the implications of fixed moments that always happen the same way was another matter, but he decided it was best to be polite and let Smith finish.</p>
+
+      <p>"However, theoretically, if one was to contain a particular fixed point inside a sort of bubble, attached to, but also separate from time and space, one could alter the events within that bubble without affecting the flow of time and space and thus create an entirely new universe, completely of one's own design."</p>
+
+      <p>Smith had said all of that in one breath, so fast that Barry was still processing the first bit when Smith suddenly walked away.</p>
+
+      <p>"Hang on!" shouted Barry as he followed Smith to a large crowd of people gathering at the entrance to the hall. Everyone in the crowd was buzzing with excitement – the limousines had arrived.</p>
+
+      <p>Barry found Smith, after jostling and pushing and almost punching his way through the mob, right by the door to the entrance. He was not half pleased at the fact that he had a full and clear view of the red carpet outside. The lights from a thousand cameras had already started flashing away. Something was still niggling Barry.</p>
+
+      <p>"What's all this got to do with me… And her dress." He asked Smith over the shoulder of an exceedingly loud youth.</p>
+
+      <p>"Her dress is a
+
+        <span class="decoder" id="dec-ri-causalsig">
+          <button class="decoder-trigger" onclick="togglePanel('dec-ri-causalsig',this)">causal signifier</button>
+          <span class="decoder-panel">
+            <span class="decode-label">World-Internal</span>
+            <span class="decode-term">Causal Signifier</span>
+            <span class="panel-body">The unnamed manipulator uses Emma's dress as a tracking variable — a marker that changes with each iteration to confirm which version of events is running. It's an elegant piece of world-building: a single repeated visual detail (what will she wear?) carries the whole temporal architecture of the story. When the dress returns to "the original," the game has changed.</span>
+          </span>
+        </span>," he answered, without taking his eyes off the red carpet.</p>
+
+      <p>"A what?"</p>
+
+      <p>"It's their way of tracking which changes to this event work or not. So it changes with each iteration of this event."</p>
+
+      <p>"Iterations? Wait… How many times have I come to this party?"</p>
+
+      <p>
+        <span class="marginnote" id="mn-ri-forty">
+          <button class="marginnote-trigger" onclick="togglePanel('mn-ri-forty',this)">"Once… About forty times now."</button>
+          <span class="marginnote-panel">
+            <span class="mn-label">Craft Note</span>
+            <span class="panel-body">The pause in the dialogue — the gap between "Once" and "About forty times now" — is where all the comedy lives. Smith begins with a technically accurate answer (Barry's first experience of the party) then immediately corrects it with a number that makes the first answer meaningless. The joke is about the violence of revision.</span>
+          </span>
+        </span>
+      </p>
+
+      <p>"You're mad."</p>
+
+      <p>Barry had finally said it. But Smith didn't seem to take offence, or even notice for that matter. Obviously, Barry thought, Smith was used to being called mad, but in spite of this, Barry stayed.</p>
+
+      <p>"So what does it matter to me?" he asked again.</p>
+
+      <p>"You're not supposed to be here."</p>
+
+      <p>Now Barry was offended.</p>
+
+      <p>"Excuse you!" he shouted over the din that greeted the arrival of yet another limousine, "I was invited, I'll have you know."</p>
+
+      <p>Smith turned to him, finally aware of his faux pas. "Well you're supposed to be here, but… not like you are now, you see?"</p>
+
+      <p>"No I don't see."</p>
+
+      <p>"Well I can't blame you," said Smith.</p>
+
+      <p>It was then that Smith was suddenly distracted by something happening on the red carpet.</p>
+
+      <p>"What did you say she would be wearing?"</p>
+
+      <p>"Gold," Barry said, again without thinking.</p>
+
+      <p>"That's strange." said Smith.</p>
+
+      <p>And then Barry saw her. She glided over the velvet like an angel, Barry thought, practically glowing in the most exquisite gold evening gown he'd ever seen. It was beautiful, perfect.</p>
+
+      <p>"I thought you said her dress changes each time," said Barry as he and Smith were forced back inside by the crowd.</p>
+
+      <p>"It has…" Smith said, "This is the first time I've seen her in the original."</p>
+
+      <p>Smith made no sense, and so Barry decided, as he grabbed a glass of champagne off a passing waiter's platter, that he would end this conversation and think no more of it. It just so happened that at that precise moment, Smith started making a scene – a scene which focused entirely on Barry.</p>
+
+      <p>"Of course!" Smith shouted as he slapped the waiter so hard on the back that the poor boy fell to the floor. "They've stopped fiddling with her!"</p>
+
+      <p>Barry tried to sneak away, but Smith grabbed both his arms and started ranting excitedly.</p>
+
+      <p>
+        <span class="marginnote" id="mn-ri-outthere">
+          <button class="marginnote-trigger" onclick="togglePanel('mn-ri-outthere',this)">"I'M ON TO YOU OUT THERE! I SEE WHAT YOU'RE DOING! IT'S NOT GOING TO WORK!"</button>
+          <span class="marginnote-panel">
+            <span class="mn-label">Craft Note</span>
+            <span class="panel-body">Smith addresses the unseen manipulator directly — shouting upward, outward, through the walls of the bubble at whoever is "pulling the strings." This is a meta-fictional gesture: the character briefly aware of their own authored condition. It's also distinctly Doctorish — the habit of addressing the cosmos as though it's listening, and will respond.</span>
+          </span>
+        </span>
+      </p>
+
+      <p>"What are you on about?" cried a thoroughly spooked, and embarrassed, Barry.</p>
+
+      <p>"What do you do for a living, Barry?"</p>
+
+      <p>"Wha-? I'm in catering." said Barry, his eyes like saucers.</p>
+
+      <p>"You say you're in catering, but you're a waiter, aren't you?"</p>
+
+      <p>Barry knew it was true, but couldn't say it. Something was stopping him. So he just stood with his mouth open.</p>
+
+      <p>"That's why you looked out of place. They could never stop you from meeting her, because you're a waiter. In every iteration of this party you just kept walking around with that platter and kept on bumping into her and spilling champagne on her."</p>
+
+      <p>Barry was mortified.</p>
+
+      <p>"You're saying I meet her and spill champagne on her?"</p>
+
+      <p>The thought of it made Barry want to hide away. Smith however, got even more excited and even laughed.</p>
+
+      <p>"Oh, more than that Barry Lipton. Your daughter is brilliant, so brilliant in fact, that someone is trying to build a new universe without her in it. Isn't it great when it all clicks into place?"</p>
+
+      <p>"Daughter? You mean - ?"</p>
+
+      <p>"Yes! Exactly. It's funny how spilling things on people leads to romance. It's actually very common. Which is weird."</p>
+
+      <p>Barry wasn't sure if it was because of what Smith had just said, or something else, but an earthquake suddenly rocked the entire party, quite literally.</p>
+
+      <p>"What was that?"</p>
+
+      <p>Smith was positively bouncing off the walls in his excitement.</p>
+
+      <p>"A rupture in the stasis matrix," he said, once again whipping out his doo-dad.</p>
+
+      <p>It was all too much. Barry had to sit down. He couldn't see a chair, so he just sat down where he was.</p>
+
+      <p>"But what's going on?" he shouted over panicked partygoers.</p>
+
+      <p>"Believe it or not, our conversation compromised the structure of the 'bubble thingy' and any minute now it will collapse in on itself and the person pushing the buttons will have to hit 'reset'."</p>
+
+      <p>"You mean we're all going to die?"</p>
+
+      <p>"Yes… Well sort of… This iteration will cease to exist. But there will be others. Oh this is brilliant!"</p>
+
+      <p>Someone obviously overheard Smith, because the chaos suddenly went up so many notches it ceased to be measurable by human understanding.</p>
+
+      <p>"HOW IS THAT BRILLIANT?" yelled a terrified Barry.</p>
+
+      <p>"Because an unstable matrix has holes!" replied Smith.</p>
+
+      <p>"What?" screamed Barry.</p>
+
+      <p>"It's my ticket out!" shouted Smith, "If I can accelerate the instability, I can create a gap big enough to pass through and I can finally see who's pulling the strings."</p>
+
+      <p>"YOU'RE MAD!"</p>
+
+      <p>"I KNOW!"</p>
+
+      <p>And with that, Smith climbed up on a nearby table, pointed the doo-dad toward the kitchens and jumped as everything suddenly exploded.</p>
+
+      <div class="section-break">✦ &nbsp;&nbsp; ✦ &nbsp;&nbsp; ✦</div>
+
+      <p>Barry had a good feeling about that night's shift. He whistled as he straightened his company issued bowtie and picked up his company issued silver platter. He liked doing celebrity parties. The money was good, and he always got the chance to name-drop and talk rubbish about the stars with his mates afterwards. It was a good gig, he had to admit.</p>
+
+      <p>It was about ten minutes before doors opened and the whole team was helping out with the décor. As he was straightening a particularly silky tablecloth, he turned to his friend at the table next and said:</p>
+
+      <p>
+        <span class="marginnote" id="mn-ri-loop">
+          <button class="marginnote-trigger" onclick="togglePanel('mn-ri-loop',this)">"I wonder what she'll be wearing tonight."</button>
+          <span class="marginnote-panel">
+            <span class="mn-label">Craft Note · Circular Structure</span>
+            <span class="panel-body">The story ends by repeating its opening line — but now we know who's speaking it, and we understand the weight of the loop it's about to restart. Barry has become Smith's counterpart: the innocent about to be drawn into the same conversation, again. The structure doesn't just describe a time loop; it enacts one. The reading experience mirrors Barry's experience.</span>
+          </span>
+        </span>
+      </p>
+
+    </div>
+  </div><!-- /ri-story -->
+
+  <!-- ── TAB 2: THE WIBBLY WOBBLY ──────────────────────── -->
+  <div id="ri-world" class="tab-content">
+    <div class="edu-wrap">
+      <h2>The Wibbly Wobbly</h2>
+      <p class="edu-intro">World-building, internal systems, and the temporal logic of the story</p>
+
+      <div class="acc-item">
+        <button class="acc-trigger" onclick="toggleAcc(this)">
+          <span>How does the "temporal re-alignment bubble" actually work?</span>
+          <span class="acc-arrow">▾</span>
+        </button>
+        <div class="acc-panel">
+          <p>Smith describes a fixed point in time — this celebrity party — enclosed in a self-contained loop that is "attached to, but also separate from" the normal flow of time and space. Inside this bubble, events can be altered and re-run without the changes propagating outward and collapsing history. Think of it as a laboratory for history: the experiment happens inside; the universe outside is unaffected.</p>
+          <p>The rules Smith establishes have elegant internal consistency. The bubble is stable as long as no one inside it fully understands what's happening. Once Smith explains the system to Barry — and Barry begins to comprehend — their conversation destabilises the matrix, causing the ruptures and eventually the collapse. Understanding destroys the illusion.</p>
+        </div>
+      </div>
+
+      <div class="acc-item">
+        <button class="acc-trigger" onclick="toggleAcc(this)">
+          <span>Who is "out there" pulling the strings?</span>
+          <span class="acc-arrow">▾</span>
+        </button>
+        <div class="acc-panel">
+          <p>The story deliberately withholds the identity of the manipulator. Smith shouts at them directly — "I'M ON TO YOU OUT THERE" — but we never learn who they are or what they ultimately want. The story ends before Smith can "pass through" the unstable matrix to find them.</p>
+          <p>What we know: they have the technology to create a temporal bubble around a fixed point; they've been running iterations for at least forty cycles; they've been adjusting Emma's dress as a tracking signal; and they've decided to switch tactics from changing Emma to changing Barry. The sophistication of their operation suggests a major player — potentially Time Lord, potentially a future technology. The story wisely doesn't guess.</p>
+        </div>
+      </div>
+
+      <div class="acc-item">
+        <button class="acc-trigger" onclick="toggleAcc(this)">
+          <span>Why does Barry's daughter matter so much?</span>
+          <span class="acc-arrow">▾</span>
+        </button>
+        <div class="acc-panel">
+          <p>Smith reveals that Barry's future daughter — born from the romance that begins when Barry spills champagne on Emma tonight — is, apparently, brilliant enough that someone wants to erase her from existence by ensuring the meeting never happens. The story doesn't tell us what she does. That's the right call: her importance is asserted, not demonstrated, and the reader's imagination fills the gap more powerfully than any explanation could.</p>
+          <p>This is a classic Doctor Who structure: an ordinary person matters enormously, not because of who they are now, but because of what flows from them. The Doctor always arrives to protect ordinary moments that will, in time, become extraordinary.</p>
+        </div>
+      </div>
+
+      <div class="acc-item">
+        <button class="acc-trigger" onclick="toggleAcc(this)">
+          <span>Why can't the manipulator simply remove Barry from the party?</span>
+          <span class="acc-arrow">▾</span>
+        </button>
+        <div class="acc-panel">
+          <p>Because Barry is a waiter — and the party is the fixed point. He was hired to be there. Every adjustment the manipulator makes to the guest list, the venue, the timing, still results in a waiter wandering the floor with a champagne platter. As Smith puts it: "They could never stop you from meeting her, because you're a waiter." The party requires catering. Catering requires Barry.</p>
+          <p>This is a wry commentary on the limits of power: the manipulator can alter variables, but certain structural facts — a party needs staff — are impervious to revision. Barry's ordinariness is his protection.</p>
+        </div>
+      </div>
+
+      <div class="acc-item">
+        <button class="acc-trigger" onclick="toggleAcc(this)">
+          <span>What does the "original" gold dress signify?</span>
+          <span class="acc-arrow">▾</span>
+        </button>
+        <div class="acc-panel">
+          <p>When Emma appears in the gold dress, Smith says: "This is the first time I've seen her in the original." The manipulator has been changing her dress each iteration as a tracking marker — a visible signal that the bubble is running a new version. The return to the original dress means the manipulator has stopped adjusting Emma and switched to adjusting Barry instead (elevating him from waiter to guest).</p>
+          <p>Barry knows the original because he remembers it from a previous iteration he doesn't consciously remember — his answer at the story's opening ("Gold") is retrieved knowledge from across the loop. The dress is, in the story's own terms, a causal signifier: the one variable that tracks everything else.</p>
+        </div>
+      </div>
+
+    </div>
+  </div><!-- /ri-world -->
+
+  <!-- ── TAB 3: THE CRAFT ──────────────────────────────── -->
+  <div id="ri-craft" class="tab-content">
+    <div class="edu-wrap">
+      <h2>The Craft</h2>
+      <p class="edu-intro">Genre tradition, structural choices, and what the author is doing while the story runs</p>
+
+      <div class="acc-item">
+        <button class="acc-trigger" onclick="toggleAcc(this)">
+          <span>What tradition is this story working within?</span>
+          <span class="acc-arrow">▾</span>
+        </button>
+        <div class="acc-panel">
+          <p>Re-Iteration is Doctor Who fan-fiction in a very specific mode: the <em>adventure-at-a-party</em> sub-genre, in which the Doctor arrives at a mundane social event and it turns out to be cosmically significant. This is a well-worn structure in the show itself — "Vincent and the Doctor," "The Doctor Dances," countless others — and the story is entirely fluent in it.</p>
+          <p>It's also a <strong>time-loop narrative</strong>, a genre with its own history: <em>Groundhog Day</em>, "Heaven Sent" (Doctor Who S9E11), Ken Grimwood's <em>Replay</em>. The specific innovation here is that the loop is imposed from outside by a manipulator — it's not a natural phenomenon but a weapon or tool. The story also belongs to the tradition of Doctor Who fan-fiction that writes the Doctor as "John Smith," keeping canonical distance while trading on canonical weight.</p>
+        </div>
+      </div>
+
+      <div class="acc-item">
+        <button class="acc-trigger" onclick="toggleAcc(this)">
+          <span>How does the circular structure work, and why is it the right choice?</span>
+          <span class="acc-arrow">▾</span>
+        </button>
+        <div class="acc-panel">
+          <p>The story ends with its opening line, spoken now by Barry. This is structural poetry: the story about a time loop is itself a loop. The first time the line is spoken, it's mysterious. The second time, we understand it as the beginning of the loop we've just read through — Barry is about to meet Smith, again, and the whole thing will start over.</p>
+          <p>The split-second reveal in the final lines — that Barry is a waiter, not a guest — reframes the opening encounter entirely. Smith approached a man with a silver platter. Of course he looked "out of place" among the guests. The story withholds this detail for maximum effect, then releases it just before the loop closes. This is precision timing.</p>
+        </div>
+      </div>
+
+      <div class="acc-item">
+        <button class="acc-trigger" onclick="toggleAcc(this)">
+          <span>What does the story do unusually well for its length?</span>
+          <span class="acc-arrow">▾</span>
+        </button>
+        <div class="acc-panel">
+          <p>The story manages to establish an original cosmology (the bubble, the fixed point, the manipulator, the causal signifier) entirely through dialogue, without ever stopping the story to explain itself. Smith expounds while moving through the party, while searching for Emma, while making a scene. The exposition is always action.</p>
+          <p>It also earns genuine emotional stakes in a short space. Barry's future daughter — who we never meet, whose importance is asserted but not demonstrated — becomes a figure worth protecting. The story does this through structure: once we understand what's at stake (a life erased from existence), the loop becomes sinister. Short fiction rarely gets to do this; this one does.</p>
+        </div>
+      </div>
+
+      <div class="acc-item">
+        <button class="acc-trigger" onclick="toggleAcc(this)">
+          <span>What does the story deliberately refuse to resolve?</span>
+          <span class="acc-arrow">▾</span>
+        </button>
+        <div class="acc-panel">
+          <p>Almost everything, and correctly. We never learn: who the manipulator is; whether Smith escapes through the matrix gap; what Barry's daughter does that makes her worth erasing; whether Barry and Emma's meeting happens in the next iteration as intended; what "the original" event was, before any bubbling.</p>
+          <p>The refusal is structural, not lazy. The story is about a moment in a loop — one iteration among forty — and ending on the loop's restart is philosophically honest. We get the shape of the mystery; the solution belongs to a story the author hasn't written. This is the right kind of open ending: it leaves the reader inside the loop alongside Barry, which is exactly where the story wanted us.</p>
+        </div>
+      </div>
+
+    </div>
+  </div><!-- /ri-craft -->
+
+  <!-- ── TAB 4: FURTHER READING ──────────────────────────── -->
+  <div id="ri-reading" class="tab-content">
+    <div class="edu-wrap">
+      <h2>Further Reading</h2>
+      <p class="edu-intro">Genre history, canonical sources, and comparative texts</p>
+      <div class="reading-section">
+        <h3>The Canon This Story Draws On</h3>
+        <a class="reading-link" href="https://www.bbc.co.uk/programmes/b006q2x0" target="_blank">
+          <span class="rl-title">Doctor Who — BBC</span>
+          <span class="rl-desc">The source series; the show's full run is available via BBC iPlayer in the UK.</span>
+        </a>
+        <a class="reading-link" href="https://tardis.wiki/wiki/Blink_(TV_story)" target="_blank">
+          <span class="rl-title">Blink — S3E10 (2007)</span>
+          <span class="rl-desc">Origin of "wibbly wobbly timey wimey" and the show's most celebrated fixed-point episode.</span>
+        </a>
+        <a class="reading-link" href="https://tardis.wiki/wiki/The_Fires_of_Pompeii_(TV_story)" target="_blank">
+          <span class="rl-title">The Fires of Pompeii — S4E2 (2008)</span>
+          <span class="rl-desc">The canonical treatment of fixed points: events that must happen even at terrible cost.</span>
+        </a>
+        <a class="reading-link" href="https://tardis.wiki/wiki/Heaven_Sent_(TV_story)" target="_blank">
+          <span class="rl-title">Heaven Sent — S9E11 (2015)</span>
+          <span class="rl-desc">Doctor Who's most sustained time-loop narrative; shares structural DNA with Re-Iteration.</span>
+        </a>
+
+        <h3>The Fan-Fiction Tradition</h3>
+        <a class="reading-link" href="https://renegadestoryteller.tumblr.com" target="_blank">
+          <span class="rl-title">Renegade Storyteller — Tumblr</span>
+          <span class="rl-desc">The author's original platform; the full archive of challenge-response fiction including this story.</span>
+        </a>
+        <a class="reading-link" href="https://archiveofourown.org/tags/Doctor%20Who" target="_blank">
+          <span class="rl-title">Doctor Who on Archive of Our Own</span>
+          <span class="rl-desc">The largest repository of Doctor Who fan-fiction; useful for contextualising the John Smith alias tradition.</span>
+        </a>
+
+        <h3>The Time Loop as Literary Form</h3>
+        <a class="reading-link" href="https://en.wikipedia.org/wiki/Replay_(Grimwood_novel)" target="_blank">
+          <span class="rl-title">Replay — Ken Grimwood (1987)</span>
+          <span class="rl-desc">The novel that established the modern template for time-loop narratives; a useful comparative text.</span>
+        </a>
+      </div>
+    </div>
+  </div><!-- /ri-reading -->
+
+</div><!-- /story-reiteration -->
+
+
+<!-- ══════════════════════════════════════════════════════════════════
+     STORY 2: EXTERMINATE!
+     ══════════════════════════════════════════════════════════════════ -->
+<div id="story-exterminate" class="story">
+
+  <nav class="tab-nav">
+    <button class="tab-btn active"  onclick="switchTab('ex','story',this)">The Story</button>
+    <button class="tab-btn"         onclick="switchTab('ex','world',this)">The Whoniverse</button>
+    <button class="tab-btn"         onclick="switchTab('ex','craft',this)">The Craft</button>
+    <button class="tab-btn"         onclick="switchTab('ex','reading',this)">Further Reading</button>
+  </nav>
+
+  <!-- ── TAB 1: THE STORY ─────────────────────────────── -->
+  <div id="ex-story" class="tab-content active">
+    <div class="prose-wrap">
+      <h2 class="story-title">Exterminate!</h2>
+      <p class="story-meta">
+        Published: <a href="https://renegadestoryteller.tumblr.com/post/62355089189/c015-exterminate?" target="_blank">renegadestoryteller.tumblr.com</a>
+        &nbsp;·&nbsp; Doctor Who fan-fiction &nbsp;·&nbsp; Challenge C015 &nbsp;·&nbsp; JL
+      </p>
+
+      <p>Their screams still echoed in her ears as she ran. She had to get as far away from them as she could. Her heart was pounding a frantic, desperate beat throughout her body as her lungs burned, crying out for more oxygen. She struggled to breathe through the sobs that racked her body. All she could see was the death that had surrounding her only moments ago; the faces of a hundred screaming, tortured souls being torn from their existence on this planet. Why? That was the only thing she could think. Why had they done this? Why had they chosen here? Why now? Why this? Her legs begged for rest, pleaded for her to stop running, but she couldn't. She had to flee.</p>
+
+      <p>
+        <span class="marginnote" id="mn-ex-dress">
+          <button class="marginnote-trigger" onclick="togglePanel('mn-ex-dress',this)">On any other night she would have thought this place beautiful; a fairy tale forest. The trees were colossal, dignified things, with leaves as large as a man stretching high above her head. She was not on the path, so the bushes and saplings grabbed at her, scratching and tearing her arms and legs and face as she ploughed through. It didn't help that she was in her wedding dress</button>
+          <span class="marginnote-panel">
+            <span class="mn-label">Craft Note</span>
+            <span class="panel-body">The wedding dress is introduced with studied casualness — "it didn't help" — but it carries enormous weight. Lucy will wear it for the entire story. It's the costume she had on when she lost her fiancé, her guests, her father. The story never gives her a change of clothes because there is no pause long enough, no safe enough moment, for her to become someone other than a bride who survived her own wedding.</span>
+          </span>
+        </span>
+        , or at least it had been, before they arrived.</p>
+
+      <p>"LUCY WAIT!"</p>
+
+      <p>She recognised the adolescent voice calling out to her and looked back. The root of one of the monolithic trees collided with her still running feet and she found herself hurtling head first for the floor. She wasn't sure if she had blacked out, but the boy to whom the voice belonged was immediately at her side, panic etched into his young face. Gabriel, his name was; he had been her ring-bearer.</p>
+
+      <p>"Lucy! Lucy! Are you okay?"</p>
+
+      <p>Her head was throbbing, she was cut and bleeding everywhere she looked, her ankle felt like it was being bludgeoned with something large and heavy and she had just witnessed a hundred or so people massacred in under a minute.</p>
+
+      <p>"I'm… I'm fine. I think I twisted my ankle though."</p>
+
+      <p>She struggled to sit up, but managed with Gabriel's help. Her heart was still beating a furiously and her breath was still short and sharp. She tried to calm down.</p>
+
+      <p>"How did you get out, Gabe?"</p>
+
+      <p>"Hid under the altar until those… Things… Left. I saw you duck out through the wine cellar, so I followed you."</p>
+
+      <p>He was whispering, and kept looking around, much like a wildcat. It scared her.</p>
+
+      <p>"Did they follow you?"</p>
+
+      <p>"I don't know. I heard them shouting a little ways back. Those voices…"</p>
+
+      <p>A look passed over the thirteen year old boy's face – terror. Sheer, unadulterated terror of the kind Lucy felt. She knew, in that moment, that he too could still see the faces of the dead, could still hear the screaming. It broke her. Until now, adrenaline had kept her grief at bay, but now – Now it washed over her like a solar storm of the kind they got back home on
+
+        <span class="decoder" id="dec-ex-andrazi">
+          <button class="decoder-trigger" onclick="togglePanel('dec-ex-andrazi',this)">Andrazi</button>
+          <span class="decoder-panel">
+            <span class="decode-label">World-Internal · Planet</span>
+            <span class="decode-term">Andrazi</span>
+            <span class="panel-body">Lucy's home world — not Earth, but a human colony planet far from it. The story establishes it has its own star (Proximus), its own cultural institutions (the Ancient Earth Museum), and its own regional identity. Lucy is recognisably human but culturally distant from Earth, which is why she knows what a plunger and a whisk look like only from a museum field trip.</span>
+          </span>
+        </span>.
+
+        She grabbed the boy and pulled him close, holding him tight and hoping he would understand that she was there with him. He cried, soft and almost silent, while his fingers dug into her shoulders with all the pain he could not bear. Her eyes remained dry; the screams wouldn't let her weep for the lost.</p>
+
+      <p>Neither of them knew how long they sat there, huddled together, praying that this would all be a bad dream. Eventually, Gabriel spoke.</p>
+
+      <p>"I thought they were a gag at first. You know one of Uncle Lucian's practical jokes… I mean,
+
+        <span class="decoder" id="dec-ex-saltshaker">
+          <button class="decoder-trigger" onclick="togglePanel('dec-ex-saltshaker',this)">what monster makes itself look like a salt-shaker?</button>
+          <span class="decoder-panel">
+            <span class="decode-label">Fan Lexicon</span>
+            <span class="decode-term">"Salt-Shaker"</span>
+            <span class="panel-body">The long-standing fan nickname for Daleks, derived from their distinctive silhouette: dome head, cylindrical body, and ringed skirt. The description dates to their first appearance in 1963, when viewers found them simultaneously terrifying and, on reflection, slightly ridiculous-looking. The story uses it precisely as Doctor Who always does: to establish the gap between how the Daleks appear and what they actually are.</span>
+            <a class="decode-link" href="https://tardis.wiki/wiki/Dalek" target="_blank">→ TARDIS Wiki: Dalek</a>
+          </span>
+        </span>"</p>
+
+      <p>The mention of her fiancé ripped through her, bringing with it flashes of his dying face. She never heard his last words to her.</p>
+
+      <p>
+        <span class="marginnote" id="mn-ex-dad">
+          <button class="marginnote-trigger" onclick="togglePanel('mn-ex-dad',this)">"My dad… He says – used to say that the most dangerous predators in the Universe look harmless, even ridiculous. They kill you while you laugh at them."</button>
+          <span class="marginnote-panel">
+            <span class="mn-label">Craft Note · Foreshadowing</span>
+            <span class="panel-body">This line does double work. Immediately, it describes the Daleks — the harmless-looking salt-shakers that just massacred a hundred people. But it will also describe the Doctor, who arrives in a blue box, mutters about Dorothy, and names his ship "Sexy." The story plants its thematic key early: the most dangerous things — for good or ill — tend to look ridiculous first.</span>
+          </span>
+        </span>
+      </p>
+
+      <p>"Do you think he meant those things?"</p>
+
+      <p>"I don't know…"</p>
+
+      <p>She didn't want to think about Dad, or Lucian, or anyone who was in the cathedral. Right now, she just wanted a way out; off this planet and back to Andrazi. She looked around for the first time in a long while. Thankfully, they weren't in a clearing. The trees, with their giant leaves, formed a canopy overhead that protected them from even the sky. She suddenly remembered why she had chosen this place for her wedding; the leaves trapped the light of Proximus during the day and radiated the excess energy at night. The forest glowed, a pale, magnificent orange – The Forest of Gold. She had even consented to have journos there, because she knew the pictures would be stunning; on every newsfeed throughout the galaxy. People could call her talentless for being a reality-stream star, but no one would deny that she had a talent for creating unforgettable experiences. She almost laughed at the irony, but suddenly her mind was overcome with the faces of the dead and dying.</p>
+
+      <p>"Lucy! Are you okay?"</p>
+
+      <p>She tried to shake it off. She was back in this unforgiving reality. Back in the place where all she had known and loved had been destroyed by demons in metal shells. She finally broke down.</p>
+
+      <p>"Why? WHY?! What did they want?"</p>
+
+      <p>Gabriel stayed silent. She tried to get a grip on herself. If there was to be any hope of surviving this nightmare, she had to get a grip. She looked up at her ring-bearer and found him deep in thought. When he finally spoke, it was slowly and deliberately, as if he was trying to solve a maths problem.</p>
+
+      <p>"I think… They were – are – looking for something. The black one said something about a key. And, um, a starlight bridge? Or stardust, I'm not sure."</p>
+
+      <p>Well that made no sense. Couldn't they just have asked? To Lucy, it seemed as if the monsters had been created for the express purpose of killing anything that wasn't like them. It sickened her. And then, for what seemed to be no reason at all, Gabriel brightened up.</p>
+
+      <p>"I've still got your ring! Hang on."</p>
+
+      <p>He fished it out of his pocket and handed it to Lucy, chuffed with himself for having done his duty. It was a simple, but elegant band, made from original Earth platinum; incredibly rare these days. Even rarer was the diamond, set perfectly into the top. It refracted the light from the trees in a way no other diamond ever could. Legend had it that the diamond had fallen from the heavens to Earth in the 21st century where it was found by a man with many faces. He had called it the
+
+        <span class="decoder" id="dec-ex-whitepointstar">
+          <button class="decoder-trigger" onclick="togglePanel('dec-ex-whitepointstar',this)">White Point Star</button>
+          <span class="decoder-panel">
+            <span class="decode-label">Doctor Who Canon</span>
+            <span class="decode-term">White Point Star</span>
+            <span class="panel-body">A Gallifreyan crystal — the rarest diamond in existence, existing nowhere in the universe except on the Time Lord homeworld Gallifrey. In "The End of Time" (2009), the Master used one as a signal anchor to begin drawing Gallifrey itself through the time lock. The story places a fragment of this same diamond in Lucy's wedding ring, giving the Daleks' search a canonical motive: it's a fragment of Gallifreyan technology that could open pathways across time.</span>
+            <a class="decode-link" href="https://tardis.wiki/wiki/White_point_star" target="_blank">→ TARDIS Wiki: White Point Star</a>
+          </span>
+        </span>,
+
+        and he used it to call across the stars to another world. Later it was cut into six smaller diamonds, the only diamonds of their kind in all the universe. This one had been in Lucian's family for generations. Lucian had said to her that no matter where she was in the Universe, if she had the ring, he would find her. She kissed the ring and wished he could find her now.</p>
+
+      <p>"Lucy, did you hear that?"</p>
+
+      <p>Silence had fallen over the forest; not even the wind made a sound. Lucy looked around. Even the light from the trees seemed dimmer. All around them, darkness seemed to be approaching. Gabriel stood up. Lucy tried, but her leg shot sharp tendrils of sheer agony through her body and she fell once again. Gabriel lifted her up and she supported herself on his shoulder. The only things she could hear were heartbeat and Gabriel's quickened intake of air.</p>
+
+      <p>Something moved behind them, almost – but not quite – dragging on the floor. The two of them turned to face it, whatever it was. She stared through the trees, hoping to find some sign of movement, of humanity. She only found darkness. And then that terrible, screaming voice echoed through the forest.</p>
+
+      <p>"The human female has the Fragment."</p>
+
+      <p>It clicked. The diamond; they wanted the diamond for this bridge key thing. She held it up, and called out to the black, hoping that they were reasonable.</p>
+
+      <p>"Here! If you want it, you can have it. Just let us go! Please!"</p>
+
+      <p>The silence was absolute. Nothing moved or made a sound for what seemed like ages; she even held her breath. In her mind, she prayed. She wasn't even religious, but she prayed.</p>
+
+      <p>The monster emerged from the shadows. She could see why Gabriel had thought they were a practical joke. It had no legs, just a skirt of half spheres; no torso or thorax, just an extension of its armour that ended with a domed head, decked with two white lights that looked like ears and an eye-stalk that glowed blue. Instead of arms it had what looked like a
+
+        <span class="decoder" id="dec-ex-plunger">
+          <button class="decoder-trigger" onclick="togglePanel('dec-ex-plunger',this)">plunger and a whisk</button>
+          <span class="decoder-panel">
+            <span class="decode-label">Alien Perspective</span>
+            <span class="decode-term">Dalek Manipulator Arm &amp; Gunstick</span>
+            <span class="panel-body">Lucy describes the Dalek's manipulator arm as a plunger and its energy weapon as a whisk — because she knows these objects only from a school trip to the Ancient Earth Museum on Andrazi. This is elegant worldbuilding: the narration stays in her perspective even when describing canonical Doctor Who monsters. To her, these are historical kitchen tools. To the reader, they're immediately recognisable.</span>
+          </span>
+        </span>; she remembered those names from a field trip to the Ancient Earth Museum on Andrazi when she was little. It looked harmless, but she was more afraid now than she had ever been in her life. It glided closer, and then stopped. When it spoke, it screamed.</p>
+
+      <p>"<button class="lb-trigger" onclick="openLightbox('lb-ex-daleks')">EXTERMINATE!</button>"</p>
+
+      <p>Instinctively, she ducked, pulling Gabriel down with her. Two bursts of fiery hot blue light crackled through the air over their heads. It would fire again, she knew it. Gabriel grabbed a rock and hurled it at the creature. Had it landed anywhere else, the action would only have served to anger it. Instead, the rock collided miraculously with the monster's eye-stalk.</p>
+
+      <p>"My vision is impaired! My vision is impaired!"</p>
+
+      <p>Lucy turned to Gabriel.</p>
+
+      <p>"We need somewhere to hide!"</p>
+
+      <p>"Well, the Energy Mill is at the bottom of the hill by the river."</p>
+
+      <p>"Then let's GO!"</p>
+
+      <p>Gabriel helped her up and they ran. Every step was agony, but she couldn't give a damn at the moment. She just wanted as much space between her and that thing as she could get. They stumbled through the forest as fast as they could. She could hear them closing in around them and willed herself to go on.</p>
+
+      <p>They broke through the treeline and into the blue light of the twin moons. The Energy Mill loomed over them, a behemoth of human ingenuity and engineering. Lucian's father had designed the technology that had made this place possible. The water on this planet was imbued with the energy that the trees radiated. Lucy didn't know how it all worked, but she knew that the Mill extracted the energy from the water, making it safe to drink and at the same time providing power for the colony.</p>
+
+      <p>"EXTERMINATE!"</p>
+
+      <p>Lucy and Gabriel ran faster. They crashed through the Mill's massive doors and into the vast interior. The place was, thankfully, empty of people. Before her lay row upon row of colossal energy storage units. She suddenly had a very good idea.</p>
+
+      <p>"Gabe, I need you to look around for an energy coupling. Make sure it's got a ton of insulation."</p>
+
+      <p>Gabriel looked from her to the battery and understood. He let her go and ran off, around the corner. She could hear him searching for almost five minutes, making a terrific racket. He came back victorious though, and handed her the three foot long coupling. It was a black bar, about as thick as a bottle of wine, and on either end was an intricate device that resembled a wine glass, albeit one with a large spike in the centre. She had seen a docu-stream, one of those survival-in-space ones, where a man had used one of these batteries and a coupling to jump start a space ship. Her plan was similar, she guessed, and if it worked then she would be able to fight these monsters off. There were literally thousands of these little Fusion-S batteries here.</p>
+
+      <p>She remembered the ring. Lucian would be proud of her. She turned to Gabriel.</p>
+
+      <p>"If you see one of those things, point the coupling straight at it, okay? I'll ram the battery into the other end and we'll blast that thing all the way back to hell."</p>
+
+      <p>The teenager smiled nervously. Lucy hugged him. Finally, there was hope.</p>
+
+      <p>"Thank you Gabe."</p>
+
+      <p>He didn't respond, but when she let him go he seemed almost cocky, like he thought he could do anything. She clutched her wedding ring and thought one simple thought. <em>If you want it, I dare you to come and get it.</em></p>
+
+      <p>"The humans have been located! Exterminate!"</p>
+
+      <p>The voice had rent through the air suddenly and violently, knocking any and kinds of arrogance from her mind in an instant. That inhuman, soulless scream terrified her once more, bringing with it all the images, all the faces and all of the pain.</p>
+
+      <p>She started to tremble as she stood there with a teenage boy, looking down the corridor of power sources and waiting for the inevitable. The inevitable arrived. It glided toward them, almost gracefully, entirely without fear. But it did not fire.</p>
+
+      <p>"EXTERMINATE!"</p>
+
+      <p>She didn't know how, or why, but she was suddenly calm. It would end, one way or another she reasoned.</p>
+
+      <p>"Gabriel! The coupling!"</p>
+
+      <p>Gabriel did nothing. The monster was drawing nearer.</p>
+
+      <p>"GABE!"</p>
+
+      <p>He snapped out of it and finally pointed the soon-to-be-business-end of the black bar at the creature. Lucy looked right into the monster's glowing blue eye-stalk and smiled.</p>
+
+      <p>
+        <span class="marginnote" id="mn-ex-extthis">
+          <button class="marginnote-trigger" onclick="togglePanel('mn-ex-extthis',this)">"Exterminate this."</button>
+          <span class="marginnote-panel">
+            <span class="mn-label">Craft Note · Genre Payoff</span>
+            <span class="panel-body">The story has been loading this moment since its title. Every time a Dalek screams "EXTERMINATE" the word has been associated with horror and helplessness. Lucy's three-word reclamation of it — cool, quiet, aimed — inverts that entirely. The reader has been trained to hear that word as threat; now it's defiance. The story earns this in a single line.</span>
+          </span>
+        </span>
+      </p>
+
+      <p>She plunged the battery, red-cap first, into the back of the coupling.</p>
+
+      <p>A thunderous, white hot bolt of beautiful lightning burst forth from the coupling and connected with the monster. Lucy couldn't see or hear anything for several seconds after the instant that her makeshift weapon had fired. It was all whiteness and noise.</p>
+
+      <p>She closed her eyes and tried to shake off the ringing in her ears and the black spots that were popping in her eyes. All was quiet. She looked up and found the monster. It was still.</p>
+
+      <p>Gabriel, on the other hand, was shaking. He looked shell-shocked, and was staring at the coupling with utter disbelief.</p>
+
+      <p>"That… Was… Awesome."</p>
+
+      <p>He burst out laughing; the kind of laugh that is unique those who have just been through hell and come out of the other side, shaken but okay. Lucy hugged him once more, and suddenly found herself laughing and crying at the same time. They were safe. They would survive. She could go home.</p>
+
+      <p>"Human technology is useless! We are supreme!"</p>
+
+      <p>Every good, hopeful thought was wiped from her mind. She didn't need to see it, to know that they were as good as dead. Her arms were still around Gabriel's neck. She gripped him tighter. This was the end, but she could not give up hope. She closed her eyes and gripped the ring tighter than ever. She knew that Lucian wouldn't find her, but she begged the Universe for someone, anyone who could help them.</p>
+
+      <p>The sound was faint, but it grew louder; a slow, steady oscillation of immense, timeless power. The monster advanced.</p>
+
+      <p>"EXTERMIN – "</p>
+
+      <p>It was silenced by the resounding BOOM that filled the air. It sounded like something very large had just fallen from thin air. Lucy opened her eyes and looked over. The monster had disappeared. In its place stood a box. A blue box, with windows, doors and a little light on top. Lucy couldn't help but stare.</p>
+
+      <p>
+        <span class="marginnote" id="mn-ex-doctor">
+          <button class="marginnote-trigger" onclick="togglePanel('mn-ex-doctor',this)">One of the box's doors opened and a man stepped out. He didn't acknowledge Lucy or Gabriel immediately. They didn't protest though; they were still in shock. He was regarding his box with a sort of mild curiosity.</button>
+          <span class="marginnote-panel">
+            <span class="mn-label">Craft Note · Tonal Shift</span>
+            <span class="panel-body">The Doctor's entrance is a masterclass in Doctor Who's signature register. The story pivots from horror to comedy in four sentences — the man who just materialised his box on top of a Dalek is mildly puzzled about the floor height. The contrast is not accidental; it is the point. Doctor Who has always used the Doctor's absurdist cheerfulness as a pressure valve after horror. It earns its laughs by taking the horror seriously first.</span>
+          </span>
+        </span>
+      </p>
+
+      <p>"That's strange. She doesn't usually get the height of the floor wrong."</p>
+
+      <p>Somehow Lucy understood that "she" was the box. The man patted the door, as if consoling "her". He looked down and saw the plunger-like arm that was sticking out from under the box.</p>
+
+      <p>"<button class="lb-trigger" onclick="openLightbox('lb-ex-wizard')">Oh look, it's the Wicked Witch of the East. Well done, Sexy!</button> Although you could have told me."</p>
+
+      <p>He was positively bouncing with excitement, and had yet to notice the two terrified souls who were still staring at him.</p>
+
+      <p>"Wait a minute! That makes me Dorothy! I liked Dorothy. She had spunk. Oooh that's a good word. Spunk."</p>
+
+      <p>He suddenly turned and pointed straight at Lucy.</p>
+
+      <p>"Tell me, is your name Glinda?"</p>
+
+      <p>"Uh… no. It's Lucy."</p>
+
+      <p>He strode up to her and Gabriel like he owned the place.</p>
+
+      <p>"Good name, Lucy. I like Lucy. Just stay out of cupboards, you could get lost."</p>
+
+      <p>He was mad, Lucy decided, and Gabriel seemed to agree. But still, there was something about him that put her at ease. In the back of her mind, she remembered what her dad used to say. The most dangerous things in the Universe look harmless, even ridiculous. But something could be both dangerous and good, right? She didn't know why, but this man seemed like a good man. Mad, but good.</p>
+
+      <p>He stopped in front of them and smiled, like a naughty child.</p>
+
+      <p>"Now, Lucy. Toto. Did anyone here call for help?"</p>
+
+      <div class="challenge-box">
+        <div class="ch-label">Challenge C015 — Requirements</div>
+        <p>Tell Me a Story About: A clandestine rendezvous. | Genre: Thriller/Horror | Style: 3rd Person Narrative (Past Tense) | It Must Have: 1) A wedding ring &nbsp;2) A diamond &nbsp;3) A celebrity. &nbsp;4) DALEKS! | Someone must say: "It's the wicked witch"</p>
+      </div>
+      <p class="author-note">Author's note: I hope the Whoniverse approves. JL</p>
+
+    </div>
+  </div><!-- /ex-story -->
+
+  <!-- ── TAB 2: THE WHONIVERSE ─────────────────────────── -->
+  <div id="ex-world" class="tab-content">
+    <div class="edu-wrap">
+      <h2>The Whoniverse</h2>
+      <p class="edu-intro">The world Lucy inhabits: its rules, its technology, and where it sits in the Doctor Who universe</p>
+
+      <div class="acc-item">
+        <button class="acc-trigger" onclick="toggleAcc(this)">
+          <span>What are the Daleks looking for, and why does the White Point Star fragment matter?</span>
+          <span class="acc-arrow">▾</span>
+        </button>
+        <div class="acc-panel">
+          <p>Gabriel overheard the Daleks mention "a key" and "a starlight bridge" — which the story connects to the White Point Star fragment in Lucy's ring. In canonical Doctor Who ("The End of Time," 2009), the White Point Star was used by the Master as a signal anchor to begin drawing Gallifrey through the time lock. A fragment of this diamond could, logically, serve as a bridging key between locked or sealed temporal locations — hence "starlight bridge."</p>
+          <p>The Daleks want it as a tool for spatial/temporal conquest: a key that can open passages between sealed points in time. The story wisely keeps the details abstract; what matters is that the object on Lucy's finger is cosmically significant, and that she has no idea.</p>
+        </div>
+      </div>
+
+      <div class="acc-item">
+        <button class="acc-trigger" onclick="toggleAcc(this)">
+          <span>What kind of world is Andrazi, and what does it tell us about the universe?</span>
+          <span class="acc-arrow">▾</span>
+        </button>
+        <div class="acc-panel">
+          <p>Andrazi is a human colony world — recognisably human culture, with its own star (Proximus), its own institutions (the Ancient Earth Museum), and its own regional identity distinct from Earth. The detail of the museum matters: Lucy knows what a plunger and a whisk look like because she saw them in a display case. Earth is ancient history to her, exotic enough to be museumified.</p>
+          <p>This is a quietly ambitious bit of worldbuilding. The story takes place in a future where human civilisation has spread across the galaxy, Earth is a cultural relic, and a wedding on a forest planet can be attended by journalists broadcasting to "every newsfeed throughout the galaxy." The Daleks haven't changed; the humans have spread. The story uses this to reframe the Doctor's arrival: he's not rescuing humans on Earth, but humans far from home.</p>
+        </div>
+      </div>
+
+      <div class="acc-item">
+        <button class="acc-trigger" onclick="toggleAcc(this)">
+          <span>How does Lucy's celebrity background function in the story?</span>
+          <span class="acc-arrow">▾</span>
+        </button>
+        <div class="acc-panel">
+          <p>Lucy is a reality-stream star — the far-future equivalent of a reality television celebrity. She's used to being watched, to crafting experiences for public consumption. She chose this forest specifically because "the pictures would be stunning; on every newsfeed throughout the galaxy." Her professional instinct is spectacle.</p>
+          <p>This background makes her survival arc more interesting. A celebrity who designs experiences finds herself in one she cannot control; a person whose job is to perform publicly is reduced to hiding in a forest in a ruined wedding dress. The celebrity detail also satisfies the challenge requirement ("a celebrity") in a way that is narratively functional rather than incidental — it tells us something about who Lucy is.</p>
+        </div>
+      </div>
+
+      <div class="acc-item">
+        <button class="acc-trigger" onclick="toggleAcc(this)">
+          <span>What is the Forest of Gold, and how does it serve the story?</span>
+          <span class="acc-arrow">▾</span>
+        </button>
+        <div class="acc-panel">
+          <p>The Forest of Gold is named for its trees' behaviour: they absorb the light of Proximus (the local star) during the day and radiate it at night as a pale, magnificent orange glow. The forest is Lucy's wedding venue — chosen for its beauty and photographic potential. After the massacre, it becomes simultaneously a sanctuary (the canopy hides them from Daleks patrolling by air) and a hostile terrain (she's running through it in a wedding dress with a twisted ankle).</p>
+          <p>The Energy Mill at the forest's edge is powered by this same tree-energy system, filtered through the river. The mill is where Lucy improvises her weapon. The setting is not decorative; the world's ecology produces both the monster's hunting ground and the survivor's weapon.</p>
+        </div>
+      </div>
+
+      <div class="acc-item">
+        <button class="acc-trigger" onclick="toggleAcc(this)">
+          <span>What does Lucy's father's rule tell us about this universe?</span>
+          <span class="acc-arrow">▾</span>
+        </button>
+        <div class="acc-panel">
+          <p><em>"The most dangerous predators in the Universe look harmless, even ridiculous. They kill you while you laugh at them."</em></p>
+          <p>This is the story's thesis statement, delivered as inherited wisdom. It applies immediately to the Daleks — salt-shakers that annihilated a wedding party in under a minute. But the story plants it as a two-edged truth: the Doctor, who arrives in a comedy police box and immediately starts monologuing about The Wizard of Oz, is also dangerous. Lucy intuits this: "this man seemed like a good man. Mad, but good." Dangerous and good are not mutually exclusive. Her father taught her half the lesson; the story teaches her the other half.</p>
+        </div>
+      </div>
+
+    </div>
+  </div><!-- /ex-world -->
+
+  <!-- ── TAB 3: THE CRAFT ──────────────────────────────── -->
+  <div id="ex-craft" class="tab-content">
+    <div class="edu-wrap">
+      <h2>The Craft</h2>
+      <p class="edu-intro">How the story is built, what it's doing, and what it leaves open</p>
+
+      <div class="acc-item">
+        <button class="acc-trigger" onclick="toggleAcc(this)">
+          <span>How does the story handle its challenge requirements?</span>
+          <span class="acc-arrow">▾</span>
+        </button>
+        <div class="acc-panel">
+          <p>The challenge specified: a wedding ring, a diamond, a celebrity, Daleks, and the phrase "It's the wicked witch." Each is integrated rather than stapled on. The ring isn't decorative — it contains the White Point Star fragment and is the Daleks' actual objective. The diamond is the same object. The celebrity is Lucy, and her celebrity status shapes her character architecture. The Daleks are the story's engine.</p>
+          <p>The "wicked witch" line is perhaps the most inventive solution: rather than assigning it to a human character (the obvious move), the author gives it to the Doctor, looking down at a Dalek crushed under his TARDIS — which is both funnier and more characteristically Doctorish. The challenge requirement becomes a character moment rather than a box-tick.</p>
+        </div>
+      </div>
+
+      <div class="acc-item">
+        <button class="acc-trigger" onclick="toggleAcc(this)">
+          <span>The horror-to-comedy tonal shift: how does it work?</span>
+          <span class="acc-arrow">▾</span>
+        </button>
+        <div class="acc-panel">
+          <p>Doctor Who has always operated in multiple registers simultaneously: the show can be genuinely terrifying in one scene and comedic in the next. This tonal range is not a flaw but the show's specific achievement — it proves that horror and comedy are not opposites but neighbours, and that moving between them quickly is a form of emotional intelligence.</p>
+          <p>This story executes the shift with real precision. The horror is earned first: a massacred wedding, a child's terror, a twisted ankle in a bridal gown, Daleks hunting through a glowing forest. None of this is played for laughs. Then the TARDIS materialises on a Dalek, and the Doctor wanders out muttering about Judy Garland. The comedy works <strong>because</strong> the horror was real. The reader's nervous laughter is relief, not dismissal.</p>
+        </div>
+      </div>
+
+      <div class="acc-item">
+        <button class="acc-trigger" onclick="toggleAcc(this)">
+          <span>Is Lucy a companion in waiting? What does she share with canonical companions?</span>
+          <span class="acc-arrow">▾</span>
+        </button>
+        <div class="acc-panel">
+          <p>The story ends before any explicit companion offer, but Lucy has all the structural hallmarks. She improvises under pressure (the makeshift Dalek-killer). She protects someone smaller and more vulnerable than herself (Gabriel). She has suffered devastating loss and kept moving. And crucially, she recognises the Doctor not as a threat but as a good man — "mad, but good" — which is exactly what companions see that others can't.</p>
+          <p>The Wizard of Oz framing — Dorothy, Toto, Glinda — is the Doctor's own reading of their meeting. He's already cast her. "Did anyone here call for help?" is an invitation. Whether Lucy steps through the door is a story the author leaves unwritten.</p>
+        </div>
+      </div>
+
+      <div class="acc-item">
+        <button class="acc-trigger" onclick="toggleAcc(this)">
+          <span>What does the story refuse to resolve, and is the refusal meaningful?</span>
+          <span class="acc-arrow">▾</span>
+        </button>
+        <div class="acc-panel">
+          <p>The story ends on the Doctor's arrival and his first question. We don't know: whether Lucy accepts whatever he's implicitly offering; whether the Dalek threat is ended or merely paused; what happens to the White Point Star fragment; whether Gabriel is safe; or whether the "starlight bridge" is ever built. The story stops at the moment of possibility rather than the moment of resolution.</p>
+          <p>This is the correct ending for a short piece introducing an original character. The Doctor has arrived; the darkness has been interrupted; Lucy and Gabriel are alive. Everything else belongs to a larger story. The refusal to resolve is not a truncation — it's a door left open.</p>
+        </div>
+      </div>
+
+    </div>
+  </div><!-- /ex-craft -->
+
+  <!-- ── TAB 4: FURTHER READING ──────────────────────────── -->
+  <div id="ex-reading" class="tab-content">
+    <div class="edu-wrap">
+      <h2>Further Reading</h2>
+      <p class="edu-intro">Canonical sources, Dalek history, and comparative texts</p>
+      <div class="reading-section">
+        <h3>The Daleks in Canon</h3>
+        <a class="reading-link" href="https://tardis.wiki/wiki/The_Daleks_(TV_story)" target="_blank">
+          <span class="rl-title">The Daleks — S1 (1963)</span>
+          <span class="rl-desc">Terry Nation's original Dalek story; the source of everything that follows.</span>
+        </a>
+        <a class="reading-link" href="https://tardis.wiki/wiki/Dalek_(TV_story)" target="_blank">
+          <span class="rl-title">Dalek — S1E6 (2005)</span>
+          <span class="rl-desc">The revival's reintroduction of the Daleks; establishes their post-Time War mythology.</span>
+        </a>
+        <a class="reading-link" href="https://tardis.wiki/wiki/The_End_of_Time_(TV_story)" target="_blank">
+          <span class="rl-title">The End of Time — Specials (2009/10)</span>
+          <span class="rl-desc">Origin of the White Point Star; the Tenth Doctor's final story.</span>
+        </a>
+
+        <h3>The Whoniverse's Human Future</h3>
+        <a class="reading-link" href="https://tardis.wiki/wiki/The_Long_Game_(TV_story)" target="_blank">
+          <span class="rl-title">The Long Game — S1E7 (2005)</span>
+          <span class="rl-desc">A portrait of a far-future human civilization, with celebrity and media culture at its centre.</span>
+        </a>
+        <a class="reading-link" href="https://tardis.wiki/wiki/New_Earth_(TV_story)" target="_blank">
+          <span class="rl-title">New Earth — S2E1 (2006)</span>
+          <span class="rl-desc">Human civilization beyond Earth; the pattern of human colony worlds the story draws on.</span>
+        </a>
+
+        <h3>The Author's Work</h3>
+        <a class="reading-link" href="https://renegadestoryteller.tumblr.com" target="_blank">
+          <span class="rl-title">Renegade Storyteller — Tumblr</span>
+          <span class="rl-desc">The full archive of challenge-response fiction by JL, including Re-Iteration and Exterminate!</span>
+        </a>
+      </div>
+    </div>
+  </div><!-- /ex-reading -->
+
+</div><!-- /story-exterminate -->
+
+
+<!-- ══════════════════════════════════════════════════════════════════
+     LIGHTBOXES — collected at end of body
+     ══════════════════════════════════════════════════════════════════ -->
+
+<!-- LB: Fixed Points -->
+<div class="lb-overlay" id="lb-ri-fixedpoint" onclick="closeLbOnOverlay(event,'lb-ri-fixedpoint')">
+  <div class="lb-box">
+    <div class="lb-header">
+      <span class="lb-title">Fixed Points in Time</span>
+      <button class="lb-close" onclick="closeLightbox('lb-ri-fixedpoint')">✕</button>
+    </div>
+    <div class="lb-body">
+      <h3>What Is a Fixed Point?</h3>
+      <p>A fixed point in time is an event in the Doctor Who universe that cannot be altered without catastrophic consequences to the timeline. Whatever the Doctor does — wherever he travels — certain events must happen as they happened. To change them is to unravel causality itself.</p>
+      <h3>Key Examples in the Show</h3>
+      <p><strong>The Eruption of Vesuvius (79 AD)</strong> — explored in "The Fires of Pompeii" (S4E2, 2008). The Doctor learns that Pompeii's destruction is fixed: he cannot save the city. In a final act of mercy, he saves one family. The episode establishes the emotional cost of fixed points: the Doctor must sometimes choose not to act.</p>
+      <p><strong>The Doctor's Death at Lake Silencio</strong> — in "The Impossible Astronaut" (S6E1, 2011), a fixed point demands the Doctor die. The resolution involves a complicated loophole rather than a change to the event itself.</p>
+      <p><strong>The Significance for Re-Iteration</strong> — this story inverts the usual premise. Rather than the Doctor trying to change a fixed point, someone else has enclosed one in a bubble to <em>experiment</em> with it. The fixed point is the lever, not the obstacle.</p>
+      <a href="https://tardis.wiki/wiki/Fixed_point_in_time" target="_blank">→ TARDIS Wiki: Fixed Points in Time</a>
+    </div>
+  </div>
+</div>
+
+<!-- LB: Daleks -->
+<div class="lb-overlay" id="lb-ex-daleks" onclick="closeLbOnOverlay(event,'lb-ex-daleks')">
+  <div class="lb-box">
+    <div class="lb-header">
+      <span class="lb-title">The Daleks</span>
+      <button class="lb-close" onclick="closeLightbox('lb-ex-daleks')">✕</button>
+    </div>
+    <div class="lb-body">
+      <h3>Origin</h3>
+      <p>Created by writer Terry Nation, the Daleks first appeared in "The Daleks" (1963-64), the second Doctor Who serial. They were intended as an allegory for Nazism: a species that had engineered all empathy and difference out of itself, surviving in life-support travel machines, recognising no life-form as equal, with a single operational command: exterminate.</p>
+      <h3>Design</h3>
+      <p>The physical design by Raymond Cusick has remained essentially unchanged since 1963. The domed head, cylindrical body, and ringed base produce the "salt-shaker" silhouette — something that looks, at first glance, not particularly frightening. This gap between appearance and lethality is part of what makes them effective as monsters: they cannot be dismissed once you have seen what they do.</p>
+      <h3>The Dalek Ethos</h3>
+      <p>Daleks believe in racial purity to a degree that makes all non-Dalek life an affront. They do not negotiate, reason, or take prisoners unless strategically useful. Their single word — "Exterminate" — is not a battle cry but a statement of purpose. Every species that is not Dalek must, eventually, cease to exist.</p>
+      <h3>Post-Time War</h3>
+      <p>In the revival series (2005 onward), the Daleks survived the Time War that supposedly destroyed both them and the Time Lords. Their post-war stories carry an additional layer of horror: they are the only survivors of a catastrophe that consumed two civilisations. They emerged unchanged.</p>
+      <a href="https://tardis.wiki/wiki/Dalek" target="_blank">→ TARDIS Wiki: Dalek</a>
+    </div>
+  </div>
+</div>
+
+<!-- LB: Wizard of Oz -->
+<div class="lb-overlay" id="lb-ex-wizard" onclick="closeLbOnOverlay(event,'lb-ex-wizard')">
+  <div class="lb-box">
+    <div class="lb-header">
+      <span class="lb-title">The Wicked Witch of the East</span>
+      <button class="lb-close" onclick="closeLightbox('lb-ex-wizard')">✕</button>
+    </div>
+    <div class="lb-body">
+      <h3>The Wizard of Oz Reference</h3>
+      <p>In L. Frank Baum's <em>The Wonderful Wizard of Oz</em> (1900) and the 1939 MGM film, the Wicked Witch of the East is the witch killed when Dorothy's house lands on her in Munchkinland. She is defeated not by heroism but by accident — the house simply falls, and only her ruby slippers survive, protruding from beneath. The Doctor sees a Dalek gun-arm sticking out from under his TARDIS and makes the comparison immediately.</p>
+      <h3>Why the Doctor Makes This Joke</h3>
+      <p>This is quintessentially Doctorish behaviour: using a cultural reference to defuse (for himself, if not for Lucy and Gabriel) the horror of what just happened. The TARDIS materialised on a Dalek. A living creature is dead under his ship. His response is to quote a children's film. This is not callousness — it is the Doctor's coping mechanism, his way of making the universe slightly less terrifying by making it slightly more absurd.</p>
+      <h3>The Casting That Follows</h3>
+      <p>The joke immediately extends: Dorothy (the Doctor), Toto (Gabriel), Glinda (Lucy's proposed name), and the implicit question of whether they're off to see a wizard. The Doctor is playing a game with a reference he knows and they don't. When he calls Lucy "Toto" and Gabriel "Toto" in the same breath, and offers "Did anyone here call for help?" — he is completing the casting. He's already decided to help.</p>
+      <a href="https://en.wikipedia.org/wiki/The_Wonderful_Wizard_of_Oz" target="_blank">→ Wikipedia: The Wonderful Wizard of Oz</a>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════════════════════════
+     JAVASCRIPT
+     ══════════════════════════════════════════════════════════════════ -->
+<script>
+/* ─── Story selector ─────────────────────────────── */
+function selectStory(id, btn) {
+  document.querySelectorAll('.story').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.story-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('story-' + id).classList.add('active');
+  btn.classList.add('active');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+/* ─── Tab switcher ───────────────────────────────── */
+function switchTab(prefix, tabId, btn) {
+  const story = btn.closest('.story');
+  story.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  story.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById(prefix + '-' + tabId).classList.add('active');
+  btn.classList.add('active');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+/* ─── Decoder / margin note panels ──────────────── */
+function togglePanel(id, btn) {
+  const wrapper = document.getElementById(id);
+  const panel = wrapper.querySelector('.decoder-panel, .marginnote-panel');
+  const isOpen = panel.classList.contains('open');
+
+  document.querySelectorAll('.decoder-panel.open, .marginnote-panel.open')
+    .forEach(p => p.classList.remove('open'));
+  document.querySelectorAll('.decoder-trigger.open, .marginnote-trigger.open')
+    .forEach(b => b.classList.remove('open'));
+
+  if (!isOpen) {
+    panel.classList.add('open');
+    btn.classList.add('open');
+    // Viewport overflow check
+    const rect = panel.getBoundingClientRect();
+    if (rect.right > window.innerWidth - 16) {
+      panel.classList.add('flip-left');
+    } else {
+      panel.classList.remove('flip-left');
+    }
+  }
+}
+
+/* Close panels on outside click */
+document.addEventListener('click', function(e) {
+  if (!e.target.closest('.decoder') && !e.target.closest('.marginnote')) {
+    document.querySelectorAll('.decoder-panel.open, .marginnote-panel.open')
+      .forEach(p => p.classList.remove('open'));
+    document.querySelectorAll('.decoder-trigger.open, .marginnote-trigger.open')
+      .forEach(b => b.classList.remove('open'));
+  }
+});
+
+/* ─── Accordion ──────────────────────────────────── */
+function toggleAcc(btn) {
+  const panel = btn.nextElementSibling;
+  const isOpen = btn.classList.contains('open');
+  document.querySelectorAll('.acc-trigger.open').forEach(b => {
+    b.classList.remove('open');
+    b.nextElementSibling.classList.remove('open');
+  });
+  if (!isOpen) {
+    btn.classList.add('open');
+    panel.classList.add('open');
+  }
+}
+
+/* ─── Lightbox ───────────────────────────────────── */
+function openLightbox(id) {
+  document.getElementById(id).classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeLightbox(id) {
+  document.getElementById(id).classList.remove('open');
+  document.body.style.overflow = '';
+}
+function closeLbOnOverlay(e, id) {
+  if (e.target === document.getElementById(id)) closeLightbox(id);
+}
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') {
+    document.querySelectorAll('.lb-overlay.open').forEach(el => {
+      el.classList.remove('open');
+    });
+    document.body.style.overflow = '';
+  }
+});
+</script>
+</body>
+</html>

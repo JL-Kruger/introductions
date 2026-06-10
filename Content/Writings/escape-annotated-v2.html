@@ -1,0 +1,1097 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ESCAPE — Annotated Edition</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fredericka+the+Great&family=Lora:ital,wght@0,400;0,500;1,400&family=Space+Mono:ital@0;1&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{font-size:16px;scroll-behavior:smooth;}
+
+:root {
+  /* Cold register */
+  --cold-bg:    #080706;
+  --cold-mid:   #0f0d0a;
+  --cold-lift:  #161310;
+  --cold-panel: #0b0906;
+  --cold-border:#252018;
+  --cold-hi:    #3a3028;
+  --cold-steel: #58687a;
+  --cold-text:  #8a7d68;
+  --cold-dim:   #3c3228;
+  --cold-faint: #241e16;
+
+  /* Warm register — the music lives here */
+  --warm-amber: #c87828;
+  --warm-gold:  #d4a030;
+  --warm-glow:  #e8b840;
+  --warm-bg:    #120e08;
+  --warm-border:#4a3010;
+  --warm-hi:    #8a5818;
+
+  /* Threat register */
+  --threat:     #6a2810;
+  --threat-hi:  #8a3818;
+}
+
+/* ─── GRAIN TEXTURE ─────────────────────────── */
+body::before {
+  content:'';
+  position:fixed;
+  inset:0;
+  pointer-events:none;
+  z-index:999;
+  opacity:0.035;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='250' height='250'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='250' height='250' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+body {
+  background: var(--cold-bg);
+  color: var(--cold-text);
+  font-family: 'Lora', serif;
+  min-height: 100vh;
+}
+
+/* ─── HEADER ────────────────────────────────── */
+.site-header {
+  background: var(--cold-bg);
+  padding: 4rem 2rem 3rem;
+  position: relative;
+  overflow: hidden;
+  border-bottom: 1px solid var(--cold-border);
+}
+
+/* Horizontal stripes — stencil/military print effect */
+.site-header::before {
+  content:'';
+  position:absolute;
+  inset:0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 3px,
+    rgba(255,255,255,0.008) 3px,
+    rgba(255,255,255,0.008) 4px
+  );
+  pointer-events:none;
+}
+
+.site-header::after {
+  content:'';
+  position:absolute;
+  inset:0;
+  background: radial-gradient(ellipse at 50% 120%, rgba(200,120,40,0.07) 0%, transparent 60%);
+  pointer-events:none;
+}
+
+.header-inner {
+  max-width: 900px;
+  margin: 0 auto;
+  position: relative;
+}
+
+.header-eyebrow {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.6rem;
+  letter-spacing: 0.4em;
+  text-transform: uppercase;
+  color: var(--cold-dim);
+  margin-bottom: 1.2rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+.header-eyebrow::after {
+  content:'';
+  flex:1;
+  height:1px;
+  background: var(--cold-border);
+  max-width: 200px;
+}
+
+.header-title-row {
+  display: flex;
+  align-items: flex-end;
+  gap: 2.5rem;
+  margin-bottom: 1.6rem;
+  flex-wrap: wrap;
+}
+
+h1 {
+  font-family: 'Fredericka the Great', sans-serif;
+  font-size: clamp(5rem, 18vw, 11rem);
+  letter-spacing: 0.06em;
+  line-height: 0.88;
+  color: #d8c898;
+  position: relative;
+  /* Slight flicker on load */
+  animation: flicker 0.6s steps(1) forwards;
+}
+
+@keyframes flicker {
+  0%   { opacity:0; }
+  40%  { opacity:0.6; }
+  55%  { opacity:0; }
+  70%  { opacity:0.9; }
+  80%  { opacity:0; }
+  90%  { opacity:1; }
+  100% { opacity:1; }
+}
+
+.header-meta {
+  padding-bottom: 0.6rem;
+}
+.header-meta p {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.62rem;
+  letter-spacing: 0.12em;
+  line-height: 2;
+  color: var(--cold-dim);
+}
+.header-meta a { color: var(--warm-hi); text-decoration:none; }
+.header-meta a:hover { color: var(--warm-amber); }
+
+.header-bottom {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+.header-rule-line {
+  flex:1;
+  height:1px;
+  background: linear-gradient(90deg, var(--warm-border), var(--cold-border), transparent);
+}
+.header-tag {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.58rem;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: var(--cold-faint);
+  white-space: nowrap;
+}
+
+/* ─── TAB NAV ───────────────────────────────── */
+.tab-nav {
+  display: flex;
+  background: var(--cold-bg);
+  border-bottom: 2px solid var(--cold-border);
+  padding: 0 1.5rem;
+  overflow-x: auto;
+  scrollbar-width: none;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  gap: 0.15rem;
+}
+.tab-nav::-webkit-scrollbar{display:none;}
+
+.tab-btn {
+  background: transparent;
+  border: none;
+  border-top: 2px solid transparent;
+  color: var(--cold-dim);
+  font-family: 'Fredericka the Great', sans-serif;
+  font-size: 0.95rem;
+  letter-spacing: 0.22em;
+  padding: 0.9rem 1.5rem 0.75rem;
+  cursor: pointer;
+  transition: all 0.15s;
+  white-space: nowrap;
+  margin-bottom: -2px;
+  clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%);
+}
+.tab-btn:hover { color: var(--cold-text); background: var(--cold-mid); }
+.tab-btn.active {
+  color: var(--warm-amber);
+  background: var(--cold-mid);
+  border-top-color: var(--warm-amber);
+}
+
+/* ─── TAB CONTENT ───────────────────────────── */
+.tab-content { display:none; }
+.tab-content.active { display:block; }
+
+/* ─── PROSE WRAP ────────────────────────────── */
+.prose-wrap {
+  max-width: 700px;
+  margin: 0 auto;
+  padding: 3.5rem 1.5rem 6rem;
+}
+
+.prose-wrap p {
+  font-family: 'Lora', serif;
+  font-size: 1.06rem;
+  line-height: 1.96;
+  color: #978770;
+  margin-bottom: 1.5rem;
+}
+
+/* ─── PIANO SCENE — warm bubble ─────────────── */
+.piano-scene {
+  background: var(--warm-bg);
+  border-left: 3px solid var(--warm-border);
+  padding: 2rem 1.8rem 2rem 2rem;
+  margin: 2.5rem -1rem 2.5rem;
+  position: relative;
+}
+.piano-scene::before {
+  content: '♪';
+  position: absolute;
+  top: 1.2rem;
+  right: 1.4rem;
+  font-size: 1.2rem;
+  color: var(--warm-border);
+  opacity: 0.6;
+}
+.piano-scene p {
+  color: #b09870 !important;
+}
+
+/* ─── COUNTDOWN ─────────────────────────────── */
+.countdown-block {
+  margin: 3rem 0 1.5rem;
+  padding: 0.5rem 0;
+  position: relative;
+}
+.countdown-block::before {
+  content:'';
+  position:absolute;
+  left:0;right:0;top:50%;
+  height:1px;
+  background: var(--cold-border);
+}
+.countdown-numeral {
+  font-family: 'Fredericka the Great', sans-serif;
+  font-size: clamp(4rem, 14vw, 7.5rem);
+  letter-spacing: 0.04em;
+  line-height: 1;
+  color: var(--cold-hi);
+  position: relative;
+  display: inline-block;
+  background: var(--cold-bg);
+  padding-right: 0.4em;
+}
+
+/* ─── FINAL LINE — maximum weight ──────────── */
+.final-line-wrap {
+  margin: 4rem 0 2rem;
+  padding: 2.5rem 1rem;
+  border-top: 1px solid var(--cold-border);
+  border-bottom: 1px solid var(--cold-border);
+  text-align: center;
+  position: relative;
+}
+.final-line-wrap::before,
+.final-line-wrap::after {
+  content: '—';
+  font-family: 'Lora', serif;
+  color: var(--warm-border);
+  position: absolute;
+  font-size: 1rem;
+}
+.final-line-wrap::before { top: 1rem; left: 50%; transform: translateX(-50%); }
+.final-line-wrap::after  { bottom: 1rem; left: 50%; transform: translateX(-50%); }
+
+.final-line {
+  font-family: 'Lora', serif;
+  font-style: italic;
+  font-size: clamp(1.05rem, 2.5vw, 1.28rem);
+  line-height: 1.75;
+  color: #c8a858 !important;
+  margin: 0 !important;
+}
+
+/* ─── DECODER ───────────────────────────────── */
+.decoder { display:inline; position:relative; }
+.decoder-trigger {
+  background: none;
+  border: none;
+  border-bottom: 1px dotted var(--warm-hi);
+  color: var(--warm-amber);
+  cursor: pointer;
+  font-family: inherit;
+  font-size: inherit;
+  line-height: inherit;
+  padding: 0;
+  display: inline;
+  transition: color 0.12s;
+}
+.decoder-trigger:hover { color: var(--warm-glow); }
+.decoder-trigger::after {
+  content:'▾';
+  font-size:0.5em;
+  margin-left:1px;
+  vertical-align:super;
+  opacity:0.55;
+}
+.decoder-trigger.open { color: var(--warm-glow); }
+.decoder-trigger.open::after { content:'▴'; }
+
+.decoder-panel {
+  display: none;
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  z-index: 500;
+  width: 290px;
+  background: #060402;
+  border: 1px solid var(--cold-hi);
+  border-top: 2px solid var(--warm-amber);
+  padding: 1rem 1.1rem;
+  box-shadow: 0 12px 40px rgba(0,0,0,0.85);
+}
+.decoder-panel.open { display:block; }
+.decoder-panel.flip-left { left:auto; right:0; }
+
+.decode-label {
+  display:block;
+  font-family:'Fredericka the Great',sans-serif;
+  font-size:0.7rem;
+  letter-spacing:0.32em;
+  color: var(--warm-hi);
+  margin-bottom:0.3rem;
+}
+.decode-term {
+  display:block;
+  font-family:'Fredericka the Great',sans-serif;
+  font-size:1.05rem;
+  letter-spacing:0.1em;
+  color: var(--warm-amber);
+  margin-bottom:0.45rem;
+}
+.decoder-panel .panel-body {
+  display:block;
+  font-family:'Space Mono',monospace;
+  font-size:0.72rem;
+  color: var(--cold-steel);
+  line-height:1.7;
+}
+.decode-link {
+  display:block;
+  margin-top:0.55rem;
+  font-family:'Space Mono',monospace;
+  font-size:0.62rem;
+  color: var(--cold-dim);
+  text-decoration:none;
+}
+.decode-link:hover { color: var(--warm-amber); }
+
+/* Threat variant — for Purifier/Hornet */
+.decoder-panel.threat {
+  border-top-color: var(--threat-hi);
+}
+.decoder-panel.threat .decode-label { color: var(--threat); }
+.decoder-panel.threat .decode-term  { color: var(--threat-hi); }
+
+/* ─── MARGIN NOTE ───────────────────────────── */
+.marginnote { display:inline; position:relative; }
+.marginnote-trigger {
+  background:none; border:none;
+  border-bottom:1px dotted var(--cold-hi);
+  color:inherit; cursor:pointer;
+  font-family:inherit; font-size:inherit; line-height:inherit;
+  padding:0; display:inline;
+}
+.marginnote-trigger::after {
+  content:'✎';
+  font-size:0.55em;
+  margin-left:2px;
+  vertical-align:super;
+  color: var(--warm-gold);
+  opacity:0.75;
+}
+
+.marginnote-panel {
+  display:none;
+  position:absolute;
+  top:calc(100% + 6px);
+  left:0;
+  z-index:500;
+  width:290px;
+  background:#0a0800;
+  border:1px solid var(--warm-border);
+  border-top:2px solid var(--warm-gold);
+  padding:1rem 1.1rem;
+  box-shadow:0 12px 40px rgba(0,0,0,0.85);
+}
+.marginnote-panel.open { display:block; }
+.marginnote-panel.flip-left { left:auto; right:0; }
+
+.mn-label {
+  display:block;
+  font-family:'Fredericka the Great',sans-serif;
+  font-size:0.7rem;
+  letter-spacing:0.32em;
+  color: var(--warm-border);
+  margin-bottom:0.3rem;
+}
+.marginnote-panel .panel-body {
+  display:block;
+  font-family:'Space Mono',monospace;
+  font-size:0.72rem;
+  color: #7a6838;
+  line-height:1.7;
+}
+
+/* ─── LIGHTBOX TRIGGER ──────────────────────── */
+.lb-trigger {
+  background:none; border:none;
+  border-bottom:1px solid rgba(90,130,80,0.4);
+  color:inherit; cursor:pointer;
+  font-family:inherit; font-size:inherit; line-height:inherit;
+  padding:0; display:inline;
+}
+.lb-trigger::after {
+  content:'⊕';
+  font-size:0.52em;
+  margin-left:2px;
+  vertical-align:super;
+  color:#6a9858;
+  opacity:0.8;
+}
+
+/* ─── LIGHTBOX ──────────────────────────────── */
+.lb-overlay {
+  display:none;
+  position:fixed; inset:0;
+  background:rgba(4,2,0,0.95);
+  z-index:1000;
+  align-items:center; justify-content:center;
+  padding:1rem;
+  backdrop-filter:blur(4px);
+}
+.lb-overlay.open { display:flex; }
+.lb-box {
+  background: var(--cold-panel);
+  border: 1px solid var(--cold-hi);
+  border-top: 3px solid var(--warm-amber);
+  max-width: 600px; width:100%;
+  max-height:88vh; overflow-y:auto;
+  box-shadow:0 0 100px rgba(0,0,0,0.9), 0 0 40px rgba(100,50,0,0.12);
+}
+.lb-header {
+  display:flex; align-items:center; justify-content:space-between;
+  padding:1rem 1.4rem;
+  border-bottom:1px solid var(--cold-border);
+  background:#060401;
+  position:sticky; top:0;
+}
+.lb-title {
+  font-family:'Fredericka the Great',sans-serif;
+  font-size:1.1rem;
+  letter-spacing:0.18em;
+  color: var(--warm-amber);
+}
+.lb-close {
+  background:none;
+  border:1px solid var(--cold-hi);
+  color: var(--cold-dim);
+  cursor:pointer;
+  font-size:0.8rem;
+  width:24px; height:24px;
+  display:flex; align-items:center; justify-content:center;
+  transition:all 0.15s;
+}
+.lb-close:hover { color: var(--warm-amber); border-color: var(--warm-border); }
+.lb-body { padding:1.5rem; }
+.lb-body h3 {
+  font-family:'Fredericka the Great',sans-serif;
+  font-size:0.85rem;
+  letter-spacing:0.28em;
+  color: var(--warm-border);
+  margin:1.4rem 0 0.5rem;
+  padding-bottom:0.35rem;
+  border-bottom:1px solid var(--cold-border);
+}
+.lb-body h3:first-child { margin-top:0; }
+.lb-body p {
+  font-family:'Space Mono',monospace;
+  font-size:0.78rem;
+  color: var(--cold-steel);
+  line-height:1.75;
+  margin-bottom:0.6rem;
+}
+.lb-body a { color: var(--warm-hi); font-size:0.72rem; text-decoration:none; }
+.lb-body a:hover { color: var(--warm-amber); }
+.lb-body strong { color: var(--cold-text); }
+
+/* ─── ACCORDION ─────────────────────────────── */
+.acc-item {
+  border:1px solid var(--cold-border);
+  margin-bottom:0.4rem;
+  overflow:hidden;
+}
+.acc-trigger {
+  background: var(--cold-mid);
+  border:none; width:100%;
+  text-align:left;
+  padding:0.9rem 1.1rem;
+  cursor:pointer;
+  display:flex; justify-content:space-between; align-items:center;
+  font-family:'Space Mono',monospace;
+  font-size:0.76rem;
+  color: var(--cold-dim);
+  transition:all 0.15s;
+  gap:1rem;
+}
+.acc-trigger:hover { background: var(--cold-lift); color: var(--cold-text); }
+.acc-trigger.open { color: var(--warm-amber); background: var(--cold-lift); border-left:2px solid var(--warm-amber); }
+.acc-arrow { font-size:0.8rem; flex-shrink:0; transition:transform 0.2s; }
+.acc-trigger.open .acc-arrow { transform:rotate(180deg); }
+.acc-panel {
+  display:none;
+  padding:1.1rem 1.3rem;
+  border-top:1px solid var(--cold-border);
+  background: var(--cold-panel);
+}
+.acc-panel.open { display:block; }
+.acc-panel p {
+  font-family:'Space Mono',monospace;
+  font-size:0.78rem;
+  color: var(--cold-steel);
+  line-height:1.75;
+  margin-bottom:0.65rem;
+}
+.acc-panel p:last-child { margin-bottom:0; }
+.acc-panel a { color: var(--warm-hi); text-decoration:none; }
+.acc-panel a:hover { color: var(--warm-amber); }
+.acc-panel strong { color: var(--cold-text); }
+.acc-panel em { font-style:italic; color: #786040; }
+
+/* ─── EDU WRAP ──────────────────────────────── */
+.edu-wrap {
+  max-width:700px;
+  margin:0 auto;
+  padding:3.5rem 1.5rem 6rem;
+}
+.edu-wrap > h2 {
+  font-family:'Fredericka the Great',sans-serif;
+  font-size:clamp(2rem,6vw,3rem);
+  letter-spacing:0.1em;
+  color:#d0bc88;
+  margin-bottom:0.15rem;
+}
+.edu-intro {
+  font-family:'Space Mono',monospace;
+  font-size:0.62rem;
+  letter-spacing:0.15em;
+  color: var(--cold-faint);
+  margin-bottom:2.2rem;
+  padding-bottom:1.2rem;
+  border-bottom:1px solid var(--cold-border);
+}
+
+/* ─── FURTHER READING ───────────────────────── */
+.reading-section h3 {
+  font-family:'Fredericka the Great',sans-serif;
+  font-size:0.85rem;
+  letter-spacing:0.3em;
+  color: var(--warm-border);
+  margin:2.2rem 0 0.6rem;
+  padding-bottom:0.4rem;
+  border-bottom:1px solid var(--cold-border);
+}
+.reading-section h3:first-child { margin-top:0; }
+.reading-link {
+  display:block;
+  padding:0.65rem 0;
+  border-bottom:1px solid var(--cold-faint);
+  text-decoration:none;
+  transition:all 0.15s;
+}
+.reading-link:hover .rl-title { color: var(--warm-amber); }
+.rl-title {
+  display:block;
+  font-family:'Lora',serif;
+  font-size:0.94rem;
+  color: #6a5838;
+  transition:color 0.15s;
+}
+.rl-desc {
+  display:block;
+  font-family:'Space Mono',monospace;
+  font-size:0.65rem;
+  color: var(--cold-faint);
+  margin-top:0.15rem;
+  line-height:1.5;
+}
+
+/* ─── SCROLLBAR ─────────────────────────────── */
+::-webkit-scrollbar{ width:4px; height:4px; }
+::-webkit-scrollbar-track{ background:var(--cold-bg); }
+::-webkit-scrollbar-thumb{ background:var(--cold-hi); }
+::-webkit-scrollbar-thumb:hover{ background:var(--warm-border); }
+</style>
+</head>
+<body>
+
+<!-- ════════════════════ HEADER ════════════════════ -->
+<header class="site-header">
+  <div class="header-inner">
+    <div class="header-eyebrow">Renegade Storyteller &nbsp;&middot;&nbsp; Annotated Edition</div>
+    <div class="header-title-row">
+      <h1>Escape</h1>
+      <div class="header-meta">
+        <p>Author &nbsp;/&nbsp; JL</p>
+        <p>Genre &nbsp;/&nbsp; Post-Apocalyptic Fiction</p>
+        <p>Source &nbsp;/&nbsp; <a href="https://renegadestoryteller.tumblr.com/post/59645570933/escape?" target="_blank">renegadestoryteller.tumblr.com</a></p>
+      </div>
+    </div>
+    <div class="header-bottom">
+      <div class="header-rule-line"></div>
+      <span class="header-tag">Annotated &nbsp;&middot;&nbsp; Interactive &nbsp;&middot;&nbsp; Educational</span>
+    </div>
+  </div>
+</header>
+
+<!-- ════════════════════ TAB NAV ════════════════════ -->
+<nav class="tab-nav">
+  <button class="tab-btn active" onclick="switchTab('story',this)">The Story</button>
+  <button class="tab-btn"        onclick="switchTab('world',this)">The World</button>
+  <button class="tab-btn"        onclick="switchTab('craft',this)">The Craft</button>
+  <button class="tab-btn"        onclick="switchTab('reading',this)">Further Reading</button>
+</nav>
+
+
+<!-- ════════════════════════════════════════════════════════
+     TAB 1: THE STORY
+     ════════════════════════════════════════════════════════ -->
+<div id="tab-story" class="tab-content active">
+  <div class="prose-wrap">
+
+    <p>
+      <span class="marginnote" id="mn-dust">
+        <button class="marginnote-trigger" onclick="togglePanel('mn-dust',this)">The dust had settled. It had settled long before she arrived.</button>
+        <span class="marginnote-panel">
+          <span class="mn-label">Craft Note · Opening</span>
+          <span class="panel-body">Two sentences doing different work in the same breath. The first is literal — dust on surfaces, in aftermath. The second adds a temporal register: the war is old; this place has been empty a long time. "Long before she arrived" also quietly centres her as the story's sole point of consciousness before we've even met her. The story opens in aftermath and stays there.</span>
+        </span>
+      </span>
+      As she picked her way through debris and long forgotten miscellanea she tried to imagine this place as it would have been before the war. There were a few stained glass windows still clinging to their frames near the door frame she had crossed on the way in. In the daylight they coloured the dust clouds her scavenger hunt kicked up. Just a few steps in from the door frame were the remnants of a bar. Behind it, a few bottles still stood on the remaining shelves, most of them broken or empty, but she spotted a full bottle of rum, naturally covered in dust, waiting for her on the topmost shelf.</p>
+
+    <p>She had to stand on a busted refrigerator to reach it, but it was worth it. She sat on a sturdy looking part of the bar and sipped the fiery drink as she looked around. It was strangely quiet. The cities were in ruins these days, but still populated to a certain degree, so you could always expect to hear something, be it human or animal. Today though, it was quiet. She pulled out a pocket watch from one of the pouches on her belt. It was still early. Perhaps it was Sunday. She always lost track of the days in between cities.</p>
+
+    <p>
+      <span class="marginnote" id="mn-sunday">
+        <button class="marginnote-trigger" onclick="togglePanel('mn-sunday',this)">She listened hard for a moment, trying to hear singing. Singing meant Sunday.</button>
+        <span class="marginnote-panel">
+          <span class="mn-label">Craft Note · Ritual &amp; Time</span>
+          <span class="panel-body">Without electricity or reliable calendars, people have recovered older ways of marking time. Sunday is not a date — it's a sound. This is not primitive; it's adaptive. The detail also quietly positions her: close enough to hear it, too far to be part of it. She navigates community by proximity, never belonging.</span>
+        </span>
+      </span>
+      She sat up, concentrating on every sound she could make out, both nearby and in the distance – she even held her breath. At last she heard it, the soft, but unmistakable melody of a house full of people belting out an old favourite with no regard for the actual tune. She took another swig of the rum and relaxed a little. The song had been a little too far away for her liking, but at least it was there. She fished her
+
+      <span class="decoder" id="dec-radcounter">
+        <button class="decoder-trigger" onclick="togglePanel('dec-radcounter',this)">rad counter</button>
+        <span class="decoder-panel">
+          <span class="decode-label">Object · Tool</span>
+          <span class="decode-term">Rad Counter</span>
+          <span class="panel-body">A Geiger counter — measures ionising radiation. A slow tic-tic-tic means background radiation is present but not dangerous. The dark irony here: the counter's reassurance deepens the mystery. The city wasn't emptied by a nuclear strike. Something else cleared it. The instrument meant to warn her instead raises a question she can't answer.</span>
+        </span>
+      </span>
+
+      out of her backpack. The tic-tic-tic told her that she wasn't about to start growing any unwanted appendages and that worried her even more. If there were no rads floating around, why was there no one here?</p>
+
+    <p>She slid off the bar to the ground and started looking around. She didn't want to stay here long, but at the same time did not want to pass up the opportunity of finding a good trade. She stowed the rum in her backpack as she passed the two dozen or so tables, in varied states of disrepair, on her way to what looked like a stage.</p>
+
+    <!-- ── PIANO SCENE ─────────────────────────── -->
+    <div class="piano-scene">
+      <p>
+        <span class="marginnote" id="mn-piano">
+          <button class="marginnote-trigger" onclick="togglePanel('mn-piano',this)">The piano was beautiful.</button>
+          <span class="marginnote-panel">
+            <span class="mn-label">Craft Note · Structural Pivot</span>
+            <span class="panel-body">Three words. The shortest sentence in the story, and structurally its most important. Everything before this is survival logic: read the environment, check for threats, find tradeable goods. "The piano was beautiful" stops all of that. The survival frame is the container; this is the contents. The sentence earns its brevity by refusing to elaborate — it simply asserts the fact and trusts the reader to stop alongside her.</span>
+          </span>
+        </span>
+        She used a moth-eaten curtain to clear away most of the dust, and it almost shone. The lid that usually covered the keys was missing, but all the eighty eight were still there. This place had been a
+
+        <button class="lb-trigger" onclick="openLightbox('lb-jazzbar')">jazz bar</button>
+
+        she decided, it must have been. This city was known for jazz, before the war. She smiled as she imagined what it could be like to be on this stage in its heyday. She pressed down on one of the keys. It was not quite in tune, but near enough for her to press another. She played the keys in sequence, low to high, singing each note softly and trying to remember which note went where.</p>
+
+      <p>
+        <span class="marginnote" id="mn-lyric">
+          <button class="marginnote-trigger" onclick="togglePanel('mn-lyric',this)">She was singing a gentle string of words that made no sense but reminded her of home.</button>
+          <span class="marginnote-panel">
+            <span class="mn-label">Craft Note · Privacy &amp; Restraint</span>
+            <span class="panel-body">The story refuses to tell us what she is singing. We get the emotional content — home, comfort, private meaning — but not the lyric itself. Her interior world has been inaccessible throughout. This is the one moment of softness, and the author protects it by not transcribing it. The song belongs to her alone, even from the reader.</span>
+          </span>
+        </span>
+        It wasn't jazz, but to a girl with nothing and no one, it was a little piece of heaven.</p>
+    </div>
+
+    <p>When she stopped, she realised that she had lost track of time, had been almost completely lost in her own little world, far away from here. For too long – far too long. She looked back toward the window. It was well past noon; she needed to get moving. The light caught the dust as it started moving. She wouldn't have noticed it had she not heard the mechanical whisper of a
+
+      <span class="decoder" id="dec-hornet">
+        <button class="decoder-trigger" onclick="togglePanel('dec-hornet',this)">Hornet</button>
+        <span class="decoder-panel threat">
+          <span class="decode-label">World-Internal · Pursuit Vehicle</span>
+          <span class="decode-term">Hornet</span>
+          <span class="panel-body">A pursuit vehicle used by the Emperor's forces — small, fast, engines near-silent by design. For her, the sound is not just auditory but biographical: she has heard it before, at the deaths of people around her. The story says she forged "an unshakeable link between that sound and the death of those around her." Hornets never hunt alone.</span>
+        </span>
+      </span>
+
+      outside. The engines of a Hornet are incredibly hard to hear, but for her, they were even harder to forget. She had forged an unshakeable link between that sound and the death of those around her. Now she was alone, and more terrified than she had ever been.</p>
+
+    <p>Fear, however, cleared her head. Instinctively, she ducked behind the old piano. She had to get out, fast. If it saw her, it could track her. She checked for exits. The way she had come was not an option – it led on to the street, where the Hornet, and more importantly, its rider, had definitely landed. Out through the back wasn't an option either; Hornets never hunted alone. She spotted a flight of stairs through what used to be the kitchen. She didn't like the idea of going up instead of out, but the buildings in this area were close together, so there was a chance that she could traverse the next few buildings and head out further down the street while they were still searching here. Falling to her death would be better than being caught by a
+
+      <span class="decoder" id="dec-purifier">
+        <button class="decoder-trigger" onclick="togglePanel('dec-purifier',this)">Purifier</button>
+        <span class="decoder-panel threat">
+          <span class="decode-label">World-Internal · Enforcer</span>
+          <span class="decode-term">Purifier</span>
+          <span class="panel-body">The Emperor's elite military enforcers — fewer than a hundred of them won the entire war, and they stay to hunt survivors. They wear black biomechanical exoskeletons: armour that integrates with the body and amplifies it to inhuman levels. The story hedges on whether they're still fully human. The name is ideological: not soldiers carrying out orders, but agents of cleansing. The title is the function.</span>
+        </span>
+      </span>,
+
+      the
+
+      <button class="lb-trigger" onclick="openLightbox('lb-emperor')">Emperor's</button>
+
+      most fearsome and most deadly enforcer. She wasn't even sure they were entirely human, in their black
+
+      <span class="decoder" id="dec-exo">
+        <button class="decoder-trigger" onclick="togglePanel('dec-exo',this)">biomechanical exoskeletons</button>
+        <span class="decoder-panel threat">
+          <span class="decode-label">Technology</span>
+          <span class="decode-term">Biomechanical Exoskeleton</span>
+          <span class="panel-body">Powered armour that integrates mechanically and biologically with the wearer — augmenting strength, speed, and endurance beyond human limits. "Biomechanical" suggests the integration runs deeper than a suit: it interfaces with the nervous system or the body itself. This is why the story hedges on whether Purifiers are still human. The armour doesn't just cover the person; it may have replaced parts of them.</span>
+          <a class="decode-link" href="https://en.wikipedia.org/wiki/Powered_exoskeleton" target="_blank">→ Wikipedia: Powered Exoskeleton</a>
+        </span>
+      </span>
+
+      that allowed them to tear through entire platoons in mere minutes. The Purifiers had won the war. Less than a hundred of them. She slipped her backpack silently onto her shoulders as she counted under her breath.</p>
+
+    <!-- ── COUNTDOWN ──────────────────────────── -->
+    <div class="countdown-block">
+      <span class="countdown-numeral">One.</span>
+    </div>
+    <p>It was silent again. The Hornet's engines were off; the Purifier would search for life until it found something to kill.</p>
+
+    <div class="countdown-block">
+      <span class="countdown-numeral">Two.</span>
+    </div>
+    <p>She was sure there was another one, but she couldn't hear it. She couldn't hear anything beyond the pounding of her heart.</p>
+
+    <div class="countdown-block">
+      <span class="countdown-numeral">Three.</span>
+    </div>
+
+    <p>The crunch of glass being broken underfoot greeted her from the door frame out front as she dashed for the single saloon door that guarded what used to be the kitchen. The piano disintegrated behind her with such force that she took the saloon door with her as she crashed into the kitchen. Her ribs screamed at her in pain, but she didn't have time to scream back. She vaulted over the skeleton of a hob and ducked as the air above her crackled with another blast from whatever the Purifier was trying to kill her with.</p>
+
+    <p>She reached the stairs as something clipped her backpack, sending her over the balustrade into the wall. She scrambled to her feet, ignoring the pain and blinking blood out of her eyes. A quick glance told her that the monster wasn't running. She threw the tattered leftovers of her backpack at the advancing beast and took the stairs three at a time. Her backpack was reduced to dust in mid-air.</p>
+
+    <p>On the landing she was met with a corridor that ended in sky. She could see the rooftop of the next building at the other end, just beyond the point where roof of this building had been blown away. She ran, focusing entirely on the flat cement on the other side of the gap, and then jumped. For less than a second, she was flying free.</p>
+
+    <p>She did not land gracefully. As her feet hit the cement she felt her leg break, and she crumpled, tumbling to a stop in the centre of the rooftop. She cried out in agony but bit back the tears and pulled her broken leg up to her chest, gripping her knee with both hands and trying to focus. She wouldn't jump again, and she couldn't run. But if she could get inside, she might be able to hide. It was a slim chance, but better than nothing.</p>
+
+    <p>She spotted the fire escape. It wasn't far.</p>
+
+    <p>She rolled onto her stomach and pushed up, pulling her good leg under her and struggling to her feet. She stumbled, and almost fell over. The air once again crackled over the spot where her head had been a moment before. The Purifier was advancing down the corridor, still refusing to run. She hobbled and hopped as fast as she could away from the creature of flesh and steel. She reached the fire escape. And then she heard it.</p>
+
+    <p>The engines of a Hornet are quiet, but unmistakable. Hornets never hunt alone. The thud behind her told her that the Purifier behind her had made the jump without breaking any bones.</p>
+
+    <!-- ── FINAL LINE ─────────────────────────── -->
+    <div class="final-line-wrap">
+      <p class="final-line">
+        <span class="marginnote" id="mn-final">
+          <button class="marginnote-trigger" onclick="togglePanel('mn-final',this)">She closed her eyes and tried to remember which note went where.</button>
+          <span class="marginnote-panel">
+            <span class="mn-label">Craft Note · Final Line</span>
+            <span class="panel-body">The story ends on the piano, not on the Purifier. "Trying to remember which note went where" echoes the piano scene word-for-word — what was idle practice is now a last act of interiority. Surrounded, broken-legged, she does not pray or fight or surrender. She reaches for the music. The story's argument is compressed into that gesture: that beauty, remembered in extremity, is the thing the world could not take from her. The final line earns its weight only because the piano scene came first and was allowed to breathe.</span>
+          </span>
+        </span>
+      </p>
+    </div>
+
+  </div>
+</div><!-- /tab-story -->
+
+
+<!-- ════════════════════════════════════════════════════════
+     TAB 2: THE WORLD
+     ════════════════════════════════════════════════════════ -->
+<div id="tab-world" class="tab-content">
+  <div class="edu-wrap">
+    <h2>The World</h2>
+    <p class="edu-intro">What the author has constructed — its rules, its politics, and how survival works inside it</p>
+
+    <div class="acc-item">
+      <button class="acc-trigger" onclick="toggleAcc(this)">
+        <span>What happened? What was "the war"?</span>
+        <span class="acc-arrow">▾</span>
+      </button>
+      <div class="acc-panel">
+        <p>The story withholds almost everything about the war's origin, duration, and combatants. What we can infer: it was catastrophic enough to reduce cities to ruins; it was recent enough that people remember what the cities were, but old enough that the dust settled long before she arrived. It was <strong>not primarily nuclear</strong> — the rad counter finds no dangerous radiation, meaning the destruction was caused by other means: the Purifiers' weapons, conventional ordnance, or something else entirely.</p>
+        <p>Most significantly: the war was <strong>won</strong>. By fewer than a hundred Purifiers. A conflict that depopulated entire cities and left the survivors scavenging was ended not by negotiation or mutual exhaustion, but by a small elite force acting on behalf of an Emperor. This is not the aftermath of a mutual catastrophe. It is the aftermath of a conquest.</p>
+      </div>
+    </div>
+
+    <div class="acc-item">
+      <button class="acc-trigger" onclick="toggleAcc(this)">
+        <span>Who or what is the Emperor?</span>
+        <span class="acc-arrow">▾</span>
+      </button>
+      <div class="acc-panel">
+        <p>Named but never described. The Emperor commands the Purifiers, prosecuted and won the war, and maintains an ongoing enforcement presence in the ruins — Hornets still patrol, Purifiers still hunt survivors. The war may be over, but the violence continues. This means the Emperor's goal is not simply victory but <strong>elimination</strong> of everything that remains.</p>
+        <p>The title "Emperor" carries ideological weight that "President" or "Commander" would not. It implies absolute authority, permanence, and a claim to territory that is not merely political but total. The story doesn't need to explain the ideology — the name, the Purifiers, and the ongoing hunt supply the picture entirely.</p>
+      </div>
+    </div>
+
+    <div class="acc-item">
+      <button class="acc-trigger" onclick="toggleAcc(this)">
+        <span>What are Purifiers, and what does the story tell us about them?</span>
+        <span class="acc-arrow">▾</span>
+      </button>
+      <div class="acc-panel">
+        <p>Fewer than a hundred Purifiers won the war. That number is the story's most chilling detail. A conventional army requires tens of thousands; the fact that fewer than a hundred of these beings ended the conflict suggests a lethality that lies outside ordinary military logic.</p>
+        <p>The story hedges deliberately on their humanity: <em>"she wasn't even sure they were entirely human."</em> The biomechanical exoskeleton is not armour worn over a person but something more intimate — a system that may have altered what the person is. The Purifier in the story never runs. It glides, closes the distance, disintegrates objects at range without effort. The unhurriedness is its own kind of horror.</p>
+        <p>The name is ideological. "Purifier" does not describe a soldier doing a job; it describes an agent performing a cleansing — removing what is impure from a world being remade. She is not a combatant to be defeated. She is an impurity to be removed.</p>
+      </div>
+    </div>
+
+    <div class="acc-item">
+      <button class="acc-trigger" onclick="toggleAcc(this)">
+        <span>How does survival culture work in this world?</span>
+        <span class="acc-arrow">▾</span>
+      </button>
+      <div class="acc-panel">
+        <p>The story gives us a rich picture of reorganised life. People move between cities — staying nowhere long enough to be tracked. They scavenge for <strong>tradeable goods</strong>, not just necessities, which implies a barter economy substantial enough that a good trade is worth the risk of delay. They track radiation to distinguish safe zones from dangerous ones.</p>
+        <p>Crucially, communities still hold ritual time. Sunday has not disappeared — it has been redetermined by sound rather than calendar. A house full of people singing badly together marks a persistence of collective life that has refused to disappear. She navigates by it: the song too far away means she is more isolated than she'd like. The survival of Sunday under the Emperor's regime is itself a form of resistance, even if unintentional.</p>
+      </div>
+    </div>
+
+    <div class="acc-item">
+      <button class="acc-trigger" onclick="toggleAcc(this)">
+        <span>Why was the jazz bar empty? What does the abandoned city mean?</span>
+        <span class="acc-arrow">▾</span>
+      </button>
+      <div class="acc-panel">
+        <p>The rad counter's low reading is the story's first mystery: the city wasn't nuked, so why is it empty? The Purifier's arrival provides the retroactive answer — this area is either an active patrol zone or has already been cleared. The absence of people is not evidence of safety but of prior violence.</p>
+        <p>The jazz bar carries the city's pre-war culture in concentrated form. The city "was known for jazz, before the war." The piano still has all eighty-eight keys. What survives in ruins is not always what you expect. The story finds something almost miraculous in this particular survival — the most fragile-seeming thing, the most beautiful, the one that was never designed for durability, is still there and still, almost, in tune.</p>
+      </div>
+    </div>
+
+  </div>
+</div><!-- /tab-world -->
+
+
+<!-- ════════════════════════════════════════════════════════
+     TAB 3: THE CRAFT
+     ════════════════════════════════════════════════════════ -->
+<div id="tab-craft" class="tab-content">
+  <div class="edu-wrap">
+    <h2>The Craft</h2>
+    <p class="edu-intro">Structural choices, genre tradition, and what the story is doing while it runs</p>
+
+    <div class="acc-item">
+      <button class="acc-trigger" onclick="toggleAcc(this)">
+        <span>What tradition is this story working within?</span>
+        <span class="acc-arrow">▾</span>
+      </button>
+      <div class="acc-panel">
+        <p>Post-apocalyptic fiction as a serious literary genre dates at least to Mary Shelley's <em>The Last Man</em> (1826), but its modern form was shaped by Cold War anxiety. Cormac McCarthy's <em>The Road</em> (2006) is the recent high-water mark of the bleakness mode: stripped, austere, lit by a single strand of love in absolute darkness.</p>
+        <p><em>Escape</em> also has genre furniture — the Emperor, the Purifiers, the exoskeletons — that edges it toward dystopian science fiction, closer to <em>1984</em>'s totalitarian structure. But its <strong>sentimental register</strong> places it in the tradition that argues for the survival of interior life as resistance. Emily St. John Mandel's <em>Station Eleven</em> (2014) built its entire architecture on this thesis — "survival is insufficient" — sending a travelling symphony through a devastated North America. <em>Escape</em> makes the same argument in miniature: the rum and the trade goods are survival; the piano is the thing that makes survival mean something.</p>
+      </div>
+    </div>
+
+    <div class="acc-item">
+      <button class="acc-trigger" onclick="toggleAcc(this)">
+        <span>How does the story use sound as structural material?</span>
+        <span class="acc-arrow">▾</span>
+      </button>
+      <div class="acc-panel">
+        <p>Sound organises the story from first paragraph to last. She checks for life by listening — the singing that marks Sunday; the suspicious quiet that signals danger. The rad counter speaks in sound (tic-tic-tic). The Hornet's engine is "incredibly hard to hear" but unforgettable. The Purifier announces itself with broken glass.</p>
+        <p>The piano scene sits at the story's acoustic centre: in a narrative structured around listening for threats, she <strong>produces sound</strong> instead of reading it. She makes music. Then the Hornet engine — the story's signature threatening sound — ends the scene. The chase that follows is filled with violence as sound: energy weapon crackles, the disintegration of her backpack, the crump of bone on cement.</p>
+        <p>The final line returns to the piano — not to the sound itself, but to the act of trying to recall it. The story ends in interior silence, reaching for a remembered melody. Sound is the medium through which she experiences both beauty and mortal threat, and the final image holds both at once.</p>
+      </div>
+    </div>
+
+    <div class="acc-item">
+      <button class="acc-trigger" onclick="toggleAcc(this)">
+        <span>The unnamed protagonist: what does anonymity do?</span>
+        <span class="acc-arrow">▾</span>
+      </button>
+      <div class="acc-panel">
+        <p>She has no name, no verifiable backstory, no stated origin. We know she moves between cities, carries specific tools, understands the world's dangers, and once had people around her whom the Hornets helped kill. That is all. The story never grants us the intimacy of a name.</p>
+        <p>Post-apocalyptic fiction often uses unnamed protagonists to suggest that the individual story is also a universal one. It also maintains a specific kind of emotional distance: we observe her from close range but cannot fully inhabit her. The moment the story comes closest to her interior — the singing, the "gentle string of words that made no sense" — it protects her privacy by not transcribing the lyric. She remains hers. Even from the reader.</p>
+      </div>
+    </div>
+
+    <div class="acc-item">
+      <button class="acc-trigger" onclick="toggleAcc(this)">
+        <span>One. Two. Three. — what does the white space do?</span>
+        <span class="acc-arrow">▾</span>
+      </button>
+      <div class="acc-panel">
+        <p>The three numbered paragraphs — single words, given their own space and silence — are the story's most formal structural gesture. Each number carries a sentence of exposition between it and the next, but the space around each numeral creates a silence that mirrors hers: she is counting under her breath, controlling fear through rhythm, preparing herself for movement.</p>
+        <p>The countdown is also a rhetorical contract with the reader: something will happen at three. It does — glass breaks at the door frame, and the chase begins. But the story uses the countdown to slow the pace just before it accelerates. The eruption of violence feels like a released breath rather than a sudden shock. The numbers are not a gimmick but a precision instrument for managing the reader's physiological response.</p>
+      </div>
+    </div>
+
+    <div class="acc-item">
+      <button class="acc-trigger" onclick="toggleAcc(this)">
+        <span>What does the final line do, and why is it the right ending?</span>
+        <span class="acc-arrow">▾</span>
+      </button>
+      <div class="acc-panel">
+        <p><em>"She closed her eyes and tried to remember which note went where."</em> The phrase echoes the piano scene exactly. Its return at the end is not coincidence but architecture: the story has been building to this repetition since the first time those words appeared.</p>
+        <p>The ending is deliberately ambiguous about survival. Two Purifiers, a broken leg, no weapon, no route. The story does not tell us what happens next because the ending is not about what happens next — it is about what she chooses to do in her last conscious moment. She does not pray. She does not fight. She does not surrender. She reaches for the music.</p>
+        <p>The story's argument is compressed into that gesture: that beauty, remembered in extremity, is a form of humanity the world has been unable to take from her. The final line earns its weight only because the piano scene came first and was allowed to breathe. Without it, the ending is sentiment. With it, it is earned.</p>
+      </div>
+    </div>
+
+  </div>
+</div><!-- /tab-craft -->
+
+
+<!-- ════════════════════════════════════════════════════════
+     TAB 4: FURTHER READING
+     ════════════════════════════════════════════════════════ -->
+<div id="tab-reading" class="tab-content">
+  <div class="edu-wrap">
+    <h2>Further Reading</h2>
+    <p class="edu-intro">Genre history, comparative texts, and the tradition this story is in conversation with</p>
+    <div class="reading-section">
+
+      <h3>The Post-Apocalyptic Tradition</h3>
+      <a class="reading-link" href="https://en.wikipedia.org/wiki/The_Last_Man" target="_blank">
+        <span class="rl-title">The Last Man — Mary Shelley (1826)</span>
+        <span class="rl-desc">The foundational text; a plague-annihilated world and one surviving narrator.</span>
+      </a>
+      <a class="reading-link" href="https://en.wikipedia.org/wiki/The_Road" target="_blank">
+        <span class="rl-title">The Road — Cormac McCarthy (2006)</span>
+        <span class="rl-desc">The contemporary benchmark; survival at its bleakest essentials, lit by a single love.</span>
+      </a>
+      <a class="reading-link" href="https://en.wikipedia.org/wiki/Station_Eleven" target="_blank">
+        <span class="rl-title">Station Eleven — Emily St. John Mandel (2014)</span>
+        <span class="rl-desc">"Survival is insufficient" — the closest thematic cousin to Escape's argument about art in ruins.</span>
+      </a>
+
+      <h3>Sentimentality as Resistance</h3>
+      <a class="reading-link" href="https://en.wikipedia.org/wiki/Parable_of_the_Sower" target="_blank">
+        <span class="rl-title">Parable of the Sower — Octavia Butler (1993)</span>
+        <span class="rl-desc">A survivor navigating a collapsed California; community and ritual as survival tools.</span>
+      </a>
+      <a class="reading-link" href="https://en.wikipedia.org/wiki/A_Canticle_for_Leibowitz" target="_blank">
+        <span class="rl-title">A Canticle for Leibowitz — Walter M. Miller Jr. (1959)</span>
+        <span class="rl-desc">What survives collapse: the preservation of knowledge as a sacred act across centuries.</span>
+      </a>
+
+      <h3>Totalitarianism and the Emperor</h3>
+      <a class="reading-link" href="https://en.wikipedia.org/wiki/Nineteen_Eighty-Four" target="_blank">
+        <span class="rl-title">Nineteen Eighty-Four — George Orwell (1949)</span>
+        <span class="rl-desc">The canonical portrait of totalitarianism as a lived system.</span>
+      </a>
+      <a class="reading-link" href="https://en.wikipedia.org/wiki/The_Handmaid%27s_Tale" target="_blank">
+        <span class="rl-title">The Handmaid's Tale — Margaret Atwood (1985)</span>
+        <span class="rl-desc">A conquered society's internal logic; what an authoritarian regime does to those who survive inside it.</span>
+      </a>
+
+      <h3>The Author's Work</h3>
+      <a class="reading-link" href="https://renegadestoryteller.tumblr.com" target="_blank">
+        <span class="rl-title">Renegade Storyteller — Tumblr</span>
+        <span class="rl-desc">The full archive of challenge-response fiction by JL.</span>
+      </a>
+
+    </div>
+  </div>
+</div><!-- /tab-reading -->
+
+
+<!-- ════════════ LIGHTBOXES ════════════ -->
+
+<div class="lb-overlay" id="lb-jazzbar" onclick="closeLbOnOverlay(event,'lb-jazzbar')">
+  <div class="lb-box">
+    <div class="lb-header">
+      <span class="lb-title">Jazz &amp; Cultural Survival</span>
+      <button class="lb-close" onclick="closeLightbox('lb-jazzbar')">✕</button>
+    </div>
+    <div class="lb-body">
+      <h3>What Was Lost Here</h3>
+      <p>The city "was known for jazz, before the war." Jazz is not a neutral cultural referent. It is a Black American art form that emerged from communities navigating centuries of violence, displacement, and suppression — communities that created something beautiful specifically in conditions that should have made beauty impossible.</p>
+      <h3>What Survived</h3>
+      <p>The piano still has all eighty-eight keys. This is not a small detail. In the logic of the story, almost everything has been destroyed or emptied. The piano — the most fragile-seeming object in a jazz bar, the one most exposed to weather and ruin, the one that requires the most maintenance to stay in tune — is the thing still there, still functional, still <strong>almost</strong> in tune.</p>
+      <p>The story finds something close to miraculous in this survival. It is not an accident of plot; it is a structural argument: the things made to carry beauty are harder to destroy than they look.</p>
+      <h3>Playing in the Ruins</h3>
+      <p>She is not a jazz musician. She doesn't perform the city's lost tradition — she plays scales, she sings words that make no sense. She makes what music she can with what she has, in a space that was built for a different kind of music by a different kind of person. The resonance is not imitation; it is continuation. The bar hosted music before the war. It hosts music now.</p>
+    </div>
+  </div>
+</div>
+
+<div class="lb-overlay" id="lb-emperor" onclick="closeLbOnOverlay(event,'lb-emperor')">
+  <div class="lb-box">
+    <div class="lb-header">
+      <span class="lb-title">The Emperor — Political Resonance</span>
+      <button class="lb-close" onclick="closeLightbox('lb-emperor')">✕</button>
+    </div>
+    <div class="lb-body">
+      <h3>The Pattern</h3>
+      <p>The specific elements in <em>Escape</em> — an Emperor who won a war through a small elite force called "Purifiers," who continue hunting survivors in ruined cities long after the fighting ended — map onto recognisable historical and contemporary structures of authoritarian suppression. Post-apocalyptic fiction does not emerge in a vacuum.</p>
+      <h3>Elite Forces as Ideology Made Physical</h3>
+      <p>The Purifiers are not an army. Armies fight other armies. The Purifiers — fewer than a hundred of them — won the war and then <strong>stayed</strong>. Their ongoing presence in the ruins is not occupation in the traditional sense; it is continuation of the war by other means. The goal was never purely military victory; it was elimination.</p>
+      <p>The name makes the ideology explicit without naming the ideology. "Purifier" does not describe a function in military terms. It describes a function in terms of <strong>purity</strong> — of removing the impure. The targets are not soldiers. They are remnants. The war is over; the cleansing continues.</p>
+      <h3>Resistance Through Existence</h3>
+      <p>In this context, surviving is itself a political act — even if unintentional. She is not a resistance fighter. She is a woman looking for rum and a good trade. But by existing, by singing on Sunday mornings by proximity, by playing a piano in a ruined bar, she is enacting exactly what the Emperor's forces are trying to prevent: the continuation of human life outside the Emperor's order. The story does not need to make this explicit. It is the structure.</p>
+    </div>
+  </div>
+</div>
+
+
+<!-- ════════════ JAVASCRIPT ════════════ -->
+<script>
+function switchTab(id, btn) {
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + id).classList.add('active');
+  btn.classList.add('active');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function togglePanel(id, btn) {
+  const wrapper = document.getElementById(id);
+  const panel = wrapper.querySelector('.decoder-panel, .marginnote-panel');
+  const isOpen = panel.classList.contains('open');
+  document.querySelectorAll('.decoder-panel.open, .marginnote-panel.open').forEach(p => p.classList.remove('open'));
+  document.querySelectorAll('.decoder-trigger.open, .marginnote-trigger.open').forEach(b => b.classList.remove('open'));
+  if (!isOpen) {
+    panel.classList.add('open');
+    btn.classList.add('open');
+    const rect = panel.getBoundingClientRect();
+    if (rect.right > window.innerWidth - 16) panel.classList.add('flip-left');
+    else panel.classList.remove('flip-left');
+  }
+}
+
+document.addEventListener('click', function(e) {
+  if (!e.target.closest('.decoder') && !e.target.closest('.marginnote')) {
+    document.querySelectorAll('.decoder-panel.open, .marginnote-panel.open').forEach(p => p.classList.remove('open'));
+    document.querySelectorAll('.decoder-trigger.open, .marginnote-trigger.open').forEach(b => b.classList.remove('open'));
+  }
+});
+
+function toggleAcc(btn) {
+  const panel = btn.nextElementSibling;
+  const isOpen = btn.classList.contains('open');
+  document.querySelectorAll('.acc-trigger.open').forEach(b => {
+    b.classList.remove('open');
+    b.nextElementSibling.classList.remove('open');
+  });
+  if (!isOpen) { btn.classList.add('open'); panel.classList.add('open'); }
+}
+
+function openLightbox(id) { document.getElementById(id).classList.add('open'); document.body.style.overflow='hidden'; }
+function closeLightbox(id) { document.getElementById(id).classList.remove('open'); document.body.style.overflow=''; }
+function closeLbOnOverlay(e, id) { if (e.target === document.getElementById(id)) closeLightbox(id); }
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') {
+    document.querySelectorAll('.lb-overlay.open').forEach(el => el.classList.remove('open'));
+    document.body.style.overflow = '';
+  }
+});
+</script>
+</body>
+</html>

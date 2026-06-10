@@ -1,0 +1,431 @@
+/* content.css — JL Kruger Content Hub
+   tags: contenthub layout cards desktop-scroll mobile shimmer responsive */
+
+/* ── Tokens ─────────────────────────────────────────────────────────────── */
+/* Palette + layout custom properties live in /css/tokens.css, generated from
+   Toolbox/Python/variables.yaml and linked before this file. Edit colours there. */
+
+/* ── Reset ───────────────────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+/* ── Body ────────────────────────────────────────────────────────────────── */
+body {
+  margin: 0;
+  padding: 0;
+  background: url('/Media/SVG-Assets/jl-site-background-desktop.svg') no-repeat center center fixed,
+              linear-gradient(180deg, #010403 0%, #02130a 100%);
+  background-size: cover, auto;
+  background-attachment: fixed;
+  color: var(--light);
+  font-family: 'Overlock', serif;
+  font-size: 18px;
+  line-height: 1.45;
+  font-feature-settings: "kern" 1, "liga" 1;
+  text-rendering: optimizeLegibility;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* ── Typography ──────────────────────────────────────────────────────────── */
+h1, h2, h3, h4, h5, h6 { margin: 0; hyphens: none; }
+
+h1 {
+  font-family: 'Tagesschrift', serif;
+  color: var(--fire);
+  line-height: 1.15;
+  letter-spacing: 0.02em;
+  font-size: clamp(2.4rem, 4vw, 2.8rem);
+}
+h2, h3 {
+  font-family: 'Walter Turncoat', cursive;
+  line-height: 1.25;
+  letter-spacing: 0.04em;
+}
+h2 { font-size: clamp(1.2rem, 2vw, 1.8rem); 
+     color: var(--sun);
+}
+h3 { font-size: clamp(1rem, 1.4vw, 1.3rem); 
+     color: var(--rust);
+}
+h4, h5, h6 {
+  font-family: 'Walter Turncoat', cursive;
+  color: var(--rust);
+}
+blockquote { color: var(--sun); }
+
+a            { color: var(--meadow); text-decoration: none; }
+a:hover      { color: var(--fire); }
+a:visited    { color: var(--rust); }
+
+.special {
+  font-family: 'Protest Revolution', sans-serif;
+  color: var(--forest);
+  font-size: clamp(1rem, 1.4vw, 1.3rem);
+  letter-spacing: 0.03em;
+  line-height: 1.2;
+}
+
+/* ── Sticky nav ──────────────────────────────────────────────────────────── */
+.sticky-nav {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: rgba(1, 4, 3, 0.88);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  padding: 0.9rem 2rem;
+  display: flex;
+  justify-content: center;
+  border-bottom: 1.5px solid transparent;
+  border-image: linear-gradient(to right,
+    rgba(7,55,32,0) 0%, rgba(14,77,14,.44) 16.7%, rgba(94,154,14,.88) 33.3%,
+    rgba(242,198,42,1) 50%, rgba(235,117,19,.88) 66.7%, rgba(105,25,13,.44) 83.3%,
+    rgba(7,55,32,0) 100%) 1;
+  flex-shrink: 0;
+}
+
+.link-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5em 1.5em;
+  justify-content: center;
+}
+
+.nav-links {
+  font-family: 'Walter Turncoat', cursive;
+  font-size: clamp(1.1rem, 1.5vw, 1.7rem);
+}
+.nav-links a        { color: var(--light); opacity: 0.85; }
+.nav-links a:hover  { color: var(--fire);  opacity: 1; }
+
+/* Mobile nav hidden on desktop; the ≤1023px query swaps it in */
+.mobile-nav-bar      { display: none; }
+.mobile-nav-dropdown { display: none; }
+
+/* ── Main scroll container ───────────────────────────────────────────────── */
+#scroll-container {
+  flex: 1;
+  display: flex;
+  min-height: 0;
+  overflow-y: auto;
+}
+
+/* ── Hub layout ──────────────────────────────────────────────────────────── */
+.hub-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 3rem 4rem 2rem 3rem;
+  min-height: 0;
+}
+
+.bento-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 1rem 8rem;
+  padding: 0 2rem;
+  flex: 1;
+  min-height: 0;
+  align-items: start;
+}
+
+.bento-col {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 0 1.5rem;
+  min-height: 0;
+}
+
+/* ── Card component ──────────────────────────────────────────────────────── */
+.card-wrap {
+  position: relative;
+  width: 100%;
+  border-radius: 4px;
+  background: rgba(255,255,255,0.03);
+}
+
+.card-wrap.card-special {
+  background: rgba(252,242,222,0.88);
+}
+
+.card-border {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  pointer-events: none;
+  border-radius: 4px;
+}
+
+.card-border-rect {
+  fill: transparent;
+  stroke: url(#shine-org-h);
+  stroke-width: 1.5;
+}
+
+.card-wrap.card-special .card-border-rect {
+  stroke: url(#shimmer-org-h);
+}
+
+.card-body {
+  padding: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.card-thumb-wrap {
+  position: relative;
+  width: 88px;
+  height: 88px;
+  margin: 0 auto 0.5rem;
+}
+
+.card-thumb-circle {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  overflow: visible;
+  z-index: 2;
+}
+
+.card-thumb {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+  display: block;
+}
+
+.card-title {
+  font-family: 'Walter Turncoat', cursive;
+  color: var(--rust);
+  font-size: clamp(0.9rem, 1.05vw, 1.05rem);
+  line-height: 1.25;
+  margin: 0;
+}
+
+.card-desc {
+  font-family: 'Overlock', serif;
+  color: var(--fire);
+  font-size: clamp(0.78rem, 0.9vw, 0.9rem);
+  line-height: 1.4;
+  margin: 0;
+}
+
+.card-desc-sp {
+  font-family: 'Overlock', serif;
+  color: var(--forest);
+  font-size: clamp(0.78rem, 0.9vw, 0.9rem);
+  line-height: 1.4;
+  margin: 0;
+}
+
+.card-link {
+  font-family: 'Overlock', serif;
+  font-size: 0.82rem;
+  color: var(--sun);
+  text-decoration: none;
+  margin-top: 0.25rem;
+  align-self: flex-start;
+}
+.card-link:hover  { color: var(--meadow); }
+.card-link:visited { color: var(--forest); }
+
+.card-link-sp {
+  font-family: 'Overlock', serif;
+  font-size: 0.82rem;
+  color: var(--meadow);
+  text-decoration: none;
+  margin-top: 0.25rem;
+  align-self: flex-start;
+}
+.card-link-sp:hover  { color: var(--fire); }
+.card-link-sp:visited { color: var(--rust); }
+
+/* Whole card is the click target — the Visit anchor stretches over the card
+   (.card-wrap is positioned; .card-border is pointer-events:none). */
+.card-wrap {
+  cursor: pointer;
+  transition: transform 0.18s ease, background 0.18s ease;
+}
+.card-link, .card-link-sp { transition: color 0.18s ease; }
+.card-link::after,
+.card-link-sp::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}
+.card-wrap:hover { transform: translateY(-2px); }
+.card-wrap:not(.card-special):hover { background: rgba(255,255,255,0.06); }
+.card-wrap.card-special:hover       { background: rgba(252,242,222,0.96); }
+.card-wrap:hover .card-link    { color: var(--meadow); }
+.card-wrap:hover .card-link-sp { color: var(--fire); }
+
+
+/* ── Critter ─────────────────────────────────────────────────────────────── */
+.decor-critter {
+  width: clamp(120px, 14vh, 70px);
+  height: auto;
+  margin: 0 auto;
+}
+.decor-critter svg {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+.critter-wide {
+  width: 88%;
+  max-width: 100%;
+}
+
+/* ── Logo ────────────────────────────────────────────────────────────────── */
+.logo-wrap {
+  width: clamp(100px, 14vw, 180px);
+  margin: 0 auto 0.5rem;
+}
+.logo-wrap svg {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* logo wrapped in a shimmer-nav link */
+.logo-link {
+  display: inline-block;
+  line-height: 0;
+  color: inherit;
+  text-decoration: none;
+  cursor: pointer;
+}
+.logo-wrap .logo-link { display: block; width: 100%; }
+
+/* ── Frame overlays ──────────────────────────────────────────────────────── */
+.frame-overlay {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 10;
+  object-fit: cover; /* for <img> frame overlays */
+}
+.frame-desktop { display: block; }
+.frame-mobile  { display: none; }
+
+/* ── Desktop: independent column scroll ──────────────────────────────────── */
+@media (min-width: 1024px) {
+  html, body {
+    height: 100dvh;
+    overflow: hidden;
+  }
+
+  #scroll-container {
+    overflow: hidden;
+  }
+
+  .hub-content {
+    overflow: hidden;
+    flex: 1;
+  }
+
+  .bento-grid {
+    grid-template-columns: repeat(3, 1fr);
+    overflow: hidden;
+    height: 100%;
+    align-items: start;
+  }
+
+  .bento-col {
+    overflow-y: auto;
+    height: 100%;
+    scrollbar-width: none;
+  }
+  .bento-col::-webkit-scrollbar { display: none; }
+}
+
+/* ── Mobile / narrow ─────────────────────────────────────────────────────── */
+@media (max-width: 1023px) {
+  .bento-grid {
+    grid-template-columns: 1fr;
+    align-items: center;
+  }
+  .bento-col    { align-items: center; text-align: center; }
+  .card-link, .card-link-sp { align-self: center; }
+
+  /* Sticky nav → mobile bar + hamburger dropdown */
+  .sticky-nav {
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: stretch;
+    padding: 0;
+  }
+  .nav-links { display: none; }
+
+  .mobile-nav-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.6rem 1rem;
+  }
+  .mobile-page-title {
+    font-family: "Walter Turncoat", cursive;
+    font-size: 1.1rem;
+    color: var(--rust);
+    opacity: 0.9;
+  }
+  .mobile-hamburger {
+    background:
+      linear-gradient(var(--light), var(--light)) padding-box,
+      linear-gradient(var(--shimmer-deg, 135deg),
+        rgba(7,55,32,0) 0%, rgba(14,77,14,.44) 20%, rgba(94,154,14,.88) 40%,
+        rgba(242,198,42,1) 50%, rgba(235,117,19,.88) 65%, rgba(105,25,13,.44) 85%,
+        rgba(7,55,32,0) 100%) border-box;
+    border: 1px solid transparent;
+    color: var(--pigment);
+    font-size: 1.1rem;
+    padding: 0.3em 0.5em;
+    border-radius: 2px;
+    cursor: pointer;
+    line-height: 1;
+    transition: opacity 0.2s;
+  }
+  .mobile-hamburger:hover { opacity: 0.8; }
+
+  .mobile-nav-dropdown {
+    flex-direction: column;
+    gap: 0.75rem;
+    padding: 0.75rem 1rem 1rem;
+    border-top: 1px solid rgba(232, 226, 218, 0.08);
+  }
+  .sticky-nav.nav-open .mobile-nav-dropdown { display: flex; }
+  .mobile-nav-dropdown a {
+    font-family: 'Walter Turncoat', cursive;
+    font-size: 1rem;
+    color: var(--light);
+    opacity: 0.85;
+    text-decoration: none;
+  }
+  .mobile-nav-dropdown a:hover { color: var(--fire); opacity: 1; }
+
+  .frame-desktop { display: none; }
+  .frame-mobile  { display: block; }
+
+  body {
+    background-image:
+      url('/Media/SVG-Assets/jl-site-background-mobile.svg'),
+      linear-gradient(180deg, #010403 0%, #02130a 100%);
+  }
+}
+
+/* ── Reduced motion ──────────────────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  .card-border-rect { transition: none !important; }
+}

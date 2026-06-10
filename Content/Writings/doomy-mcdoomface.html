@@ -1,0 +1,1592 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DOOMY McDOOMFACE — A Doomsday Primer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Rubik+Glitch&family=Special+Elite&family=Share+Tech+Mono&family=Oswald:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:       #0f0808;
+    --surface:  #1c0f0f;
+    --surface2: #2a1515;
+    --red:      #c91e00;
+    --red-dim:  #7a1200;
+    --yellow:   #f0c400;
+    --yellow-dim:#8a7000;
+    --green:    #00e060;
+    --text:     #ede0c8;
+    --muted:    #8a7a6a;
+    --border:   #3a2020;
+    --border2:  #5a2a2a;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Special Elite', serif;
+    font-size: 15px;
+    line-height: 1.7;
+    min-height: 100vh;
+  }
+
+  /* === NOISE OVERLAY === */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 9999;
+    opacity: 0.6;
+  }
+
+  /* === MASTHEAD === */
+  .masthead {
+    background: var(--red);
+    border-bottom: 4px solid var(--yellow);
+    padding: 0;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .masthead-inner {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 28px 24px 20px;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 16px;
+    position: relative;
+  }
+
+  .masthead-left { flex: 1; }
+
+  .masthead-kicker {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 11px;
+    color: var(--yellow);
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+    display: block;
+  }
+
+  .masthead-title {
+    font-family: 'Rubik Glitch', sans-serif;
+    font-size: clamp(44px, 8vw, 82px);
+    line-height: 0.9;
+    color: var(--bg);
+    letter-spacing: -1px;
+    text-transform: uppercase;
+  }
+
+  .masthead-title span {
+    display: block;
+    color: var(--yellow);
+  }
+
+  .masthead-sub {
+    font-family: 'Oswald', sans-serif;
+    font-size: 13px;
+    color: var(--bg);
+    margin-top: 10px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    opacity: 0.7;
+  }
+
+  .masthead-svg {
+    flex-shrink: 0;
+    opacity: 0.9;
+  }
+
+  /* Atomic symbol SVG */
+  .atom-svg { animation: spin 40s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* Decorative red stripes */
+  .masthead-stripes {
+    position: absolute;
+    right: 0; top: 0; bottom: 0;
+    width: 120px;
+    background: repeating-linear-gradient(
+      -45deg,
+      transparent,
+      transparent 8px,
+      rgba(0,0,0,0.15) 8px,
+      rgba(0,0,0,0.15) 16px
+    );
+    pointer-events: none;
+  }
+
+  /* === TABS === */
+  .tab-bar {
+    background: var(--surface);
+    border-bottom: 2px solid var(--border2);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .tab-bar-inner {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0 24px;
+    display: flex;
+    gap: 0;
+    overflow-x: auto;
+  }
+
+  .tab-btn {
+    font-family: 'Oswald', sans-serif;
+    font-size: 12px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--muted);
+    background: none;
+    border: none;
+    border-bottom: 3px solid transparent;
+    padding: 14px 20px 12px;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: color 120ms ease, border-color 120ms ease;
+  }
+
+  .tab-btn:hover { color: var(--text); }
+
+  .tab-btn.active {
+    color: var(--yellow);
+    border-bottom-color: var(--yellow);
+  }
+
+  /* === CONTENT === */
+  .tab-content {
+    display: none;
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 40px 24px 80px;
+  }
+
+  .tab-content.active { display: block; }
+
+  /* === STORY TAB === */
+  .story-byline {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 32px;
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .story-byline a {
+    color: var(--red);
+    text-decoration: none;
+  }
+
+  .story-byline a:hover { color: var(--yellow); }
+
+  .story-body h2 {
+    font-family: 'Rubik Glitch', sans-serif;
+    font-size: clamp(22px, 4vw, 34px);
+    color: var(--yellow);
+    text-transform: uppercase;
+    line-height: 1.1;
+    margin: 40px 0 16px;
+    letter-spacing: 0;
+  }
+
+  .story-body p {
+    margin-bottom: 18px;
+    color: var(--text);
+  }
+
+  .story-body em {
+    color: var(--yellow-dim);
+    font-style: italic;
+  }
+
+  .story-body strong {
+    color: var(--yellow);
+    font-style: normal;
+  }
+
+  .story-body a {
+    color: var(--red);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  .story-body a:hover { color: var(--yellow); }
+
+  .story-body pre, .story-body code {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 12px;
+    color: var(--muted);
+    background: var(--surface);
+    border-left: 3px solid var(--red-dim);
+    padding: 8px 12px;
+    display: block;
+    margin: 12px 0;
+    white-space: pre-wrap;
+  }
+
+  /* Soapbox stage directions */
+  .stage-dir {
+    font-style: italic;
+    color: var(--muted);
+    border-left: 2px solid var(--border2);
+    padding-left: 14px;
+    margin: 20px 0;
+  }
+
+  /* === DECODER ACCORDION === */
+  .decoder {
+    display: inline;
+    position: relative;
+  }
+
+  .decoder-trigger {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 12px;
+    color: var(--green);
+    padding: 1px 4px;
+    letter-spacing: 1px;
+    text-decoration: underline dotted;
+    text-underline-offset: 3px;
+    transition: color 100ms;
+    vertical-align: baseline;
+    border: 1px solid var(--border2);
+    background: var(--surface);
+  }
+
+  .decoder-trigger::before {
+    content: '[ ';
+    color: var(--red-dim);
+  }
+
+  .decoder-trigger::after {
+    content: ' ▾]';
+    color: var(--red-dim);
+  }
+
+  .decoder-trigger.open::after { content: ' ▴]'; }
+  .decoder-trigger.open { border-color: var(--green); background: #0f1f14; }
+
+  .decoder-trigger:hover { color: var(--yellow); }
+
+  .decoder-panel {
+    display: none;
+    position: absolute;
+    top: calc(100% + 4px);
+    left: 0;
+    z-index: 500;
+    padding: 14px 16px;
+    font-family: 'Special Elite', serif;
+    font-size: 13px;
+    color: var(--text);
+    border: 1px solid var(--border2);
+    border-top: 2px solid var(--green);
+    background: #0d1a10;
+    width: 320px;
+    line-height: 1.6;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.6);
+  }
+
+  /* Flip panel left if it would overflow viewport right edge */
+  .decoder-panel.flip-left {
+    left: auto;
+    right: 0;
+  }
+
+  .decoder-panel.open { display: block; }
+
+  .decoder-panel .decode-label {
+    font-family: 'Oswald', sans-serif;
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--red);
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  .decoder-panel .decode-term {
+    font-family: 'Rubik Glitch', sans-serif;
+    font-size: 18px;
+    color: var(--yellow);
+    display: block;
+    margin-bottom: 8px;
+  }
+
+  .decoder-panel .decode-link {
+    display: inline-block;
+    margin-top: 8px;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 11px;
+    color: var(--red);
+    text-decoration: none;
+    border: 1px solid var(--red-dim);
+    padding: 3px 7px;
+  }
+
+  .decoder-panel .decode-link:hover {
+    background: var(--red);
+    color: var(--bg);
+  }
+
+  /* === DIVIDER === */
+  .divider {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 32px 0;
+  }
+
+  .divider-stars {
+    text-align: center;
+    color: var(--red-dim);
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 8px;
+    margin: 28px 0;
+  }
+
+  /* === CLOCK TAB === */
+  .clock-display {
+    background: var(--surface);
+    border: 1px solid var(--border2);
+    padding: 32px;
+    margin-bottom: 32px;
+    display: flex;
+    align-items: center;
+    gap: 40px;
+    flex-wrap: wrap;
+  }
+
+  .clock-svg-wrap {
+    flex-shrink: 0;
+  }
+
+  .clock-face-container {
+    position: relative;
+    width: 160px;
+    height: 160px;
+  }
+
+  .clock-text {
+    flex: 1;
+    min-width: 200px;
+  }
+
+  .clock-time-display {
+    font-family: 'Rubik Glitch', sans-serif;
+    font-size: 58px;
+    color: var(--red);
+    line-height: 1;
+    margin-bottom: 8px;
+    letter-spacing: -2px;
+  }
+
+  .clock-time-display span {
+    font-size: 24px;
+    color: var(--muted);
+    vertical-align: middle;
+    letter-spacing: 0;
+    font-family: 'Oswald', sans-serif;
+    margin-left: 8px;
+  }
+
+  .clock-text p {
+    font-size: 14px;
+    color: var(--text);
+    margin-top: 12px;
+    line-height: 1.6;
+  }
+
+  /* Timeline */
+  .timeline {
+    margin-top: 32px;
+  }
+
+  .timeline-title {
+    font-family: 'Rubik Glitch', sans-serif;
+    font-size: 22px;
+    color: var(--yellow);
+    text-transform: uppercase;
+    margin-bottom: 20px;
+    letter-spacing: 1px;
+  }
+
+  .timeline-item {
+    display: flex;
+    gap: 16px;
+    padding: 14px 0;
+    border-bottom: 1px solid var(--border);
+    align-items: flex-start;
+  }
+
+  .timeline-year {
+    font-family: 'Oswald', sans-serif;
+    font-size: 13px;
+    color: var(--muted);
+    min-width: 44px;
+    padding-top: 2px;
+  }
+
+  .timeline-time {
+    font-family: 'Rubik Glitch', sans-serif;
+    font-size: 18px;
+    color: var(--red);
+    min-width: 90px;
+  }
+
+  .timeline-desc {
+    font-size: 13px;
+    color: var(--text);
+    line-height: 1.5;
+    flex: 1;
+  }
+
+  .timeline-desc a {
+    color: var(--red);
+    text-decoration: none;
+  }
+
+  .timeline-desc a:hover { color: var(--yellow); }
+
+  /* === STAKES TAB === */
+  .stakes-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 16px;
+    margin-bottom: 32px;
+  }
+
+  .stakes-card {
+    background: var(--surface);
+    border: 1px solid var(--border2);
+    padding: 20px;
+  }
+
+  .stakes-card-icon {
+    margin-bottom: 12px;
+  }
+
+  .stakes-card-title {
+    font-family: 'Oswald', sans-serif;
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: var(--yellow);
+    margin-bottom: 8px;
+  }
+
+  .stakes-card p {
+    font-size: 13px;
+    color: var(--text);
+    line-height: 1.6;
+  }
+
+  .stakes-card a {
+    color: var(--red);
+    text-decoration: none;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 11px;
+    display: inline-block;
+    margin-top: 10px;
+    border-bottom: 1px solid var(--red-dim);
+    padding-bottom: 1px;
+  }
+
+  .stakes-card a:hover { color: var(--yellow); }
+
+  /* Quote block */
+  .pull-quote {
+    border-left: 4px solid var(--red);
+    padding: 16px 20px;
+    background: var(--surface);
+    margin: 28px 0;
+  }
+
+  .pull-quote p {
+    font-family: 'Oswald', sans-serif;
+    font-size: 20px;
+    color: var(--text);
+    line-height: 1.4;
+    margin-bottom: 8px;
+  }
+
+  .pull-quote cite {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    font-style: normal;
+    letter-spacing: 1px;
+  }
+
+  /* Accordion for stakes */
+  .accordion-item {
+    border-bottom: 1px solid var(--border);
+  }
+
+  .accordion-trigger {
+    width: 100%;
+    background: none;
+    border: none;
+    padding: 16px 0;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    text-align: left;
+    gap: 16px;
+  }
+
+  .accordion-trigger-text {
+    font-family: 'Oswald', sans-serif;
+    font-size: 15px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--text);
+    transition: color 100ms;
+  }
+
+  .accordion-trigger:hover .accordion-trigger-text { color: var(--yellow); }
+
+  .accordion-arrow {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 14px;
+    color: var(--red);
+    flex-shrink: 0;
+    transition: transform 150ms;
+  }
+
+  .accordion-trigger.open .accordion-arrow { transform: rotate(180deg); }
+
+  .accordion-panel {
+    display: none;
+    padding: 0 0 20px;
+    font-size: 14px;
+    color: var(--text);
+    line-height: 1.7;
+  }
+
+  .accordion-panel.open { display: block; }
+
+  .accordion-panel a {
+    color: var(--red);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  .accordion-panel a:hover { color: var(--yellow); }
+
+  /* === RESOURCES TAB === */
+  .resources-section-title {
+    font-family: 'Rubik Glitch', sans-serif;
+    font-size: 20px;
+    color: var(--yellow);
+    text-transform: uppercase;
+    margin: 28px 0 14px;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 8px;
+  }
+
+  .resource-link {
+    display: block;
+    padding: 14px 0;
+    border-bottom: 1px solid var(--border);
+    text-decoration: none;
+    color: var(--text);
+    transition: background 100ms;
+  }
+
+  .resource-link:hover { color: var(--yellow); }
+
+  .resource-link:hover .resource-arrow { color: var(--yellow); }
+
+  .resource-link-inner {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .resource-title {
+    font-family: 'Oswald', sans-serif;
+    font-size: 15px;
+    letter-spacing: 1px;
+    color: var(--text);
+    text-transform: uppercase;
+    margin-bottom: 4px;
+    transition: color 100ms;
+  }
+
+  .resource-link:hover .resource-title { color: var(--yellow); }
+
+  .resource-desc {
+    font-family: 'Special Elite', serif;
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.5;
+  }
+
+  .resource-tag {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 1px;
+    color: var(--red);
+    border: 1px solid var(--red-dim);
+    padding: 2px 6px;
+    flex-shrink: 0;
+    text-transform: uppercase;
+    margin-top: 2px;
+  }
+
+  .resource-arrow {
+    color: var(--muted);
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 14px;
+    flex-shrink: 0;
+    align-self: center;
+  }
+
+  /* === LIGHTBOX === */
+  .lightbox-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(10, 4, 4, 0.93);
+    z-index: 9000;
+    justify-content: center;
+    align-items: center;
+    padding: 24px;
+  }
+
+  .lightbox-overlay.open {
+    display: flex;
+  }
+
+  .lightbox-box {
+    background: var(--surface);
+    border: 1px solid var(--border2);
+    max-width: 680px;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+    position: relative;
+  }
+
+  .lightbox-header {
+    background: var(--red);
+    padding: 12px 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .lightbox-title {
+    font-family: 'Oswald', sans-serif;
+    font-size: 13px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--bg);
+  }
+
+  .lightbox-close {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 16px;
+    color: var(--bg);
+    padding: 0 4px;
+    line-height: 1;
+    opacity: 0.8;
+  }
+
+  .lightbox-close:hover { opacity: 1; }
+
+  .lightbox-body {
+    padding: 24px;
+    font-size: 14px;
+    line-height: 1.7;
+    color: var(--text);
+  }
+
+  .lightbox-body h3 {
+    font-family: 'Rubik Glitch', sans-serif;
+    font-size: 24px;
+    color: var(--yellow);
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+
+  .lightbox-body p { margin-bottom: 14px; }
+
+  .lightbox-body a {
+    color: var(--red);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  .lightbox-body a:hover { color: var(--yellow); }
+
+  .lb-trigger {
+    display: inline;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 12px;
+    color: var(--yellow);
+    text-decoration: underline dotted;
+    text-underline-offset: 3px;
+    padding: 0;
+    transition: color 100ms;
+  }
+
+  .lb-trigger:hover { color: var(--red); }
+
+  /* === CLOCK SVG ANIMATION === */
+  #clock-minute-hand {
+    transform-origin: 80px 80px;
+    transform: rotate(-60deg); /* 11:58 */
+  }
+
+  #clock-hour-hand {
+    transform-origin: 80px 80px;
+    transform: rotate(-31deg); /* 11:58 */
+  }
+
+  .clock-tick {
+    animation: tickpulse 2s ease-in-out infinite;
+  }
+
+  @keyframes tickpulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+
+  /* === SCROLLBAR === */
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--red-dim); }
+  ::-webkit-scrollbar-thumb:hover { background: var(--red); }
+
+  /* === FOOTER === */
+  footer {
+    background: var(--surface);
+    border-top: 2px solid var(--red);
+    padding: 16px 24px;
+    text-align: center;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 1px;
+  }
+
+  footer a { color: var(--red); text-decoration: none; }
+  footer a:hover { color: var(--yellow); }
+
+  /* Propaganda stamp */
+  .stamp {
+    display: inline-block;
+    border: 3px solid var(--red);
+    color: var(--red);
+    font-family: 'Oswald', sans-serif;
+    font-size: 11px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    padding: 4px 10px;
+    transform: rotate(-3deg);
+    opacity: 0.7;
+    margin-left: 12px;
+    vertical-align: middle;
+  }
+
+  /* Warning stripe bar */
+  .warning-bar {
+    background: repeating-linear-gradient(
+      90deg,
+      var(--yellow) 0px, var(--yellow) 16px,
+      var(--bg) 16px, var(--bg) 32px
+    );
+    height: 6px;
+  }
+
+  .infobox {
+    background: var(--surface);
+    border: 1px solid var(--border2);
+    border-left: 4px solid var(--red);
+    padding: 16px 20px;
+    margin: 20px 0;
+    font-size: 13px;
+    line-height: 1.6;
+  }
+
+  .infobox strong {
+    font-family: 'Oswald', sans-serif;
+    font-size: 12px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--red);
+    display: block;
+    margin-bottom: 6px;
+  }
+
+  .clock-pointer {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 8px;
+  }
+
+  .clock-pointer::before {
+    content: '→';
+    color: var(--red);
+  }
+
+</style>
+</head>
+<body>
+
+<!-- WARNING STRIPE -->
+<div class="warning-bar"></div>
+
+<!-- MASTHEAD -->
+<header class="masthead">
+  <div class="masthead-inner">
+    <div class="masthead-left">
+      <span class="masthead-kicker">Bulletin of the Atomic Scientists ✦ Soapbox Edition ✦ 26 January 2018</span>
+      <div class="masthead-title">
+        DOOMY
+        <span>McDOOMFACE</span>
+      </div>
+      <div class="masthead-sub">A Satirical Primer on the Doomsday Clock &amp; Nuclear Risk</div>
+    </div>
+    <div class="masthead-svg">
+      <!-- Atomic symbol SVG -->
+      <svg class="atom-svg" width="90" height="90" viewBox="0 0 90 90" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <ellipse cx="45" cy="45" rx="40" ry="14" stroke="#f0c400" stroke-width="2" fill="none" opacity="0.7"/>
+        <ellipse cx="45" cy="45" rx="40" ry="14" stroke="#f0c400" stroke-width="2" fill="none" opacity="0.7" transform="rotate(60 45 45)"/>
+        <ellipse cx="45" cy="45" rx="40" ry="14" stroke="#f0c400" stroke-width="2" fill="none" opacity="0.7" transform="rotate(120 45 45)"/>
+        <circle cx="45" cy="45" r="7" fill="#c91e00"/>
+      </svg>
+    </div>
+    <div class="masthead-stripes"></div>
+  </div>
+</header>
+
+<!-- TAB BAR -->
+<nav class="tab-bar">
+  <div class="tab-bar-inner">
+    <button class="tab-btn active" onclick="switchTab('story', this)">The Story</button>
+    <button class="tab-btn" onclick="switchTab('clock', this)">The Clock</button>
+    <button class="tab-btn" onclick="switchTab('stakes', this)">The Stakes</button>
+    <button class="tab-btn" onclick="switchTab('resources', this)">Further Reading</button>
+  </div>
+</nav>
+
+<!-- ============================================================ -->
+<!-- TAB: STORY -->
+<!-- ============================================================ -->
+<div id="tab-story" class="tab-content active">
+
+  <div class="story-byline">
+    <span>By <a href="https://steemit.com/@your-nomad-soul" target="_blank">your-nomad-soul</a> — posted to Steemit</span>
+    <span>Clock Time: <strong style="color:var(--red)">11:58</strong> &nbsp;|&nbsp; 2 minutes to Midnight</span>
+  </div>
+
+  <div class="story-body">
+
+    <p>A bunch of <em>clever people</em> in the United States of AAAAAAAAAAHHH NO PLEASE STOP SHOOTING PEOPLE, have taken it upon themselves to move us 30-son-of-a-mother-why-seconds closer to oblivion. Even if we're talking about the game, that's a step back. That's Fallout 3 era shit dude. I at least wanna build a base and have a chance at a sweet, sweet Nuka Cola collection. All the colours of the rainbow and all that.</p>
+
+    <p>In this edition of the <a href="https://steemit.com/trending/soapbox" target="_blank">soapbox</a>, I'm gonna ramble like a crazy person on the street corner, about one of the Crazy Person Association's required subjects for all members (my certification application is still pending, so I'm trying to make a good show of it): <a href="https://www.youtube.com/watch?v=ujdbc87DCrs" target="_blank">THE END OF THE WORLD</a></p>
+
+    <div class="stage-dir">
+      <em>(The Nomad deftly whips out a CRATE, with the word "SOAPPE" emblazoned on the broad sides, from beneath his summer robe — as wizzards are wont to do — and sets it down upon the pavement that is now in your mind. He steps atop it, clears his throat, and begins)</em>
+    </div>
+
+    <p>Ahem.</p>
+
+    <hr class="divider">
+
+    <h2>WHY THE HELL DID THEY MOVE THE BLOODY CLOCK?</h2>
+    <p><strong>OR: Why Did They Have to Make the Bloody Thing in the First Place?</strong></p>
+
+    <hr class="divider">
+
+    <p>"What 'Bloody Clock' are you talking about?" you ask.</p>
+
+    <p>Excellent question, my friend. I'm glad we can have a conversation. The <button class="lb-trigger" onclick="openLightbox('lb-doomsday-clock')">Doomsday Clock</button> (otherwise known as Scientists Trying to Tell the World-at-Large to CALM THE FUCK DOWN! or STTWLCTFD for the Tennials and AI among us) is not a clock — It is a symbol.</p>
+
+    <p>A <em>very</em> clever symbol.</p>
+
+    <p>Unfortunately, it's also a bit boring.</p>
+
+    <p>So, to spice it up a bit, let's pretend we're currently living at 00:05 on ol' Doomy McDoomface (as it's known in the year 2042)...</p>
+
+    <div class="infobox">
+      <strong>⚠ Decoder Active</strong>
+      The story uses metaphorical language. Click the <span style="color:var(--green); font-family:'Share Tech Mono',monospace">[ terms ]</span> below to decode the history behind the fiction.
+    </div>
+
+    <p>We are here: <span style="color:var(--muted);font-size:12px;font-family:'Share Tech Mono',monospace;">[the post-nuclear wasteland, naturally]</span></p>
+
+    <p style="font-family:'Share Tech Mono',monospace;font-size:12px;color:var(--muted);border-left:3px solid var(--red-dim);padding-left:12px;margin:12px 0;">Imagine a campfire, just out of frame, with a pot of roach stew bubbling happily, the smell mingling with the smoke from the crematorium nearby</p>
+
+    <p>In the Days before Midnight, before ol'Doomy was even thought of, the Old Bossmen had a thing about 
+
+    <span class="decoder" id="dec-bang-fights">
+      <button class="decoder-trigger" onclick="toggleDecoder('dec-bang-fights', this)">Bang Fights</button>
+      <span class="decoder-panel">
+        <span class="decode-label">Decoded Term</span>
+        <span class="decode-term">World Wars</span>
+        Specifically WWI (1914–1918) and WWII (1939–1945). The story's "Bang Fights" refer to industrial-scale warfare between great powers — the kind that kills tens of millions and reshapes borders. The "Bang Fight Bosses made it a family business" is a nod to how colonial powers cycled through cycles of conflict and managed their weapons industries.
+        <a class="decode-link" href="https://en.wikipedia.org/wiki/World_war" target="_blank">→ Wikipedia: World war</a>
+      </span>
+    </span>. 
+
+    It was one of those complicated things, where they all thought a Bang Fight was a good idea... Until they had one... And so realized that Bang Fights take a lot of lifestuff and make a lot of deathstuff — which their mumsies had always said was a bad idea but their papsies said was needly. <em>Aye-em-el</em>, it seemed like a bad deal, but they didn't want to lose so they carried on until they forgot why the Bang Fight happened, and then stayed in it for the sportsmanship and deathpaper, until they got tired of it and then stopped for a bit.... Uuuuuntil — they got bored and then found excuses to have another bang fight. Some of your mumsies still call it the Time of the Swinging Willies (everyone in 2042 defines a <strong>willy</strong> as: a hard manbit that goes BANG! and rips your guts out.)</p>
+
+    <p>They made Bang Fights a family business, you see... Until they had two 
+
+    <span class="decoder" id="dec-big-bang-fights">
+      <button class="decoder-trigger" onclick="toggleDecoder('dec-big-bang-fights', this)">Big Bang Fights</button>
+      <span class="decoder-panel">
+        <span class="decode-label">Decoded Term</span>
+        <span class="decode-term">World War I &amp; World War II</span>
+        The two "Big Bang Fights" are WWI (1914–1918) and WWII (1939–1945). WWI killed ~20 million people; WWII killed ~70–85 million — roughly 3% of the entire world population. The "family business" line refers to how the same colonial and industrial powers that built WWI's war machine went on to build WWII's, often profiting from both. The second Big Bang Fight ended with the Ultrabang — the atomic bomb.
+        <a class="decode-link" href="https://en.wikipedia.org/wiki/World_War_I" target="_blank">→ Wikipedia: World War I</a>
+        <a class="decode-link" href="https://en.wikipedia.org/wiki/World_War_II" target="_blank">→ Wikipedia: World War II</a>
+      </span>
+    </span>.</p>
+
+    <p>The second one ended with the first 
+
+    <span class="decoder" id="dec-ultrabang">
+      <button class="decoder-trigger" onclick="toggleDecoder('dec-ultrabang', this)">Ultrabanger</button>
+      <span class="decoder-panel">
+        <span class="decode-label">Decoded Term</span>
+        <span class="decode-term">The Atomic Bomb</span>
+        The "Ultrabanger" is the nuclear weapon — specifically the bombs dropped on Hiroshima ("Little Boy") and Nagasaki ("Fat Man") in August 1945. The Trinity Test on July 16, 1945 was the first detonation. The story notes there were two: "just in case the first one missed" — a bleak nod to the decision to drop a second bomb days after the first.
+        <a class="decode-link" href="https://en.wikipedia.org/wiki/Nuclear_weapon" target="_blank">→ Wikipedia: Nuclear weapon</a>
+        <a class="decode-link" href="https://en.wikipedia.org/wiki/Atomic_bombings_of_Hiroshima_and_Nagasaki" target="_blank">→ Wikipedia: Hiroshima &amp; Nagasaki</a>
+      </span>
+    </span>
+
+    ... and then another one just in case the first one missed.</p>
+
+    <p>This was because the 
+
+    <span class="decoder" id="dec-hairy">
+      <button class="decoder-trigger" onclick="toggleDecoder('dec-hairy', this)">Hairy Trueish Man</button>
+      <span class="decoder-panel">
+        <span class="decode-label">Decoded Term</span>
+        <span class="decode-term">Harry S. Truman</span>
+        33rd President of the United States. Authorized the use of atomic bombs on Japan in August 1945, believing it would end WWII faster and avoid a land invasion. He later launched the Manhattan Project's successor programs, overseeing the first hydrogen bomb test in 1952. His logic: show force so overwhelming that no one would dare start another war.
+        <a class="decode-link" href="https://en.wikipedia.org/wiki/Harry_S._Truman" target="_blank">→ Wikipedia: Harry S. Truman</a>
+      </span>
+    </span>
+
+     was in charge and he figured the Ultrabang was so ULTRA that no one would pick a Bang Fight ever again. But 
+
+    <span class="decoder" id="dec-bigmustache">
+      <button class="decoder-trigger" onclick="toggleDecoder('dec-bigmustache', this)">Big Mustache</button>
+      <span class="decoder-panel">
+        <span class="decode-label">Decoded Term</span>
+        <span class="decode-term">Joseph Stalin</span>
+        General Secretary of the Soviet Union. "Little Mustache" (deaded before the Ultrabang) = Adolf Hitler. Stalin oversaw the USSR's own nuclear program, testing their first bomb (RDS-1) in August 1949 — far sooner than Western intelligence had expected. This launched the nuclear arms race in earnest: both superpowers now had the bomb.
+        <a class="decode-link" href="https://en.wikipedia.org/wiki/Joseph_Stalin" target="_blank">→ Wikipedia: Joseph Stalin</a>
+        <a class="decode-link" href="https://en.wikipedia.org/wiki/Soviet_atomic_bomb_project" target="_blank">→ Wikipedia: Soviet bomb project</a>
+      </span>
+    </span>
+
+     figured the same (
+    <span class="decoder" id="dec-littlemustache">
+      <button class="decoder-trigger" onclick="toggleDecoder('dec-littlemustache', this)">Little Mustache</button>
+      <span class="decoder-panel flip-left">
+        <span class="decode-label">Decoded Term</span>
+        <span class="decode-term">Adolf Hitler</span>
+        Chancellor and Führer of Nazi Germany. Led Germany into WWII in 1939. Died by suicide in Berlin on April 30, 1945 — before the first atomic bomb was tested at Trinity (July 16, 1945) or dropped on Hiroshima (August 6, 1945). Hence "deaded before the Ultrabang came." The Nazi regime's defeat was one major reason the Manhattan Project scientists later questioned whether the bombs had been necessary.
+        <a class="decode-link" href="https://en.wikipedia.org/wiki/Adolf_Hitler" target="_blank">→ Wikipedia: Adolf Hitler</a>
+        <a class="decode-link" href="https://en.wikipedia.org/wiki/Manhattan_Project" target="_blank">→ Wikipedia: Manhattan Project</a>
+      </span>
+    </span>
+     was deaded before the Ultrabang came). Bang Fights continued, and they made so many Ultrabangs that the <em>clever ones</em> who understood the Ultrabang went "Woah, Nessy! You could blow the whole place up, if you're not careful!"</p>
+
+    <p>The Bang Fight Bosses said — "That's the point. Now we have to be careful when we Bang Fight."</p>
+
+    <p style="font-family:'Share Tech Mono',monospace;font-size:12px;color:var(--muted);border-left:3px solid var(--red-dim);padding-left:12px;margin:12px 0;">Fat Man and Little Boy. The bang so nice, we did it twice. — Hairy Trueish Man (Murican No Mustache the Second)</p>
+
+    <p>It didn't really work, but nobody knew how to make it stop not-working, so they just passed the 
+
+    <span class="decoder" id="dec-handbasket">
+      <button class="decoder-trigger" onclick="toggleDecoder('dec-handbasket', this)">hellinahandbasket button</button>
+      <span class="decoder-panel">
+        <span class="decode-label">Decoded Term</span>
+        <span class="decode-term">Mutually Assured Destruction</span>
+        MAD is the doctrine that any nuclear first strike would trigger a devastating retaliatory second strike — guaranteeing both sides' destruction. The "button passed to the next guy" captures how MAD was inherited rather than resolved: each US and Soviet leader kept the arsenal, kept the doctrine, and hoped the other side would blink first. No one ever figured out how to make it stop, so they called the standoff "stability" and moved on.
+        <a class="decode-link" href="https://en.wikipedia.org/wiki/Mutual_assured_destruction" target="_blank">→ Wikipedia: MAD</a>
+        <a class="decode-link" href="https://en.wikipedia.org/wiki/Nuclear_deterrence" target="_blank">→ Wikipedia: Nuclear deterrence</a>
+      </span>
+    </span>
+
+     on to the next guy, and kept telling everyone that it was working.</p>
+
+    <p>They kept doing that until all the Bossmen from Everywhere, couldn't remember what an Ultrabang was actually for.</p>
+
+    <p>The <em>clever ones</em> saw this coming, so they made a way to tell the Restovus when the Bossmen were being Ultrasilly.</p>
+
+    <p>They called him <button class="lb-trigger" onclick="openLightbox('lb-bulletin')">Doomy McDoomface</button>.</p>
+
+    <p>He was a clock that didn't tell the time. Instead, ol'Doomy had one job: He would shout <a href="https://www.youtube.com/watch?v=jCnWPbn-ZKo" target="_blank">'OH-OH-SHITPIPE-OH-OH'</a> just before All-of-Everything exploded. The <em>clever ones</em> said the Shout, would be called Midnight.</p>
+
+    <p>They then gave a bunch of other <em>clever ones</em> the job of telling us how close we were to ol'Doomy's Big Day, and so every year they moved Doomy McDoomface's Timestache closer or further to his forehead, depending on how angry they thought Doomy would be when he heard about what the Old Bossmen had done the year before.</p>
+
+    <p>When they were still making 
+
+    <span class="decoder" id="dec-arms-race">
+      <button class="decoder-trigger" onclick="toggleDecoder('dec-arms-race', this)">ALL THE ULTRABANGS EVERYWHERE</button>
+      <span class="decoder-panel">
+        <span class="decode-label">Decoded Term</span>
+        <span class="decode-term">The Nuclear Arms Race</span>
+        At its peak, the US and USSR together held over 60,000 nuclear warheads. The concept of Mutually Assured Destruction (MAD) was the strategy: if either side launched, the other would retaliate, destroying both. The 1962 Cuban Missile Crisis brought the world to the brink — the Clock was set to 7 minutes to midnight that year.
+        <a class="decode-link" href="https://en.wikipedia.org/wiki/Nuclear_arms_race" target="_blank">→ Wikipedia: Nuclear arms race</a>
+        <a class="decode-link" href="https://en.wikipedia.org/wiki/Mutual_assured_destruction" target="_blank">→ Wikipedia: MAD</a>
+      </span>
+    </span>
+
+     a thing, Doomy said it was 
+
+    <span class="decoder" id="dec-2min">
+      <button class="decoder-trigger" onclick="toggleDecoder('dec-2min', this)">two minutes away from Midnight</button>
+      <span class="decoder-panel">
+        <span class="decode-label">Historical Clock Setting</span>
+        <span class="decode-term">1953: 2 minutes to Midnight</span>
+        The closest the Clock had ever been set until 2018. Reason: the US tested its first thermonuclear (hydrogen) bomb in 1952 — a weapon hundreds of times more powerful than Hiroshima. The USSR followed nine months later. The Bulletin moved the Clock to 11:58 — two minutes to Midnight — the most dangerous setting since 1947.
+        <a class="decode-link" href="https://thebulletin.org/doomsday-clock/timeline/" target="_blank">→ Bulletin: Clock Timeline</a>
+      </span>
+    </span>
+
+    , and when the 
+
+    <span class="decoder" id="dec-cuban">
+      <button class="decoder-trigger" onclick="toggleDecoder('dec-cuban', this)">Red Ultrabangs got too close to the Blue Ultrabangs</button>
+      <span class="decoder-panel">
+        <span class="decode-label">Decoded Event</span>
+        <span class="decode-term">The Cuban Missile Crisis, 1962</span>
+        For 13 days in October 1962, Soviet nuclear missiles in Cuba pointed at American cities while US nuclear weapons pointed back. The world came closest to nuclear war in recorded history. Soviet submarine B-59, surrounded by US forces and unable to communicate with Moscow, came within one officer's objection of launching a nuclear torpedo. That officer was Vasili Arkhipov.
+        <a class="decode-link" href="https://en.wikipedia.org/wiki/Cuban_missile_crisis" target="_blank">→ Wikipedia: Cuban Missile Crisis</a>
+        <a class="decode-link" href="https://en.wikipedia.org/wiki/Vasili_Arkhipov" target="_blank">→ Wikipedia: Vasili Arkhipov</a>
+      </span>
+    </span>
+
+     they made Doomy say "We're thirty damned stinking seconds away Calm the Hellmaking Heck Down!."</p>
+
+    <p>But the the Old Bossmen found a trick. They distracted ol'Doomy, the Restovus and even the <em>clever ones</em> with deathpaper, pictureboxes and goodygoodstuff... So much of it that even ol'Doomy couldn't keep track for realsies anymore.</p>
+
+    <p>And so it went that when Midnight came, all we heard was a soft whimper from ol'Doomy, who croaked, "oh-oh-shitpipe-oh-oh" before All-of-Everything went COMPLETELY BATSHIT INSANE.</p>
+
+    <p style="font-family:'Share Tech Mono',monospace;font-size:12px;color:var(--muted);border-left:3px solid var(--red-dim);padding-left:12px;margin:12px 0;">Don't you just love the smell of radiation in the morning?</p>
+
+    <p>Yes, dear audience, gathered on the street in my mind... That is our possible future if we keep letting Power think it will win with a BANG! That is what we're in for if we don't keep the Bossmen in check. That is what will sneak up on us if we let the Stupid Rise.</p>
+
+    <p>It's two minutes to Midnight again — are we all still okay with that?</p>
+
+    <div class="stage-dir">
+      <em>(The Nomad takes a bow and disappears in a puff of glitter — as wizzards are wont to do — leaving the CRATE marked "SOAPPE" there on the pavement for the next Crazy Person to use. The street, of course, has disappeared from your mind... The glitter sticks around for a while)</em>
+    </div>
+
+    <div class="divider-stars">✦ ✦ ✦</div>
+
+    <p>THE END</p>
+
+    <p>it's <a href="https://steemit.com/trending/nigh" target="_blank">nigh</a> biches.</p>
+
+    <hr class="divider">
+
+    <p style="font-size:13px;color:var(--muted);">This was written while listening to <a href="https://steemit.com/@crimsonclad" target="_blank">@crimsonclad</a> doing her thang on FULL FORCE THURSDAY. It's on <a href="http://mspwaves.com/home/listen/" target="_blank">MSPWaves</a> radio and it's always epic and brutal, like all good metal should be.</p>
+    <p style="font-size:13px;color:var(--muted);">As always... Peace, Love and a Little Madness — Nomad</p>
+
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- TAB: THE CLOCK -->
+<!-- ============================================================ -->
+<div id="tab-clock" class="tab-content">
+
+  <div class="clock-display">
+    <div class="clock-svg-wrap">
+      <!-- Analog Clock SVG at 11:58 -->
+      <svg width="160" height="160" viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg">
+        <!-- Face -->
+        <circle cx="80" cy="80" r="75" fill="#1c0f0f" stroke="#3a2020" stroke-width="2"/>
+        <!-- Tick marks -->
+        <g stroke="#5a2a2a" stroke-width="1.5">
+          <line x1="80" y1="10" x2="80" y2="20"/>
+          <line x1="80" y1="140" x2="80" y2="150"/>
+          <line x1="10" y1="80" x2="20" y2="80"/>
+          <line x1="140" y1="80" x2="150" y2="80"/>
+        </g>
+        <!-- Minor ticks -->
+        <g stroke="#3a2020" stroke-width="1" opacity="0.6">
+          <line x1="80" y1="10" x2="80" y2="17" transform="rotate(30 80 80)"/>
+          <line x1="80" y1="10" x2="80" y2="17" transform="rotate(60 80 80)"/>
+          <line x1="80" y1="10" x2="80" y2="17" transform="rotate(90 80 80)"/>
+          <line x1="80" y1="10" x2="80" y2="17" transform="rotate(120 80 80)"/>
+          <line x1="80" y1="10" x2="80" y2="17" transform="rotate(150 80 80)"/>
+          <line x1="80" y1="10" x2="80" y2="17" transform="rotate(180 80 80)"/>
+          <line x1="80" y1="10" x2="80" y2="17" transform="rotate(210 80 80)"/>
+          <line x1="80" y1="10" x2="80" y2="17" transform="rotate(240 80 80)"/>
+          <line x1="80" y1="10" x2="80" y2="17" transform="rotate(270 80 80)"/>
+          <line x1="80" y1="10" x2="80" y2="17" transform="rotate(300 80 80)"/>
+          <line x1="80" y1="10" x2="80" y2="17" transform="rotate(330 80 80)"/>
+        </g>
+        <!-- 12 o'clock label zone — red sector near midnight -->
+        <path d="M80,10 A70,70 0 0,1 80,10" fill="none"/>
+        <path d="M80,11 A69,69 0 0,1 97,16 L80,80 Z" fill="#c91e00" opacity="0.15"/>
+        <!-- Hour hand — 11:58 means hour hand near 12, slightly before -->
+        <line id="clock-hour-hand" x1="80" y1="80" x2="80" y2="36" stroke="#ede0c8" stroke-width="5" stroke-linecap="round" transform="rotate(-6 80 80)"/>
+        <!-- Minute hand — 11:58 means minute hand near 12, just before -->
+        <line id="clock-minute-hand" x1="80" y1="80" x2="80" y2="20" stroke="#c91e00" stroke-width="3" stroke-linecap="round" transform="rotate(-12 80 80)"/>
+        <!-- Center dot -->
+        <circle cx="80" cy="80" r="5" fill="#c91e00" class="clock-tick"/>
+        <!-- Midnight label -->
+        <text x="80" y="32" font-family="Share Tech Mono, monospace" font-size="9" fill="#c91e00" text-anchor="middle">XII</text>
+        <text x="80" y="135" font-family="Share Tech Mono, monospace" font-size="9" fill="#5a2a2a" text-anchor="middle">VI</text>
+        <text x="28" y="84" font-family="Share Tech Mono, monospace" font-size="9" fill="#5a2a2a" text-anchor="middle">IX</text>
+        <text x="133" y="84" font-family="Share Tech Mono, monospace" font-size="9" fill="#5a2a2a" text-anchor="middle">III</text>
+      </svg>
+    </div>
+    <div class="clock-text">
+      <div class="clock-time-display">11:58 <span>pm</span></div>
+      <div style="font-family:'Oswald',sans-serif;font-size:12px;letter-spacing:2px;text-transform:uppercase;color:var(--red);margin-bottom:8px;">2 MINUTES TO MIDNIGHT — 2018 SETTING</div>
+      <p>The Doomsday Clock is a symbol created by the <a href="https://thebulletin.org/" target="_blank" style="color:var(--red);">Bulletin of the Atomic Scientists</a> in 1947. Its hands represent how close humanity is to self-annihilation — with "Midnight" representing global catastrophe.</p>
+      <div class="clock-pointer">As of January 2023, the Clock was moved to 90 seconds to midnight — the closest it has ever been set.</div>
+    </div>
+  </div>
+
+  <div class="timeline">
+    <div class="timeline-title">Clock History: Timestache Movements</div>
+
+    <div class="timeline-item">
+      <div class="timeline-year">1947</div>
+      <div class="timeline-time">11:53</div>
+      <div class="timeline-desc">The Clock's inaugural setting. The US had the bomb; the Cold War was just beginning. <a href="https://en.wikipedia.org/wiki/Doomsday_Clock" target="_blank">Designed by Martyl Langsdorf</a>, wife of a Manhattan Project scientist.</div>
+    </div>
+    <div class="timeline-item">
+      <div class="timeline-year">1949</div>
+      <div class="timeline-time">11:57</div>
+      <div class="timeline-desc">The USSR tests its first nuclear weapon (RDS-1). The atomic monopoly is over. The arms race begins in earnest.</div>
+    </div>
+    <div class="timeline-item">
+      <div class="timeline-year">1953</div>
+      <div class="timeline-time" style="color:var(--red);">11:58</div>
+      <div class="timeline-desc">Both US and USSR test hydrogen bombs. <strong style="color:var(--yellow)">Two minutes to Midnight</strong> — the closest setting until 2018. This is the moment the story references.</div>
+    </div>
+    <div class="timeline-item">
+      <div class="timeline-year">1963</div>
+      <div class="timeline-time">11:48</div>
+      <div class="timeline-desc">The <a href="https://en.wikipedia.org/wiki/Partial_Nuclear_Test_Ban_Treaty" target="_blank">Partial Nuclear Test Ban Treaty</a> is signed by US, UK and USSR. Clock moved back — further from midnight.</div>
+    </div>
+    <div class="timeline-item">
+      <div class="timeline-year">1991</div>
+      <div class="timeline-time" style="color:var(--green);">11:43</div>
+      <div class="timeline-desc">The <a href="https://en.wikipedia.org/wiki/START_I" target="_blank">START I treaty</a> is signed and the Cold War ends. The Clock is moved back to its safest ever point — 17 minutes to Midnight.</div>
+    </div>
+    <div class="timeline-item">
+      <div class="timeline-year">2018</div>
+      <div class="timeline-time" style="color:var(--red);">11:58</div>
+      <div class="timeline-desc">Back to 2 minutes — matching 1953. Reasons: <a href="https://thebulletin.org/2018/01/it-is-2-minutes-to-midnight/" target="_blank">nuclear tensions, climate change, disruptive technologies, and erosion of international norms</a>.</div>
+    </div>
+    <div class="timeline-item">
+      <div class="timeline-year">2023</div>
+      <div class="timeline-time" style="color:var(--red);font-size:14px;">11:58:30</div>
+      <div class="timeline-desc"><strong style="color:var(--red)">90 seconds to Midnight</strong> — the closest ever. Reasons include: <a href="https://thebulletin.org/doomsday-clock/" target="_blank">Russia's invasion of Ukraine, nuclear rhetoric, climate tipping points, and AI-enabled disinformation</a>.</div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ============================================================ -->
+<!-- TAB: THE STAKES -->
+<!-- ============================================================ -->
+<div id="tab-stakes" class="tab-content">
+
+  <div class="pull-quote">
+    <p>"The unleashed power of the atom has changed everything save our modes of thinking, and we thus drift toward unparalleled catastrophe."</p>
+    <cite>— Albert Einstein, 1946</cite>
+  </div>
+
+  <div class="stakes-grid">
+    <div class="stakes-card">
+      <div class="stakes-card-icon">
+        <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+          <circle cx="16" cy="16" r="5" fill="#c91e00"/>
+          <ellipse cx="16" cy="16" rx="14" ry="5" stroke="#f0c400" stroke-width="1.5" fill="none"/>
+          <ellipse cx="16" cy="16" rx="14" ry="5" stroke="#f0c400" stroke-width="1.5" fill="none" transform="rotate(60 16 16)"/>
+          <ellipse cx="16" cy="16" rx="14" ry="5" stroke="#f0c400" stroke-width="1.5" fill="none" transform="rotate(120 16 16)"/>
+        </svg>
+      </div>
+      <div class="stakes-card-title">Nuclear Arsenals</div>
+      <p>Nine countries hold approximately 12,500 nuclear warheads. About 2,000 are kept on high alert — launch-ready within minutes. The US and Russia hold over 90% of all weapons.</p>
+      <a href="https://fas.org/initiative/status-world-nuclear-forces/" target="_blank">→ FAS: Current status</a>
+    </div>
+    <div class="stakes-card">
+      <div class="stakes-card-icon">
+        <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+          <polygon points="16,4 28,28 4,28" stroke="#f0c400" stroke-width="1.5" fill="none"/>
+          <line x1="16" y1="14" x2="16" y2="20" stroke="#c91e00" stroke-width="2"/>
+          <circle cx="16" cy="24" r="1.5" fill="#c91e00"/>
+        </svg>
+      </div>
+      <div class="stakes-card-title">Near Misses</div>
+      <p>History has recorded dozens of accidental near-launches due to equipment failures, human error, and misidentifications. Each was stopped by luck, protocol, or one person's judgment call.</p>
+      <a href="https://en.wikipedia.org/wiki/List_of_nuclear_close_calls" target="_blank">→ Wikipedia: Close calls list</a>
+    </div>
+    <div class="stakes-card">
+      <div class="stakes-card-icon">
+        <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+          <rect x="4" y="12" width="24" height="16" stroke="#f0c400" stroke-width="1.5" fill="none"/>
+          <polyline points="4,12 16,4 28,12" stroke="#f0c400" stroke-width="1.5" fill="none"/>
+          <line x1="13" y1="28" x2="13" y2="20" stroke="#c91e00" stroke-width="1.5"/>
+          <line x1="19" y1="28" x2="19" y2="20" stroke="#c91e00" stroke-width="1.5"/>
+          <rect x="12" y="18" width="8" height="10" stroke="#c91e00" stroke-width="1" fill="none"/>
+        </svg>
+      </div>
+      <div class="stakes-card-title">Nuclear Winter</div>
+      <p>A regional nuclear war using even 1% of existing weapons could inject enough soot into the stratosphere to cause global cooling, crop failure, and famine affecting billions.</p>
+      <a href="https://en.wikipedia.org/wiki/Nuclear_winter" target="_blank">→ Wikipedia: Nuclear winter</a>
+    </div>
+  </div>
+
+  <div class="accordion-item">
+    <button class="accordion-trigger" onclick="toggleAccordion(this)">
+      <span class="accordion-trigger-text">Why Can't We Just Get Rid of Them?</span>
+      <span class="accordion-arrow">▾</span>
+    </button>
+    <div class="accordion-panel">
+      Nuclear disarmament is hampered by a collective action problem: no state wants to disarm while others retain weapons. The <a href="https://en.wikipedia.org/wiki/Nuclear_Non-Proliferation_Treaty" target="_blank">Non-Proliferation Treaty (NPT)</a> obligates nuclear states to pursue disarmament, but enforcement mechanisms are weak. The <a href="https://en.wikipedia.org/wiki/Treaty_on_the_Prohibition_of_Nuclear_Weapons" target="_blank">Treaty on the Prohibition of Nuclear Weapons (TPNW)</a>, adopted in 2017, bans nuclear weapons entirely — but none of the nuclear-armed states have signed it. Meanwhile, modernization programs by the US, Russia, China and others continue to expand capabilities rather than reduce them.
+    </div>
+  </div>
+
+  <div class="accordion-item">
+    <button class="accordion-trigger" onclick="toggleAccordion(this)">
+      <span class="accordion-trigger-text">Who Actually Has The Button?</span>
+      <span class="accordion-arrow">▾</span>
+    </button>
+    <div class="accordion-panel">
+      In the US, sole launch authority rests with the President. There is no legal requirement for congressional approval, and no single person can veto a presidential launch order — though military officers could theoretically refuse an order they deemed unlawful. The <a href="https://en.wikipedia.org/wiki/Nuclear_football" target="_blank">"nuclear football"</a> is a briefcase carried by a military aide containing launch authentication materials. Similar systems exist in Russia, the UK, France and China, with varying oversight mechanisms. Pakistan and India maintain their own command systems. Israel neither confirms nor denies possessing nuclear weapons.
+    </div>
+  </div>
+
+  <div class="accordion-item">
+    <button class="accordion-trigger" onclick="toggleAccordion(this)">
+      <span class="accordion-trigger-text">The Person Who Saved The World (Seriously)</span>
+      <span class="accordion-arrow">▾</span>
+    </button>
+    <div class="accordion-panel">
+      On September 26, 1983, Soviet Lieutenant Colonel <a href="https://en.wikipedia.org/wiki/Stanislav_Petrov" target="_blank">Stanislav Petrov</a> received reports that the US had launched five ICBMs at the USSR. His duty was to report it up the chain — which would have triggered a retaliatory launch. He judged it a false alarm (correctly — it was a satellite malfunction) and did not report it. He was reprimanded for improper record-keeping. He died in 2017. Similarly, Soviet naval officer <a href="https://en.wikipedia.org/wiki/Vasili_Arkhipov" target="_blank">Vasili Arkhipov</a> refused to authorize a nuclear torpedo launch during the Cuban Missile Crisis in 1962, requiring unanimous consent from three officers — he alone said no.
+    </div>
+  </div>
+
+  <div class="accordion-item">
+    <button class="accordion-trigger" onclick="toggleAccordion(this)">
+      <span class="accordion-trigger-text">New Threats: Why The Clock Is Still Moving</span>
+      <span class="accordion-arrow">▾</span>
+    </button>
+    <div class="accordion-panel">
+      The Bulletin now considers three primary threat categories: nuclear weapons, climate change, and disruptive technologies (including AI and biological weapons). As of 2024, concerns include: Russia's suspension of the New START treaty, expanding Chinese nuclear capabilities, North Korea's growing arsenal, increasing AI integration into military decision-making, and the erosion of arms control agreements that had previously provided stability. The <a href="https://thebulletin.org/doomsday-clock/" target="_blank">current setting remains at 90 seconds to Midnight</a>.
+    </div>
+  </div>
+
+</div>
+
+<!-- ============================================================ -->
+<!-- TAB: RESOURCES -->
+<!-- ============================================================ -->
+<div id="tab-resources" class="tab-content">
+
+  <div class="resources-section-title">Primary Sources</div>
+
+  <a class="resource-link" href="https://thebulletin.org/doomsday-clock/" target="_blank">
+    <div class="resource-link-inner">
+      <div>
+        <div class="resource-title">Bulletin of the Atomic Scientists — Doomsday Clock</div>
+        <div class="resource-desc">The official source. Current setting, historical context, and the full reasoning behind each annual announcement.</div>
+      </div>
+      <div>
+        <div class="resource-tag">Official</div>
+        <div class="resource-arrow">→</div>
+      </div>
+    </div>
+  </a>
+
+  <a class="resource-link" href="https://thebulletin.org/doomsday-clock/timeline/" target="_blank">
+    <div class="resource-link-inner">
+      <div>
+        <div class="resource-title">Doomsday Clock: Full Timeline 1947–Present</div>
+        <div class="resource-desc">Every setting change with the Bulletin's reasoning. Essential context for understanding the Clock's history.</div>
+      </div>
+      <div>
+        <div class="resource-tag">History</div>
+        <div class="resource-arrow">→</div>
+      </div>
+    </div>
+  </a>
+
+  <div class="resources-section-title">Wikipedia — The Basics</div>
+
+  <a class="resource-link" href="https://en.wikipedia.org/wiki/Doomsday_Clock" target="_blank">
+    <div class="resource-link-inner">
+      <div>
+        <div class="resource-title">Doomsday Clock — Wikipedia</div>
+        <div class="resource-desc">Origins, methodology, controversies, and all historical settings.</div>
+      </div>
+      <div>
+        <div class="resource-tag">Wiki</div>
+        <div class="resource-arrow">→</div>
+      </div>
+    </div>
+  </a>
+
+  <a class="resource-link" href="https://en.wikipedia.org/wiki/Nuclear_weapons_and_the_United_States" target="_blank">
+    <div class="resource-link-inner">
+      <div>
+        <div class="resource-title">Nuclear Weapons and the United States — Wikipedia</div>
+        <div class="resource-desc">History of the US nuclear program from the Manhattan Project to present day.</div>
+      </div>
+      <div>
+        <div class="resource-tag">Wiki</div>
+        <div class="resource-arrow">→</div>
+      </div>
+    </div>
+  </a>
+
+  <a class="resource-link" href="https://en.wikipedia.org/wiki/Cold_War" target="_blank">
+    <div class="resource-link-inner">
+      <div>
+        <div class="resource-title">The Cold War — Wikipedia</div>
+        <div class="resource-desc">The geopolitical context behind nearly every Clock movement from 1947 to 1991.</div>
+      </div>
+      <div>
+        <div class="resource-tag">Wiki</div>
+        <div class="resource-arrow">→</div>
+      </div>
+    </div>
+  </a>
+
+  <a class="resource-link" href="https://en.wikipedia.org/wiki/List_of_nuclear_close_calls" target="_blank">
+    <div class="resource-link-inner">
+      <div>
+        <div class="resource-title">List of Nuclear Close Calls — Wikipedia</div>
+        <div class="resource-desc">Documented incidents where nuclear war nearly occurred due to error, miscommunication, or equipment failure.</div>
+      </div>
+      <div>
+        <div class="resource-tag">Wiki</div>
+        <div class="resource-arrow">→</div>
+      </div>
+    </div>
+  </a>
+
+  <div class="resources-section-title">Deeper Reading</div>
+
+  <a class="resource-link" href="https://fas.org/initiative/status-world-nuclear-forces/" target="_blank">
+    <div class="resource-link-inner">
+      <div>
+        <div class="resource-title">Status of World Nuclear Forces — Federation of American Scientists</div>
+        <div class="resource-desc">Updated annual data on every nuclear-armed state's warhead count and deployment status.</div>
+      </div>
+      <div>
+        <div class="resource-tag">Data</div>
+        <div class="resource-arrow">→</div>
+      </div>
+    </div>
+  </a>
+
+  <a class="resource-link" href="https://en.wikipedia.org/wiki/Stanislav_Petrov" target="_blank">
+    <div class="resource-link-inner">
+      <div>
+        <div class="resource-title">Stanislav Petrov — The Man Who Saved The World</div>
+        <div class="resource-desc">The Soviet officer who refused to trigger a retaliatory nuclear strike based on a satellite false alarm in 1983.</div>
+      </div>
+      <div>
+        <div class="resource-tag">Wiki</div>
+        <div class="resource-arrow">→</div>
+      </div>
+    </div>
+  </a>
+
+  <a class="resource-link" href="https://www.armscontrol.org/factsheets/Nuclearweaponswhohaswhat" target="_blank">
+    <div class="resource-link-inner">
+      <div>
+        <div class="resource-title">Nuclear Weapons: Who Has What — Arms Control Association</div>
+        <div class="resource-desc">Comprehensive fact sheet on global nuclear arsenals and arms control agreements.</div>
+      </div>
+      <div>
+        <div class="resource-tag">Policy</div>
+        <div class="resource-arrow">→</div>
+      </div>
+    </div>
+  </a>
+
+</div>
+
+<!-- ============================================================ -->
+<!-- LIGHTBOXES -->
+<!-- ============================================================ -->
+
+<!-- Lightbox: Doomsday Clock -->
+<div class="lightbox-overlay" id="lb-doomsday-clock" onclick="closeLightboxOnOverlay(event, 'lb-doomsday-clock')">
+  <div class="lightbox-box">
+    <div class="lightbox-header">
+      <span class="lightbox-title">What Is The Doomsday Clock?</span>
+      <button class="lightbox-close" onclick="closeLightbox('lb-doomsday-clock')">✕</button>
+    </div>
+    <div class="lightbox-body">
+      <h3>The Doomsday Clock</h3>
+      <p>The Doomsday Clock was created in 1947 by the <a href="https://thebulletin.org/" target="_blank">Bulletin of the Atomic Scientists</a> — a group originally founded by Manhattan Project scientists who wanted to warn the public about the dangers of the weapons they had helped create.</p>
+      <p>The Clock is not a prediction. It is a <strong style="color:var(--yellow)">communication device</strong> — a way of conveying complex geopolitical risk to non-specialist audiences. "Midnight" represents global catastrophe (nuclear war being the original threat; climate change and AI have since been added).</p>
+      <p>Each year, a board of scientists and security experts (including members of the Bulletin's Board of Sponsors, which has included over a dozen Nobel laureates) reviews global conditions and sets the Clock. Their decision is announced in January.</p>
+      <p>The Clock was originally drawn by artist Martyl Langsdorf, whose husband Alexander Langsdorf worked on the Manhattan Project. She set it at 7 minutes to midnight — choosing the time because "it looked good to my eye."</p>
+      <p>As of January 2023, the Clock stands at <strong style="color:var(--red)">90 seconds to Midnight</strong> — the closest it has ever been.</p>
+      <a href="https://en.wikipedia.org/wiki/Doomsday_Clock" target="_blank" style="display:inline-block;margin-top:8px;font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--red);border:1px solid var(--red-dim);padding:4px 10px;text-decoration:none;">→ Wikipedia: Doomsday Clock</a>
+      <a href="https://thebulletin.org/doomsday-clock/" target="_blank" style="display:inline-block;margin-top:8px;margin-left:8px;font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--red);border:1px solid var(--red-dim);padding:4px 10px;text-decoration:none;">→ Bulletin.org</a>
+    </div>
+  </div>
+</div>
+
+<!-- Lightbox: The Bulletin -->
+<div class="lightbox-overlay" id="lb-bulletin" onclick="closeLightboxOnOverlay(event, 'lb-bulletin')">
+  <div class="lightbox-box">
+    <div class="lightbox-header">
+      <span class="lightbox-title">Who Are The "Clever Ones"?</span>
+      <button class="lightbox-close" onclick="closeLightbox('lb-bulletin')">✕</button>
+    </div>
+    <div class="lightbox-body">
+      <h3>The Bulletin of the Atomic Scientists</h3>
+      <p>In the story, "Doomy McDoomface" was created by the "clever ones" — those who understood the Ultrabang (nuclear weapon). In reality, the Doomsday Clock was created by the <strong style="color:var(--yellow)">Bulletin of the Atomic Scientists</strong>.</p>
+      <p>The Bulletin was founded in December 1945 — just months after Hiroshima — by many of the scientists who had worked on the Manhattan Project. They were haunted by what they had built. Their founding logic: scientists who create dangerous technologies have a responsibility to warn society about their consequences.</p>
+      <p>Early contributors included <a href="https://en.wikipedia.org/wiki/J._Robert_Oppenheimer" target="_blank">J. Robert Oppenheimer</a> (scientific director of the Manhattan Project), Albert Einstein, and Niels Bohr. The Bulletin originally published as a mimeographed newsletter; it became a proper magazine in 1947 — the same year the Clock was created.</p>
+      <p>Today the Bulletin is an independent, nonprofit organization. Its Board of Sponsors includes Nobel laureates in physics, chemistry, medicine and economics. They assess nuclear risk, climate change, and disruptive technologies.</p>
+      <a href="https://thebulletin.org/about/" target="_blank" style="display:inline-block;margin-top:8px;font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--red);border:1px solid var(--red-dim);padding:4px 10px;text-decoration:none;">→ About the Bulletin</a>
+      <a href="https://en.wikipedia.org/wiki/Bulletin_of_the_Atomic_Scientists" target="_blank" style="display:inline-block;margin-top:8px;margin-left:8px;font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--red);border:1px solid var(--red-dim);padding:4px 10px;text-decoration:none;">→ Wikipedia</a>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <span>DOOMY McDOOMFACE — A DOOMSDAY PRIMER</span>
+  <span class="stamp">Non-Classified</span>
+  <br><br>
+  <span>Original story by <a href="https://steemit.com/@your-nomad-soul" target="_blank">your-nomad-soul</a> — 26 January 2018 — All educational content links to public sources.</span>
+</footer>
+
+<script>
+  // Tab switching
+  function switchTab(id, btn) {
+    document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+    document.getElementById('tab-' + id).classList.add('active');
+    btn.classList.add('active');
+    window.scrollTo({ top: 0 });
+  }
+
+  // Inline decoder toggle — absolute-positioned panels
+  function toggleDecoder(id, btn) {
+    const wrapper = document.getElementById(id);
+    const panel = wrapper.querySelector('.decoder-panel');
+    const isOpen = panel.classList.contains('open');
+
+    // Close all open decoders
+    document.querySelectorAll('.decoder-panel.open').forEach(p => p.classList.remove('open'));
+    document.querySelectorAll('.decoder-trigger.open').forEach(b => b.classList.remove('open'));
+
+    if (!isOpen) {
+      panel.classList.add('open');
+      btn.classList.add('open');
+
+      // Check if panel overflows right edge and flip it if so
+      const rect = panel.getBoundingClientRect();
+      if (rect.right > window.innerWidth - 16) {
+        panel.classList.add('flip-left');
+      } else {
+        panel.classList.remove('flip-left');
+      }
+    }
+  }
+
+  // Close decoders when clicking outside
+  document.addEventListener('click', function(e) {
+    if (!e.target.closest('.decoder')) {
+      document.querySelectorAll('.decoder-panel.open').forEach(p => p.classList.remove('open'));
+      document.querySelectorAll('.decoder-trigger.open').forEach(b => b.classList.remove('open'));
+    }
+  });
+
+  // Accordion
+  function toggleAccordion(btn) {
+    const panel = btn.nextElementSibling;
+    const isOpen = btn.classList.contains('open');
+    // Close all
+    document.querySelectorAll('.accordion-trigger.open').forEach(b => {
+      b.classList.remove('open');
+      b.nextElementSibling.classList.remove('open');
+    });
+    if (!isOpen) {
+      btn.classList.add('open');
+      panel.classList.add('open');
+    }
+  }
+
+  // Lightbox
+  function openLightbox(id) {
+    document.getElementById(id).classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeLightbox(id) {
+    document.getElementById(id).classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  function closeLightboxOnOverlay(e, id) {
+    if (e.target === document.getElementById(id)) closeLightbox(id);
+  }
+
+  // ESC to close
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+      document.querySelectorAll('.lightbox-overlay.open').forEach(el => {
+        el.classList.remove('open');
+        document.body.style.overflow = '';
+      });
+    }
+  });
+</script>
+
+</body>
+</html>

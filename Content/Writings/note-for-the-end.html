@@ -1,0 +1,1565 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>A Note for the End of the Start — J.L.</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Glass+Antiqua&family=IM+Fell+English:ital@0;1&family=Share+Tech+Mono&family=Glass+Antiqua&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:           #080604;
+    --surface:      #130d04;
+    --surface2:     #1e1408;
+    --brass:        #c8922a;
+    --brass-dim:    #7a5818;
+    --brass-bright: #e8b84b;
+    --teal:         #00f0d0;
+    --teal-dim:     #008a78;
+    --magenta:      #ff2060;
+    --magenta-dim:  #8a1035;
+    --amber:        #ffaa00;
+    --amber-dim:    #7a5200;
+    --text:         #ddc898;
+    --text-dim:     #9a8a6a;
+    --muted:        #6a5a3a;
+    --border:       #2e1e08;
+    --border2:      #4a3010;
+    --border3:      #6a4818;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'IM Fell English', serif;
+    font-size: 16px;
+    line-height: 1.8;
+    min-height: 100vh;
+  }
+
+  /* === BACKGROUND TEXTURE === */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      radial-gradient(circle at 20% 80%, rgba(200,146,42,0.04) 0%, transparent 50%),
+      radial-gradient(circle at 80% 20%, rgba(0,240,208,0.03) 0%, transparent 50%),
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 9999;
+  }
+
+  /* === ORNATE TOP BORDER === */
+  .top-ornament {
+    height: 8px;
+    background: repeating-linear-gradient(
+      90deg,
+      var(--brass-dim) 0px, var(--brass) 4px,
+      var(--brass) 8px, var(--brass-dim) 12px,
+      var(--bg) 12px, var(--bg) 16px
+    );
+    opacity: 0.8;
+  }
+
+  .top-ornament-thin {
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--teal), transparent);
+    opacity: 0.5;
+    margin-top: 3px;
+  }
+
+  /* === MASTHEAD === */
+  .masthead {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border3);
+    padding: 36px 24px 28px;
+    position: relative;
+    overflow: hidden;
+    text-align: center;
+  }
+
+  .masthead::before,
+  .masthead::after {
+    content: '⚙';
+    position: absolute;
+    font-size: 80px;
+    color: var(--brass-dim);
+    opacity: 0.12;
+    top: 50%;
+    transform: translateY(-50%);
+    animation: gearspin 60s linear infinite;
+  }
+  .masthead::before { left: 20px; }
+  .masthead::after  { right: 20px; animation-direction: reverse; }
+
+  @keyframes gearspin { to { transform: translateY(-50%) rotate(360deg); } }
+
+  .masthead-gazette {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 4px;
+    color: var(--muted);
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+
+  .masthead-rule {
+    width: 100%;
+    max-width: 600px;
+    margin: 0 auto 16px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--brass), transparent);
+    position: relative;
+  }
+
+  .masthead-rule::before {
+    content: '❧';
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    background: var(--surface);
+    padding: 0 12px;
+    color: var(--brass);
+    font-size: 16px;
+  }
+
+  .masthead-title {
+    font-family: 'Glass Antiqua', serif;
+    font-size: clamp(22px, 4.5vw, 52px);
+    color: var(--brass-bright);
+    line-height: 1.1;
+    margin-bottom: 10px;
+    text-shadow: 0 0 40px rgba(200,146,42,0.3);
+    letter-spacing: 2px;
+  }
+
+  .masthead-subtitle {
+    font-family: 'IM Fell English', serif;
+    font-style: italic;
+    font-size: clamp(13px, 2vw, 17px);
+    color: var(--text-dim);
+    margin-bottom: 16px;
+    letter-spacing: 0.5px;
+  }
+
+  .masthead-meta {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+
+  .masthead-meta-item {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+  }
+
+  .masthead-meta-sep {
+    color: var(--brass-dim);
+    font-size: 16px;
+  }
+
+  .masthead-meta a {
+    color: var(--magenta);
+    text-decoration: none;
+  }
+
+  .masthead-meta a:hover {
+    color: var(--amber);
+    text-shadow: 0 0 8px var(--amber-dim);
+  }
+
+  /* === TAB BAR === */
+  .tab-bar {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border3);
+    border-top: 1px solid var(--border2);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .tab-bar-inner {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0 24px;
+    display: flex;
+    gap: 0;
+    overflow-x: auto;
+  }
+
+  .tab-btn {
+    font-family: 'Glass Antiqua', serif;
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--muted);
+    background: none;
+    border: none;
+    border-bottom: 2px solid transparent;
+    padding: 14px 18px 12px;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: color 120ms, border-color 120ms;
+  }
+
+  .tab-btn:hover { color: var(--brass); }
+
+  .tab-btn.active {
+    color: var(--amber);
+    border-bottom-color: var(--amber);
+    text-shadow: 0 0 12px rgba(255,170,0,0.4);
+  }
+
+  /* === CONTENT === */
+  .tab-content {
+    display: none;
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 40px 24px 80px;
+  }
+
+  .tab-content.active { display: block; }
+
+  /* === ESSAY BYLINE === */
+  .essay-byline {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--border2);
+    margin-bottom: 36px;
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .essay-byline a {
+    color: var(--magenta);
+    text-decoration: none;
+  }
+
+  .essay-byline a:hover { color: var(--amber); }
+
+  /* === ESSAY BODY === */
+  .essay-body p {
+    margin-bottom: 20px;
+    color: var(--text);
+  }
+
+  .essay-body h2 {
+    font-family: 'Glass Antiqua', serif;
+    font-size: clamp(16px, 2.5vw, 22px);
+    color: var(--amber);
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    margin: 44px 0 20px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border2);
+    position: relative;
+    text-shadow: 0 0 20px rgba(255,170,0,0.25);
+  }
+
+  .essay-body h2::after {
+    content: ' ⚙ ';
+    color: var(--brass-dim);
+    font-size: 14px;
+    vertical-align: middle;
+  }
+
+  .essay-body em {
+    font-style: italic;
+    color: var(--brass-bright);
+  }
+
+  .essay-body strong {
+    font-weight: 700;
+    color: var(--amber);
+  }
+
+  .essay-body a {
+    color: var(--magenta);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  .essay-body a:hover {
+    color: var(--amber);
+    text-shadow: 0 0 6px var(--amber-dim);
+  }
+
+  /* Editorial notes — telegraphic marginalia */
+  .editorial-note {
+    display: block;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 12px;
+    color: var(--teal-dim);
+    border-left: 2px solid var(--teal-dim);
+    padding: 4px 12px;
+    margin: -12px 0 18px 32px;
+    font-style: normal;
+    letter-spacing: 0.5px;
+  }
+
+  .editorial-note::before {
+    content: '— TELEGRAM — ';
+    color: var(--muted);
+    letter-spacing: 2px;
+  }
+
+  /* Caption blocks — ticker tape */
+  .caption-block {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 12px;
+    color: var(--text-dim);
+    background: var(--surface2);
+    border-left: 3px solid var(--brass-dim);
+    border-right: 1px solid var(--border2);
+    padding: 10px 16px;
+    margin: 16px 0 24px;
+    letter-spacing: 0.5px;
+    position: relative;
+  }
+
+  .caption-block::before {
+    content: '▶ DISPATCH';
+    display: block;
+    font-size: 9px;
+    color: var(--brass-dim);
+    letter-spacing: 3px;
+    margin-bottom: 4px;
+  }
+
+  /* Gear section divider */
+  .gear-divider {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 32px 0;
+    color: var(--border3);
+  }
+
+  .gear-divider::before,
+  .gear-divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--border3));
+  }
+
+  .gear-divider::after {
+    background: linear-gradient(90deg, var(--border3), transparent);
+  }
+
+  .gear-divider span {
+    font-size: 18px;
+    color: var(--brass-dim);
+  }
+
+  /* YouTube link styled as telegraph broadcast */
+  .broadcast-link {
+    display: block;
+    background: var(--surface2);
+    border: 1px solid var(--border3);
+    border-left: 3px solid var(--teal-dim);
+    padding: 12px 16px;
+    margin: 16px 0;
+    text-decoration: none;
+    color: var(--teal);
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 13px;
+    transition: border-color 120ms, text-shadow 120ms;
+  }
+
+  .broadcast-link::before {
+    content: '▶ TRANSMISSION: ';
+    color: var(--teal-dim);
+    font-size: 10px;
+    letter-spacing: 2px;
+  }
+
+  .broadcast-link:hover {
+    border-left-color: var(--teal);
+    text-shadow: 0 0 8px var(--teal-dim);
+    color: var(--teal);
+  }
+
+  /* Sign-off */
+  .signoff {
+    font-style: italic;
+    color: var(--muted);
+    font-size: 14px;
+    border-top: 1px solid var(--border2);
+    padding-top: 20px;
+    margin-top: 32px;
+  }
+
+  /* === DECODER COMPONENT === */
+  .decoder {
+    display: inline;
+    position: relative;
+  }
+
+  .decoder-trigger {
+    background: var(--surface2);
+    border: 1px solid var(--teal-dim);
+    cursor: pointer;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 12px;
+    color: var(--teal);
+    padding: 1px 5px;
+    letter-spacing: 1px;
+    text-decoration: none;
+    transition: all 100ms;
+    vertical-align: baseline;
+    line-height: 1.4;
+  }
+
+  .decoder-trigger::before {
+    content: '⚙ ';
+    color: var(--brass-dim);
+    font-size: 10px;
+  }
+
+  .decoder-trigger::after {
+    content: ' ▾';
+    color: var(--teal-dim);
+    font-size: 10px;
+  }
+
+  .decoder-trigger.open {
+    border-color: var(--teal);
+    text-shadow: 0 0 8px var(--teal-dim);
+    background: #04120f;
+  }
+
+  .decoder-trigger.open::after { content: ' ▴'; }
+
+  .decoder-trigger:hover {
+    color: var(--amber);
+    border-color: var(--amber-dim);
+    text-shadow: 0 0 8px var(--amber-dim);
+  }
+
+  .decoder-panel {
+    display: none;
+    position: absolute;
+    top: calc(100% + 6px);
+    left: 0;
+    z-index: 500;
+    padding: 16px 18px;
+    font-family: 'IM Fell English', serif;
+    font-size: 14px;
+    color: var(--text);
+    border: 1px solid var(--teal-dim);
+    border-top: 2px solid var(--teal);
+    background: #030e0c;
+    width: 340px;
+    line-height: 1.65;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.7), 0 0 20px rgba(0,240,208,0.06);
+  }
+
+  .decoder-panel.flip-left {
+    left: auto;
+    right: 0;
+  }
+
+  .decoder-panel.open { display: block; }
+
+  .decoder-panel .decode-label {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--teal-dim);
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  .decoder-panel .decode-term {
+    font-family: 'Glass Antiqua', serif;
+    font-size: 16px;
+    color: var(--amber);
+    display: block;
+    margin-bottom: 10px;
+    text-shadow: 0 0 12px rgba(255,170,0,0.3);
+  }
+
+  .decoder-panel .decode-link {
+    display: inline-block;
+    margin-top: 10px;
+    margin-right: 6px;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 11px;
+    color: var(--magenta);
+    text-decoration: none;
+    border: 1px solid var(--magenta-dim);
+    padding: 3px 8px;
+    transition: all 100ms;
+  }
+
+  .decoder-panel .decode-link:hover {
+    background: var(--magenta);
+    color: var(--bg);
+    text-shadow: none;
+  }
+
+  /* === LIGHTBOX TRIGGER === */
+  .lb-trigger {
+    display: inline;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-family: 'IM Fell English', serif;
+    font-size: inherit;
+    color: var(--magenta);
+    text-decoration: underline dotted;
+    text-underline-offset: 4px;
+    padding: 0;
+    transition: color 100ms, text-shadow 100ms;
+    font-style: italic;
+  }
+
+  .lb-trigger:hover {
+    color: var(--amber);
+    text-shadow: 0 0 8px var(--amber-dim);
+  }
+
+  /* === LIGHTBOX === */
+  .lightbox-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(4, 3, 2, 0.94);
+    z-index: 9000;
+    justify-content: center;
+    align-items: center;
+    padding: 24px;
+  }
+
+  .lightbox-overlay.open { display: flex; }
+
+  .lightbox-box {
+    background: var(--surface);
+    border: 1px solid var(--border3);
+    border-top: 3px solid var(--amber);
+    max-width: 680px;
+    width: 100%;
+    max-height: 88vh;
+    overflow-y: auto;
+    box-shadow: 0 0 60px rgba(200,146,42,0.1);
+  }
+
+  .lightbox-header {
+    background: var(--surface2);
+    border-bottom: 1px solid var(--border3);
+    padding: 14px 18px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .lightbox-title {
+    font-family: 'Glass Antiqua', serif;
+    font-size: 12px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--amber);
+  }
+
+  .lightbox-close {
+    background: none;
+    border: 1px solid var(--border3);
+    cursor: pointer;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 14px;
+    color: var(--muted);
+    padding: 2px 7px;
+    line-height: 1;
+    transition: color 100ms, border-color 100ms;
+  }
+
+  .lightbox-close:hover {
+    color: var(--magenta);
+    border-color: var(--magenta-dim);
+  }
+
+  .lightbox-body {
+    padding: 28px;
+    font-size: 15px;
+    line-height: 1.75;
+    color: var(--text);
+  }
+
+  .lightbox-body h3 {
+    font-family: 'Glass Antiqua', serif;
+    font-size: 20px;
+    color: var(--amber);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 14px;
+    text-shadow: 0 0 16px rgba(255,170,0,0.25);
+  }
+
+  .lightbox-body p { margin-bottom: 14px; }
+
+  .lightbox-body a {
+    color: var(--magenta);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  .lightbox-body a:hover { color: var(--amber); }
+
+  .lb-source-btn {
+    display: inline-block;
+    margin-top: 10px;
+    margin-right: 6px;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 11px;
+    color: var(--magenta);
+    border: 1px solid var(--magenta-dim);
+    padding: 4px 10px;
+    text-decoration: none;
+    transition: all 100ms;
+  }
+
+  .lb-source-btn:hover {
+    background: var(--magenta);
+    color: var(--bg);
+  }
+
+  /* === ACCORDION === */
+  .accordion-item {
+    border-bottom: 1px solid var(--border2);
+  }
+
+  .accordion-trigger {
+    width: 100%;
+    background: none;
+    border: none;
+    padding: 16px 0;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    text-align: left;
+  }
+
+  .accordion-trigger-text {
+    font-family: 'Glass Antiqua', serif;
+    font-size: 13px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    transition: color 100ms;
+  }
+
+  .accordion-trigger:hover .accordion-trigger-text { color: var(--amber); }
+
+  .accordion-arrow {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 16px;
+    color: var(--brass-dim);
+    flex-shrink: 0;
+    transition: transform 150ms;
+  }
+
+  .accordion-trigger.open .accordion-arrow {
+    transform: rotate(180deg);
+    color: var(--amber);
+  }
+
+  .accordion-panel {
+    display: none;
+    padding: 0 0 20px;
+    font-size: 15px;
+    color: var(--text);
+    line-height: 1.75;
+  }
+
+  .accordion-panel.open { display: block; }
+
+  .accordion-panel a {
+    color: var(--magenta);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  .accordion-panel a:hover { color: var(--amber); }
+
+  /* === OTHER TAB CONTENT STYLES === */
+  .content-title {
+    font-family: 'Glass Antiqua', serif;
+    font-size: clamp(16px, 2.5vw, 20px);
+    color: var(--amber);
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin: 36px 0 16px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border2);
+    text-shadow: 0 0 16px rgba(255,170,0,0.2);
+  }
+
+  .content-title:first-child { margin-top: 0; }
+
+  .content-body {
+    font-size: 15px;
+    line-height: 1.75;
+    color: var(--text);
+    margin-bottom: 18px;
+  }
+
+  .content-body a {
+    color: var(--magenta);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  .content-body a:hover { color: var(--amber); }
+
+  /* Infobox */
+  .infobox {
+    background: var(--surface2);
+    border: 1px solid var(--border3);
+    border-left: 3px solid var(--teal-dim);
+    padding: 16px 20px;
+    margin: 20px 0;
+    font-size: 14px;
+    line-height: 1.65;
+  }
+
+  .infobox strong {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--teal);
+    display: block;
+    margin-bottom: 6px;
+  }
+
+  /* Crisis card grid */
+  .card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 14px;
+    margin: 20px 0 32px;
+  }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border2);
+    border-top: 2px solid var(--brass-dim);
+    padding: 18px;
+  }
+
+  .card-label {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--brass-dim);
+    margin-bottom: 6px;
+    display: block;
+  }
+
+  .card-title {
+    font-family: 'Glass Antiqua', serif;
+    font-size: 14px;
+    letter-spacing: 1px;
+    color: var(--amber);
+    margin-bottom: 8px;
+    text-transform: uppercase;
+  }
+
+  .card p {
+    font-size: 13px;
+    color: var(--text-dim);
+    line-height: 1.6;
+  }
+
+  .card a {
+    color: var(--magenta);
+    text-decoration: none;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 11px;
+    display: inline-block;
+    margin-top: 8px;
+    border-bottom: 1px solid var(--magenta-dim);
+  }
+
+  .card a:hover { color: var(--amber); }
+
+  /* Pull quote */
+  .pull-quote {
+    border-left: 3px solid var(--brass);
+    padding: 14px 20px;
+    background: var(--surface);
+    margin: 28px 0;
+    position: relative;
+  }
+
+  .pull-quote::before {
+    content: '"';
+    font-family: 'Glass Antiqua', serif;
+    font-size: 48px;
+    color: var(--brass-dim);
+    opacity: 0.4;
+    position: absolute;
+    top: -8px;
+    left: 12px;
+    line-height: 1;
+  }
+
+  .pull-quote p {
+    font-family: 'IM Fell English', serif;
+    font-style: italic;
+    font-size: 18px;
+    color: var(--text);
+    line-height: 1.5;
+    margin-bottom: 8px;
+    padding-left: 24px;
+  }
+
+  .pull-quote cite {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    font-style: normal;
+    letter-spacing: 2px;
+    padding-left: 24px;
+  }
+
+  /* Resource links */
+  .resource-section-title {
+    font-family: 'Glass Antiqua', serif;
+    font-size: 14px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--brass);
+    margin: 28px 0 12px;
+    border-bottom: 1px solid var(--border2);
+    padding-bottom: 8px;
+  }
+
+  .resource-link {
+    display: block;
+    padding: 14px 0;
+    border-bottom: 1px solid var(--border);
+    text-decoration: none;
+    color: var(--text);
+    transition: color 100ms;
+  }
+
+  .resource-link:hover .resource-title { color: var(--amber); }
+
+  .resource-link-inner {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .resource-title {
+    font-family: 'Glass Antiqua', serif;
+    font-size: 13px;
+    letter-spacing: 1px;
+    color: var(--text);
+    text-transform: uppercase;
+    margin-bottom: 4px;
+    transition: color 100ms;
+  }
+
+  .resource-desc {
+    font-family: 'IM Fell English', serif;
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.5;
+  }
+
+  .resource-tag {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 1px;
+    color: var(--brass);
+    border: 1px solid var(--brass-dim);
+    padding: 2px 6px;
+    flex-shrink: 0;
+    text-transform: uppercase;
+    margin-top: 2px;
+  }
+
+  .resource-arrow {
+    color: var(--muted);
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 14px;
+    flex-shrink: 0;
+    align-self: center;
+  }
+
+  /* Storms timeline */
+  .storm-item {
+    display: flex;
+    gap: 16px;
+    padding: 14px 0;
+    border-bottom: 1px solid var(--border);
+    align-items: flex-start;
+  }
+
+  .storm-date {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    min-width: 80px;
+    padding-top: 3px;
+    letter-spacing: 1px;
+  }
+
+  .storm-badge {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    border: 1px solid var(--border3);
+    padding: 2px 6px;
+    flex-shrink: 0;
+    margin-top: 2px;
+    min-width: 70px;
+    text-align: center;
+  }
+
+  .storm-badge.red   { color: var(--magenta); border-color: var(--magenta-dim); }
+  .storm-badge.amber { color: var(--amber);   border-color: var(--amber-dim); }
+  .storm-badge.teal  { color: var(--teal);    border-color: var(--teal-dim); }
+
+  .storm-desc {
+    font-size: 14px;
+    color: var(--text);
+    line-height: 1.6;
+    flex: 1;
+  }
+
+  .storm-desc a {
+    color: var(--magenta);
+    text-decoration: none;
+  }
+
+  .storm-desc a:hover { color: var(--amber); }
+
+  /* Footer */
+  footer {
+    background: var(--surface);
+    border-top: 1px solid var(--border3);
+    padding: 18px 24px;
+    text-align: center;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 1px;
+  }
+
+  footer a { color: var(--brass); text-decoration: none; }
+  footer a:hover { color: var(--amber); }
+
+  .footer-ornament {
+    letter-spacing: 12px;
+    color: var(--brass-dim);
+    display: block;
+    margin-bottom: 8px;
+    font-size: 14px;
+  }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--brass-dim); }
+  ::-webkit-scrollbar-thumb:hover { background: var(--brass); }
+</style>
+</head>
+<body>
+
+<div class="top-ornament"></div>
+<div class="top-ornament-thin"></div>
+
+<!-- MASTHEAD -->
+<header class="masthead">
+  <div class="masthead-gazette">The Metropolitan Gazette of Accumulated Catastrophe &nbsp;·&nbsp; Vol. MMXXI</div>
+  <div class="masthead-rule"></div>
+  <h1 class="masthead-title">A Note for the End of the Start</h1>
+  <p class="masthead-subtitle">Best Take Time to Breathe While We Can. The Storms, They are A'Gathering.</p>
+  <div class="masthead-rule" style="margin-top:16px;"></div>
+  <div class="masthead-meta">
+    <span class="masthead-meta-item">By J.L.</span>
+    <span class="masthead-meta-sep">⚙</span>
+    <span class="masthead-meta-item">XIX January MMXXI</span>
+    <span class="masthead-meta-sep">⚙</span>
+    <span class="masthead-meta-item"><a href="https://medium.com/@julianlkruger/a-note-for-the-end-of-the-start-eb7498cb205f" target="_blank">Read on Medium →</a></span>
+  </div>
+</header>
+
+<!-- TAB BAR -->
+<nav class="tab-bar">
+  <div class="tab-bar-inner">
+    <button class="tab-btn active" onclick="switchTab('essay', this)">The Essay</button>
+    <button class="tab-btn" onclick="switchTab('crises', this)">The Crises</button>
+    <button class="tab-btn" onclick="switchTab('storms', this)">The Storms</button>
+    <button class="tab-btn" onclick="switchTab('reading', this)">Further Reading</button>
+  </div>
+</nav>
+
+<!-- ================================================================ -->
+<!-- TAB: THE ESSAY -->
+<!-- ================================================================ -->
+<div id="tab-essay" class="tab-content active">
+
+  <div class="essay-byline">
+    <span>J.L. — <a href="https://medium.com/@julianlkruger/a-note-for-the-end-of-the-start-eb7498cb205f" target="_blank">Medium, 19 Jan 2021</a></span>
+    <span>Written the day before Biden's inauguration &nbsp;·&nbsp; Post-Jan 6th &nbsp;·&nbsp; Peak COVID</span>
+  </div>
+
+  <div class="essay-body">
+
+    <div class="infobox">
+      <strong>⚙ Decoder Active</strong>
+      Key terms in the essay are annotated with inline <span style="font-family:'Share Tech Mono',monospace;color:var(--teal);font-size:12px;">⚙ decoders</span> — click to reveal the concept, history, or theory behind the phrase.
+    </div>
+
+    <div class="caption-block">The structures we cling to as sanctuaries are critical to our survival… The question is: Can they survive what's coming?</div>
+
+    <p>Individuals, communities, economies, societies and civilizations must all face 
+    <span class="decoder" id="dec-stress-tests">
+      <button class="decoder-trigger" onclick="toggleDecoder('dec-stress-tests', this)">stress-tests</button>
+      <span class="decoder-panel">
+        <span class="decode-label">Decoded Concept</span>
+        <span class="decode-term">Antifragility &amp; Systems Resilience</span>
+        Nassim Taleb's concept of <em>antifragility</em> holds that some systems don't merely survive stress — they improve under it. A resilient system bounces back; an antifragile one grows stronger. The inverse — fragility — describes systems that fail catastrophically under stress they were never designed to absorb. The question is whether 21st-century civilizational systems are resilient, antifragile, or increasingly fragile under the weight of compounding shocks.
+        <a class="decode-link" href="https://en.wikipedia.org/wiki/Antifragile_(book)" target="_blank">→ Wikipedia: Antifragile</a>
+        <a class="decode-link" href="https://en.wikipedia.org/wiki/Resilience_(engineering_and_construction)" target="_blank">→ Wikipedia: Resilience</a>
+      </span>
+    </span>
+    from time to time. While the necessity of any given hardship is always worth challenging, it is pretty self-evident that overcoming hardship builds resilience.</p>
+
+    <p>The rhetoric of rising to tackle a challenge is a staple of politicking. That much is clear from any cursory gander at a random act of political speech.</p>
+
+    <p>Optimists thrive on approaching difficulty with the assumption that it is, at the very least, <em>possible</em> to solve the problem.</p>
+
+    <p>However, the humans of the 21st Century are facing hardships that are beyond the scope of any individual person's capacity to comprehend.</p>
+
+    <div class="caption-block">The portal into wild speculation is perfectly safe…</div>
+
+    <div class="gear-divider"><span>⚙</span></div>
+
+    <h2>Cascading Crises Collapse Communities</h2>
+
+    <p>I've read article after article listing the smorgasbord of shitty shit that keeps happening around the world. There are hot wars, cold wars, civil wars, cyber wars, trade wars, almost wars, metaphorical wars, pseudo wars and "conflicts". Terrorism, errorism, racism, classism, authoritarianism, populism, cynicism, extremism, capitalism, nationalism, socialism, nativism, sexism, communism, anarchism…. Perhaps we're in need of a collective exorcism. Our demons run deep.</p>
+
+    <p>And yet the world turns. Somehow, most humans do not awaken every morning to the smell of hellfire and brimstone. The lucky ones (like me) get up, go to work, and get on with our weird little lives.</p>
+
+    <p>It is a statistical certainty that something terrible is happening to somebody somewhere right now. It is also almost certain that that terrible thing won't make it into the news (except, perhaps, as a statistic).</p>
+
+    <p>The news, you see, operates at the intersection of interest and attention. It has to be interesting enough to warrant attention, with enough attention paid in its execution to maintain our increasingly saturated capacity for interest. Tangentially, the effectiveness of executions as news-fodder are a telling indicator of any given country's state-of-play. Returning to the point (I think, I'm not sure if there is one yet), is the notion that the news has always made the World seem a like it's a few wobbles away from going completely off the rails. But the illusion, and it might be a delusional one, is the idea that the World has rails to ride on. Politics, at every level and in every sphere of influences, is, at best, an ongoing debate about "the Way the World should be". The way the World is plays a role in the debate, but that is not necessarily reflected in the news.</p>
+
+    <p>My point seems to have disappeared in my pontifications. Permit me to try again (pretty please, with a cherry on top? Thanks)</p>
+
+    <p>The news tells us things, and our day-to-day living tells us things. Sometimes the things told are the same from both sources. Usually when the news "hits home", or when we <em>are</em> the news of the day.</p>
+
+    <p>Why this event or that event matters occupies a good portion of every story, even when the reasons are self-evident. From another perspective — we still live in a world where keeping abreast with current events is entirely optional for most people. Not knowing what's happening out there is still a viable option. In spite of the dazzling array of calamitous catastrophes claiming space on countless newscasts, the World as we know it has not yet collapsed.</p>
+
+    <p>But that might change. Maybe not soon. But if it does, it will be the result of 
+    <span class="decoder" id="dec-cascading">
+      <button class="decoder-trigger" onclick="toggleDecoder('dec-cascading', this)">cascading crises</button>
+      <span class="decoder-panel">
+        <span class="decode-label">Decoded Concept</span>
+        <span class="decode-term">Cascading Systems Failure</span>
+        A cascading crisis is one where the failure of one system degrades or destroys the capacity of dependent systems to function — triggering a chain reaction. Unlike concurrent crises (which can be addressed in parallel), cascading crises are sequential and compounding. Classic examples: the 2008 financial crisis (mortgage defaults → bank failures → credit freezes → economic collapse); COVID-19 (health crisis → supply chain failure → political instability). The key variable is <em>dependency</em>: the more interconnected the systems, the faster the cascade.
+        <a class="decode-link" href="https://en.wikipedia.org/wiki/Cascading_failure" target="_blank">→ Wikipedia: Cascading failure</a>
+        <a class="decode-link" href="https://en.wikipedia.org/wiki/Complex_system" target="_blank">→ Wikipedia: Complex systems</a>
+      </span>
+    </span>. (The point is in sight, at last).</p>
+
+    <p>There are a lot of concurrent crises present in the World today. But they have yet to coalesce and cascade. They're beginning to, certainly… but we're not there yet. Yes, there are local and regional crises that have cascaded to their current point, but globally the cascades have been somewhat contained.</p>
+
+    <p>What separates cascading crises from their concurrent counterparts? Well, failure to resolve one crisis doesn't cripple our capacity to resolve a concurrent one, but it does for a cascading one. Dependencies are the key here. Every community is dependent on certain systems, and any given crisis generally renders particular systems uncertain. Without its systems, a community collapses.</p>
+
+    <p>The systems that a community can sustainably maintain are limited by the size of the community and the scope of each system's applications. Small communities build small systems that can be applied situationally. Small communities also have the benefit of requiring only a handful of systems in order to function survivably.</p>
+
+    <p>Large communities, on the other hand, are capable of infinitely more sophisticated and interdependent systems. Some systems become requirements for the larger systems' continued existence. It is important here to remember that in every community, no matter what size, the humans within each system, themselves, are agents of it.</p>
+
+    <span class="editorial-note">Reflexive pronouns tend to be gender neutral.</span>
+
+    <p>It would be unwise to assume that complexity is a bad thing. Every aspect of the Universe beyond the Fundamental Particles (and the Constants, whatever the fuck they turn out to be caused by) stands testament to the argument that complexity is a prerequisite for both life and consciousness. Another erroneous assumption is the notion that complexity is synonymous with fragility.</p>
+
+    <p>To illustrate this, let us consider 
+    <span class="decoder" id="dec-fireants">
+      <button class="decoder-trigger" onclick="toggleDecoder('dec-fireants', this)">fire ants</button>
+      <span class="decoder-panel">
+        <span class="decode-label">Decoded Concept</span>
+        <span class="decode-term">Emergence &amp; Collective Resilience</span>
+        Fire ant colonies demonstrate <em>emergence</em>: complex, adaptive, resilient behaviour arising from simple individual rules with no central coordination. Each ant follows basic chemical signals; the colony solves complex problems — including forming living rafts to survive floods — that no individual ant could conceive. This is the author's counter-argument to the fragility-of-complexity assumption. Robust complex systems often distribute their intelligence across their agents rather than concentrating it at the top.
+        <a class="decode-link" href="https://en.wikipedia.org/wiki/Emergence" target="_blank">→ Wikipedia: Emergence</a>
+        <a class="decode-link" href="https://en.wikipedia.org/wiki/Stigmergy" target="_blank">→ Wikipedia: Stigmergy</a>
+      </span>
+    </span>…</p>
+
+    <a class="broadcast-link" href="https://www.youtube.com/watch?v=NpiDADw5Omw" target="_blank">The bizarre physics of fire ants — YouTube</a>
+
+    <p>Simple mechanics, sure… Elegant physics, certainly… But fire ant colonies are complex AF, and also robust and resilient. So it is with large, complex communities of 
+    <span class="decoder" id="dec-homosapiens">
+      <button class="decoder-trigger" onclick="toggleDecoder('dec-homosapiens', this)">Homo sapiens</button>
+      <span class="decoder-panel">
+        <span class="decode-label">Decoded Term</span>
+        <span class="decode-term">Us. All of Us.</span>
+        <em>Homo sapiens</em> — "wise man" — is the species name for modern humans. We've been around for roughly 300,000 years. For most of that time we lived in small bands of 20–150 people. Civilization — large-scale, sedentary, literate societies — is only about 5,000–6,000 years old. The systems we currently depend on (electrical grids, global supply chains, internet infrastructure, financial markets) are at most a few hundred years old. The author's implicit point: our complex systems are historically new, largely untested at civilizational scale, and we are still the agents within them.
+        <a class="decode-link" href="https://en.wikipedia.org/wiki/Homo_sapiens" target="_blank">→ Wikipedia: Homo sapiens</a>
+        <a class="decode-link" href="https://en.wikipedia.org/wiki/History_of_civilization" target="_blank">→ Wikipedia: History of civilization</a>
+      </span>
+    </span>,
+    commonly called civilizations. Such communities have been known to last anywhere from centuries to millennia.</p>
+
+    <p>Granted, the tribe and the clan are much older units of society. And yes they have been thoroughly tested in the crucible of calamity many times more than the construct that is civilization. With that said, millennia are nothing to scoff at.</p>
+
+    <p>With systems as complex as our current ones are, it would be foolish to assume that collapse is inevitable. It isn't. But it becomes increasingly likely with every crisis that is inadequately addressed.</p>
+
+    <p>This makes our attitude toward each crisis preeminently pertinent to our power to prevail. And therein lies the hubris at the heart of our present predicament.</p>
+
+    <p>Consider this – just because we can collectively survive a hurricane, not every individual will. Collective strategies and action can save lives, but not everyone will be rescued. There are some people out there with the power and the inclination to submit all rescue efforts to a 
+    <button class="lb-trigger" onclick="openLightbox('lb-calculus')">calculus of cost-per-life-saved</button>,
+    to weigh souls in the scales of profit. But to the rescuer, the chief concern is that every soul that cries out must be answered. But the rescuers never seem to be put in charge. They are called up. Organized and deployed by the powers that be.</p>
+
+    <span class="editorial-note">Why is that?</span>
+
+    <div class="caption-block">Are the angels of our better natures condemned to be cast in stone, and thus made into the myths they seem to be?</div>
+
+    <div class="gear-divider"><span>⚙</span></div>
+
+    <h2>Never Let a Crisis Go to Waste</h2>
+
+    <span class="editorial-note">Please also connect it to the point of this piece, if there actually is one.</span>
+
+    <p>This fucking phrase. It's gotten to the point that I find it disturbing. Let me tell you why…</p>
+
+    <p>First, there's the other common variant: 
+    <span class="decoder" id="dec-good-crisis">
+      <button class="decoder-trigger" onclick="toggleDecoder('dec-good-crisis', this)">Never let a good crisis go to waste</button>
+      <span class="decoder-panel">
+        <span class="decode-label">Decoded Phrase</span>
+        <span class="decode-term">Crisis as Political Opportunity</span>
+        Attributed to Rahm Emanuel (White House Chief of Staff under Obama), spoken during the 2008 financial crisis — though variants appear earlier, attributed to Winston Churchill. The phrase encapsulates the political doctrine of using mass disruption to pass reforms (or power grabs) that would otherwise be impossible. The author's objection: the word "good" reveals the speaker's position — crises are only "good" if you're positioned to profit from them, which requires having survived them better than most.
+        <a class="decode-link" href="https://en.wikipedia.org/wiki/Rahm_Emanuel" target="_blank">→ Wikipedia: Rahm Emanuel</a>
+        <a class="decode-link" href="https://en.wikipedia.org/wiki/Naomi_Klein#The_Shock_Doctrine" target="_blank">→ Wikipedia: The Shock Doctrine</a>
+      </span>
+    </span>?
+    Dafuq is a good crisis? Who gets to decide whether or not a crisis is good?</p>
+
+    <p>It's almost certain that certain crises end up benefitting certain people. Who those people are can be difficult to ascertain. And there are significant value judgements (and therefore value systems) at work in such calculations. And when the levels of uncertainty in any given crisis cross a critical threshold, the chaos makes every calculation as meaningful as chance.</p>
+
+    <p>Gambling is addictive though.</p>
+
+    <p>I guess we'd call it a good crisis if we reach the future end in better shape than we were in the beginning. But that judgement rests entirely on our definitions of who we are. And if we go by our picture of the world as it seems to be, then there is still no consensus on how we ought to be defined.</p>
+
+    <span class="editorial-note">There could be quotations on "we", but it's more interesting to think about that statement without them.</span>
+
+    <p>The phrase in question is most salient when viewed through the lens of capital, or, more accurately, 
+    <span class="decoder" id="dec-moneygod">
+      <button class="decoder-trigger" onclick="toggleDecoder('dec-moneygod', this)">moneygod worship</button>
+      <span class="decoder-panel">
+        <span class="decode-label">Decoded Concept</span>
+        <span class="decode-term">Financialization &amp; Late-Stage Capitalism</span>
+        The author's term for the near-religious status accorded to capital accumulation in contemporary society — where profit functions as both metric and moral justification. <em>Financialization</em> describes the process by which financial instruments and returns to capital come to dominate economic decision-making over productive investment. The critique: when profit is the primary lens through which crises are evaluated, the calculus of rescue becomes indistinguishable from the calculus of extraction.
+        <a class="decode-link" href="https://en.wikipedia.org/wiki/Financialization" target="_blank">→ Wikipedia: Financialization</a>
+        <a class="decode-link" href="https://en.wikipedia.org/wiki/Late_capitalism" target="_blank">→ Wikipedia: Late capitalism</a>
+      </span>
+    </span>,
+    in all its forms. The good crisis is the crisis that results in profit. Letting a good crisis go to waste is failing to profit as much as thy peers, who, to their creditors, did not.</p>
+
+    <p>But here's the part with the point:</p>
+
+    <p>Money is created in the minds of communities, and when the communities collapse, so too, does the money. Capitalist thought is simply not up to the task of surviving cascading crises, because it tends to be persistently preoccupied with exploiting them.</p>
+
+    <div class="gear-divider"><span>⚙</span></div>
+
+    <h2>A Conclusion… Kind Of</h2>
+
+    <p>This is the Note for the End of the Start:</p>
+
+    <p>What is a day in a process that takes years, or decades, or centuries? The same as a day every day. We won't know what will happen in the days ahead, until we remember them as days gone by.</p>
+
+    <p>The Start of What? A 
+    <button class="lb-trigger" onclick="openLightbox('lb-storms')">Time of Storms</button>.</p>
+
+    <p>What we have seen since the wind kicked up and the trees started trembling is a mere trifle when compared to that which we see on the horizon.</p>
+
+    <p>Who are we? That is up to us.</p>
+
+    <p>The crises, however, have only just begun to cascade.</p>
+
+    <div class="gear-divider"><span>⚙</span></div>
+
+    <p class="signoff">This took way longer to write than I wanted it to.<br><br>Peace, Love and a Little Madness<br><strong>JL</strong></p>
+
+  </div>
+</div>
+
+<!-- ================================================================ -->
+<!-- TAB: THE CRISES -->
+<!-- ================================================================ -->
+<div id="tab-crises" class="tab-content">
+
+  <p class="content-title">Concurrent vs. Cascading</p>
+  <p class="content-body">The essay draws a precise distinction the author considers central to everything: the difference between crises that run in parallel and crises that feed each other.</p>
+
+  <div class="card-grid">
+    <div class="card">
+      <span class="card-label">Type A</span>
+      <div class="card-title">Concurrent Crises</div>
+      <p>Multiple crises occurring simultaneously but independently. A drought and a labour dispute are both crises — but solving (or failing to solve) one does not determine the outcome of the other. Resources can be divided. Societies can walk and chew gum.</p>
+    </div>
+    <div class="card">
+      <span class="card-label">Type B</span>
+      <div class="card-title">Cascading Crises</div>
+      <p>Crises linked by dependency chains, where failure in one system degrades the capacity to address failures in dependent systems. Each unresolved crisis expands the blast radius of the next. Societies cannot walk and chew gum — both legs are broken.</p>
+      <a href="https://en.wikipedia.org/wiki/Cascading_failure" target="_blank">→ Wikipedia: Cascading failure</a>
+    </div>
+  </div>
+
+  <p class="content-title">Why Dependencies Are The Key Variable</p>
+  <p class="content-body">Every modern society is built on interlocking systems — power grids, food supply chains, financial systems, public health infrastructure, communication networks, democratic institutions. Each system depends on others to function. This creates both strength and vulnerability: the same interdependence that makes modern life extraordinarily productive is what makes cascading failure possible at civilizational scale.</p>
+
+  <div class="accordion-item">
+    <button class="accordion-trigger" onclick="toggleAccordion(this)">
+      <span class="accordion-trigger-text">Historical Examples of Cascade</span>
+      <span class="accordion-arrow">▾</span>
+    </button>
+    <div class="accordion-panel">
+      The <strong style="color:var(--amber)">2008 Financial Crisis</strong> is the cleanest modern example: subprime mortgage defaults triggered bank insolvencies, which triggered credit market freezes, which triggered mass unemployment, which triggered political instability across multiple continents — all within 18 months. The <a href="https://en.wikipedia.org/wiki/Late_Bronze_Age_collapse" target="_blank">Late Bronze Age Collapse (~1200 BCE)</a> is the ancient precedent: a multi-system failure across the Eastern Mediterranean that destroyed palace economies, erased writing systems, and ended multiple civilizations within a generation. Its precise causes are still debated — which is itself an argument for the author's point about comprehension limits.
+    </div>
+  </div>
+
+  <div class="accordion-item">
+    <button class="accordion-trigger" onclick="toggleAccordion(this)">
+      <span class="accordion-trigger-text">Complexity: Fragile or Antifragile?</span>
+      <span class="accordion-arrow">▾</span>
+    </button>
+    <div class="accordion-panel">
+      The author explicitly rejects the simple equation complexity = fragility. Fire ants are the proof of concept: a colony's individual agents are expendable; the collective intelligence is robust and adaptive. The same principle applies to decentralised human networks — local communities, mutual aid structures, distributed knowledge systems. The fragility argument applies more accurately to <em>centralised</em> complex systems, where decision-making is concentrated at nodes that become single points of failure. Nassim Taleb's <a href="https://en.wikipedia.org/wiki/Antifragile_(book)" target="_blank">Antifragile</a> develops this at length: systems that can absorb shocks and reorganise are antifragile; those that require stability to function are fragile regardless of their apparent sophistication.
+    </div>
+  </div>
+
+  <div class="accordion-item">
+    <button class="accordion-trigger" onclick="toggleAccordion(this)">
+      <span class="accordion-trigger-text">The Rescuer Problem</span>
+      <span class="accordion-arrow">▾</span>
+    </button>
+    <div class="accordion-panel">
+      One of the essay's sharpest observations: in every disaster, the people most competent and motivated to help (rescuers) are not the people who make structural decisions about how resources are allocated. The people who do make those decisions often apply a <a href="https://en.wikipedia.org/wiki/Cost%E2%80%93benefit_analysis" target="_blank">cost-benefit calculus</a> that treats lives as line items. This isn't merely a moral critique — it's a systems critique. Optimising rescue for profit extraction rather than lives saved degrades the long-term resilience of the community, because community resilience is built on trust and mutual obligation, not efficiency ratios.
+    </div>
+  </div>
+
+  <div class="accordion-item">
+    <button class="accordion-trigger" onclick="toggleAccordion(this)">
+      <span class="accordion-trigger-text">Why Money Doesn't Survive Collapse</span>
+      <span class="accordion-arrow">▾</span>
+    </button>
+    <div class="accordion-panel">
+      The essay's final structural argument: money is a social technology — it functions only within the community consensus that gives it value. Weimar Germany, Zimbabwe, post-Soviet republics: monetary collapse follows community collapse, not the other way around. The implication is that capitalism's crisis-exploitation logic is self-defeating at civilizational scale. You can extract value from a collapsing community right up until the collapse extinguishes the community — and the currency — entirely. See: <a href="https://en.wikipedia.org/wiki/Hyperinflation_in_the_Weimar_Republic" target="_blank">Weimar hyperinflation</a>.
+    </div>
+  </div>
+
+</div>
+
+<!-- ================================================================ -->
+<!-- TAB: THE STORMS -->
+<!-- ================================================================ -->
+<div id="tab-storms" class="tab-content">
+
+  <p class="content-title">19 January 2021 — The Day Before</p>
+  <p class="content-body">This essay was written on the penultimate day of Trump's presidency — 13 days after the January 6th Capitol riot, during the deadliest week of COVID-19 in the United States, and the night before Biden's inauguration. The author's "storms gathering on the horizon" was not metaphor. Here is what the horizon actually looked like that day.</p>
+
+  <div class="storm-item">
+    <div class="storm-date">Jan 6, 2021</div>
+    <div class="storm-badge red">Political</div>
+    <div class="storm-desc">The United States Capitol is stormed by a mob attempting to prevent certification of the 2020 election results. <a href="https://en.wikipedia.org/wiki/2021_United_States_Capitol_attack" target="_blank">5 people die</a>; 140 police officers are injured. The world watches live.</div>
+  </div>
+
+  <div class="storm-item">
+    <div class="storm-date">Jan 2021</div>
+    <div class="storm-badge red">Health</div>
+    <div class="storm-desc">The US records its <a href="https://en.wikipedia.org/wiki/COVID-19_pandemic_in_the_United_States" target="_blank">highest single-week death toll</a> from COVID-19: over 23,000 deaths in seven days. Global total approaches 2 million. Vaccine rollout has just begun.</div>
+  </div>
+
+  <div class="storm-item">
+    <div class="storm-date">Jan 2021</div>
+    <div class="storm-badge amber">Economic</div>
+    <div class="storm-desc">Global unemployment remains historically elevated. Supply chain fractures from early COVID shutdowns are becoming structural. <a href="https://en.wikipedia.org/wiki/GameStop_short_squeeze" target="_blank">The GameStop short squeeze</a> — days away — will expose the volatility at the base of retail financial markets.</div>
+  </div>
+
+  <div class="storm-item">
+    <div class="storm-date">2020–21</div>
+    <div class="storm-badge red">Climate</div>
+    <div class="storm-desc">2020 ties 2016 as the hottest year on record. Australia has just emerged from the <a href="https://en.wikipedia.org/wiki/2019%E2%80%9320_Australian_bushfire_season" target="_blank">Black Summer bushfires</a>. The US withdraws from the Paris Agreement (re-joining in Feb 2021).</div>
+  </div>
+
+  <div class="storm-item">
+    <div class="storm-date">2020–21</div>
+    <div class="storm-badge amber">Information</div>
+    <div class="storm-desc">The <a href="https://en.wikipedia.org/wiki/Infodemic" target="_blank">COVID infodemic</a> — the WHO's term for the parallel epidemic of misinformation — is at peak intensity. Social media platforms struggle with vaccine disinformation. Trust in institutions is at generational lows.</div>
+  </div>
+
+  <p class="content-title">What Cascaded After</p>
+  <p class="content-body">The author wrote "the crises have only just begun to cascade." In the years since, some of the cascades he anticipated have become legible.</p>
+
+  <div class="storm-item">
+    <div class="storm-date">Feb 2022</div>
+    <div class="storm-badge red">Geopolitical</div>
+    <div class="storm-desc">Russia invades Ukraine. Global food systems are disrupted — Ukraine and Russia supply ~30% of the world's wheat exports. Energy price shocks ripple through European economies. The <a href="https://en.wikipedia.org/wiki/Doomsday_Clock" target="_blank">Doomsday Clock</a> moves to 90 seconds to Midnight.</div>
+  </div>
+
+  <div class="storm-item">
+    <div class="storm-date">2022–23</div>
+    <div class="storm-badge amber">Economic</div>
+    <div class="storm-desc">Post-pandemic supply chain failures combine with war-driven energy shocks to produce the <a href="https://en.wikipedia.org/wiki/2021%E2%80%932023_inflation_surge" target="_blank">worst inflation surge</a> in four decades across Western economies — a textbook concurrent-turning-cascading event.</div>
+  </div>
+
+  <div class="storm-item">
+    <div class="storm-date">2023–24</div>
+    <div class="storm-badge teal">Technological</div>
+    <div class="storm-desc">Rapid deployment of large language models accelerates the very disinformation dynamics the author alludes to. AI-generated content complicates the "intersection of interest and attention" he identifies as the news's operating logic.</div>
+  </div>
+
+  <pull-quote>
+    <div class="pull-quote">
+      <p>The crises, however, have only just begun to cascade.</p>
+      <cite>— J.L., 19 January 2021</cite>
+    </div>
+  </pull-quote>
+
+</div>
+
+<!-- ================================================================ -->
+<!-- TAB: FURTHER READING -->
+<!-- ================================================================ -->
+<div id="tab-reading" class="tab-content">
+
+  <div class="resource-section-title">On Cascading Systems Failure</div>
+
+  <a class="resource-link" href="https://en.wikipedia.org/wiki/Cascading_failure" target="_blank">
+    <div class="resource-link-inner">
+      <div>
+        <div class="resource-title">Cascading Failure — Wikipedia</div>
+        <div class="resource-desc">The mechanics of how failure propagates through interdependent systems — from power grids to financial networks to ecosystems.</div>
+      </div>
+      <div><div class="resource-tag">Wiki</div></div>
+    </div>
+  </a>
+
+  <a class="resource-link" href="https://en.wikipedia.org/wiki/Late_Bronze_Age_collapse" target="_blank">
+    <div class="resource-link-inner">
+      <div>
+        <div class="resource-title">Late Bronze Age Collapse — Wikipedia</div>
+        <div class="resource-desc">The civilizational collapse of ~1200 BCE: multiple interconnected societies destroyed within a generation. Still debated; possibly the cleanest historical analogue to the author's argument.</div>
+      </div>
+      <div><div class="resource-tag">History</div></div>
+    </div>
+  </a>
+
+  <a class="resource-link" href="https://en.wikipedia.org/wiki/Antifragile_(book)" target="_blank">
+    <div class="resource-link-inner">
+      <div>
+        <div class="resource-title">Antifragile — Nassim Nicholas Taleb</div>
+        <div class="resource-desc">The intellectual framework behind the essay's resilience argument: systems that gain from disorder versus those that merely survive it.</div>
+      </div>
+      <div><div class="resource-tag">Book</div></div>
+    </div>
+  </a>
+
+  <div class="resource-section-title">On Crisis Exploitation</div>
+
+  <a class="resource-link" href="https://en.wikipedia.org/wiki/The_Shock_Doctrine" target="_blank">
+    <div class="resource-link-inner">
+      <div>
+        <div class="resource-title">The Shock Doctrine — Naomi Klein</div>
+        <div class="resource-desc">The extended argument for the author's "moneygod worship" observation: how disaster capitalism exploits crisis to restructure societies in ways that would otherwise be politically impossible.</div>
+      </div>
+      <div><div class="resource-tag">Book</div></div>
+    </div>
+  </a>
+
+  <a class="resource-link" href="https://en.wikipedia.org/wiki/Financialization" target="_blank">
+    <div class="resource-link-inner">
+      <div>
+        <div class="resource-title">Financialization — Wikipedia</div>
+        <div class="resource-desc">The economic process behind the author's "moneygod worship" critique — the subordination of all economic activity to financial returns.</div>
+      </div>
+      <div><div class="resource-tag">Wiki</div></div>
+    </div>
+  </a>
+
+  <div class="resource-section-title">On Emergence &amp; Collective Intelligence</div>
+
+  <a class="resource-link" href="https://en.wikipedia.org/wiki/Emergence" target="_blank">
+    <div class="resource-link-inner">
+      <div>
+        <div class="resource-title">Emergence — Wikipedia</div>
+        <div class="resource-desc">The phenomenon the fire ant analogy illustrates: complex adaptive behaviour arising from simple local interactions with no central coordination.</div>
+      </div>
+      <div><div class="resource-tag">Wiki</div></div>
+    </div>
+  </a>
+
+  <a class="resource-link" href="https://www.youtube.com/watch?v=NpiDADw5Omw" target="_blank">
+    <div class="resource-link-inner">
+      <div>
+        <div class="resource-title">The Bizarre Physics of Fire Ants — YouTube</div>
+        <div class="resource-desc">The video linked in the original essay. Veritasium on how fire ant colonies form living, self-healing structures using only local chemical signals.</div>
+      </div>
+      <div><div class="resource-tag">Video</div></div>
+    </div>
+  </a>
+
+  <div class="resource-section-title">The Original</div>
+
+  <a class="resource-link" href="https://medium.com/@julianlkruger/a-note-for-the-end-of-the-start-eb7498cb205f" target="_blank">
+    <div class="resource-link-inner">
+      <div>
+        <div class="resource-title">A Note for the End of the Start — Medium</div>
+        <div class="resource-desc">The original essay, published on Medium on 19 January 2021.</div>
+      </div>
+      <div><div class="resource-tag">Original</div></div>
+    </div>
+  </a>
+
+</div>
+
+<!-- ================================================================ -->
+<!-- LIGHTBOXES -->
+<!-- ================================================================ -->
+
+<div class="lightbox-overlay" id="lb-calculus" onclick="closeLightboxOnOverlay(event, 'lb-calculus')">
+  <div class="lightbox-box">
+    <div class="lightbox-header">
+      <span class="lightbox-title">The Calculus of Cost Per Life Saved</span>
+      <button class="lightbox-close" onclick="closeLightbox('lb-calculus')">✕</button>
+    </div>
+    <div class="lightbox-body">
+      <h3>Who Decides What a Life is Worth?</h3>
+      <p>The "calculus of cost-per-life-saved" is not a metaphor — it is a formal methodology embedded in government and corporate decision-making worldwide. Known variously as <em>Value of a Statistical Life</em> (VSL) or cost-effectiveness analysis, it assigns monetary values to human lives to determine whether safety interventions are "worth" implementing.</p>
+      <p>The US government's VSL figure varies by agency: the EPA uses approximately $11 million per life; the Department of Transportation uses roughly $12 million. These numbers determine whether a highway guardrail gets installed, whether a drug recall is ordered, whether an evacuation is funded.</p>
+      <p>The author's objection is not merely moral — it is structural. Communities are built on mutual obligation. When rescue calculus treats lives as assets to be measured against costs, it corrodes the social trust that makes community resilience possible in the first place. The people best positioned to apply the calculus (the powerful) are rarely the ones paying the cost of being on the wrong side of it.</p>
+      <a class="lb-source-btn" href="https://en.wikipedia.org/wiki/Value_of_a_statistical_life" target="_blank">→ Wikipedia: Value of Statistical Life</a>
+      <a class="lb-source-btn" href="https://en.wikipedia.org/wiki/Trolley_problem" target="_blank">→ Wikipedia: The Trolley Problem</a>
+    </div>
+  </div>
+</div>
+
+<div class="lightbox-overlay" id="lb-storms" onclick="closeLightboxOnOverlay(event, 'lb-storms')">
+  <div class="lightbox-box">
+    <div class="lightbox-header">
+      <span class="lightbox-title">The Time of Storms</span>
+      <button class="lightbox-close" onclick="closeLightbox('lb-storms')">✕</button>
+    </div>
+    <div class="lightbox-body">
+      <h3>What the Author Meant</h3>
+      <p>Written on January 19, 2021 — the last day of the Trump presidency, 13 days after the Capitol riot, during the deadliest week of COVID in US history — the "Time of Storms" is the author's frame for the era we have entered.</p>
+      <p>The phrase doesn't describe a single catastrophe. It describes a <em>period</em> — a sustained stretch of history in which the crises that had been building for decades begin to interact, amplify, and cascade. Not the storm itself; the sky before it.</p>
+      <p>The author is careful to note that the cascades had "only just begun." He is not predicting collapse. He is observing the conditions under which collapse becomes more likely with each inadequately addressed crisis. The distinction matters: fatalism would say the collapse is inevitable. The author says our <em>attitude toward each crisis</em> — our willingness to address rather than exploit — is what determines the outcome.</p>
+      <p>The question "Who are we?" at the essay's end is not rhetorical despair. It is the only genuinely open variable in the system.</p>
+      <a class="lb-source-btn" href="https://en.wikipedia.org/wiki/Polycrisis" target="_blank">→ Wikipedia: Polycrisis</a>
+      <a class="lb-source-btn" href="https://en.wikipedia.org/wiki/Existential_risk_from_artificial_general_intelligence" target="_blank">→ Wikipedia: Existential risk overview</a>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <span class="footer-ornament">⚙ ❧ ⚙</span>
+  <span>A NOTE FOR THE END OF THE START &nbsp;·&nbsp; J.L. &nbsp;·&nbsp; XIX January MMXXI</span><br><br>
+  <span>Essay reproduced for educational annotation. <a href="https://medium.com/@julianlkruger/a-note-for-the-end-of-the-start-eb7498cb205f" target="_blank">Original on Medium →</a></span>
+</footer>
+
+<script>
+  function switchTab(id, btn) {
+    document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+    document.getElementById('tab-' + id).classList.add('active');
+    btn.classList.add('active');
+    window.scrollTo({ top: 0 });
+  }
+
+  function toggleDecoder(id, btn) {
+    const wrapper = document.getElementById(id);
+    const panel = wrapper.querySelector('.decoder-panel');
+    const isOpen = panel.classList.contains('open');
+
+    document.querySelectorAll('.decoder-panel.open').forEach(p => p.classList.remove('open'));
+    document.querySelectorAll('.decoder-trigger.open').forEach(b => b.classList.remove('open'));
+
+    if (!isOpen) {
+      panel.classList.add('open');
+      btn.classList.add('open');
+      const rect = panel.getBoundingClientRect();
+      if (rect.right > window.innerWidth - 16) {
+        panel.classList.add('flip-left');
+      } else {
+        panel.classList.remove('flip-left');
+      }
+    }
+  }
+
+  document.addEventListener('click', function(e) {
+    if (!e.target.closest('.decoder')) {
+      document.querySelectorAll('.decoder-panel.open').forEach(p => p.classList.remove('open'));
+      document.querySelectorAll('.decoder-trigger.open').forEach(b => b.classList.remove('open'));
+    }
+  });
+
+  function toggleAccordion(btn) {
+    const panel = btn.nextElementSibling;
+    const isOpen = btn.classList.contains('open');
+    document.querySelectorAll('.accordion-trigger.open').forEach(b => {
+      b.classList.remove('open');
+      b.nextElementSibling.classList.remove('open');
+    });
+    if (!isOpen) {
+      btn.classList.add('open');
+      panel.classList.add('open');
+    }
+  }
+
+  function openLightbox(id) {
+    document.getElementById(id).classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeLightbox(id) {
+    document.getElementById(id).classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  function closeLightboxOnOverlay(e, id) {
+    if (e.target === document.getElementById(id)) closeLightbox(id);
+  }
+
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+      document.querySelectorAll('.lightbox-overlay.open').forEach(el => {
+        el.classList.remove('open');
+      });
+      document.body.style.overflow = '';
+    }
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,17 @@
+/* AUTO-GENERATED from variables.yaml by builder_common — do not edit. */
+:root {
+  --soil:    #442204;
+  --pigment: #69190d;
+  --rust:    #a52c16;
+  --fire:    #eb7513;
+  --sun:     #f2c62a;
+  --light:   #e8e2da;
+  --meadow:  #5e9a0e;
+  --forest:  #0e4d0e;
+  --jungle:  #073720;
+  --sidebar-w:      22vw;
+  --logo-h:         30vh;
+  --content-max-w:  680px;
+  --content-pad-v:  42vh;
+  --lh:             1.5;
+}

@@ -1,0 +1,1243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>How to Build a Raft — Annotated</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Glass+Antiqua&family=Glass+Antiqua&family=Crimson+Pro:ital,wght@0,400;0,600;1,400;1,600&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --parchment:      #f7f0e2;
+  --parchment-dark: #ede0c8;
+  --parchment-mid:  #f2e8d5;
+  --ink:            #2a1a08;
+  --ink-mid:        #5a3e28;
+  --ink-light:      #8a6848;
+  --gold:           #c9963a;
+  --gold-dark:      #8b6b1a;
+  --gold-light:     #e8c068;
+  --forest:         #2d5a2e;
+  --forest-light:   #4a7c4b;
+  --crimson:        #8b1520;
+  --panel-bg:       #fdf8ef;
+  --border:         #c8a878;
+  --radius:         4px;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'Crimson Pro', Georgia, serif;
+  background-color: #ddd0b5;
+  background-image:
+    radial-gradient(ellipse at 15% 10%, rgba(200,168,100,0.35) 0%, transparent 55%),
+    radial-gradient(ellipse at 85% 85%, rgba(45,90,46,0.12) 0%, transparent 55%),
+    radial-gradient(ellipse at 50% 50%, rgba(139,101,26,0.06) 0%, transparent 70%);
+  color: var(--ink);
+  font-size: 19px;
+  line-height: 1.78;
+  min-height: 100vh;
+}
+
+/* ── SITE HEADER ── */
+.site-header {
+  text-align: center;
+  padding: 3.5rem 2rem 2.5rem;
+  background: linear-gradient(160deg, #1c2a10 0%, #2d3e18 60%, #3a4a22 100%);
+  position: relative;
+  overflow: hidden;
+}
+.site-header::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    repeating-linear-gradient(45deg, transparent, transparent 22px, rgba(255,255,255,0.018) 22px, rgba(255,255,255,0.018) 44px),
+    repeating-linear-gradient(-45deg, transparent, transparent 22px, rgba(0,0,0,0.018) 22px, rgba(0,0,0,0.018) 44px);
+}
+.site-header-ornament {
+  font-size: 1.3rem;
+  color: var(--gold);
+  letter-spacing: 0.8rem;
+  margin-bottom: 1rem;
+  position: relative;
+  opacity: 0.85;
+}
+.site-title {
+  font-family: 'Glass Antiqua', serif;
+  font-size: clamp(1.5rem, 4.5vw, 3rem);
+  font-weight: 700;
+  color: #f3e5bb;
+  letter-spacing: 0.06em;
+  line-height: 1.2;
+  position: relative;
+  text-shadow: 0 2px 10px rgba(0,0,0,0.45), 0 0 30px rgba(200,150,50,0.15);
+}
+.site-subtitle {
+  font-family: 'Glass Antiqua', serif;
+  font-size: 0.8rem;
+  color: rgba(220,195,140,0.65);
+  letter-spacing: 0.3em;
+  margin-top: 0.65rem;
+  text-transform: uppercase;
+  position: relative;
+}
+
+/* ── NAVIGATION ── */
+.nav-bar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: #1c2a10;
+  border-bottom: 2px solid var(--gold-dark);
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+.nav-btn {
+  font-family: 'Glass Antiqua', serif;
+  font-size: 0.74rem;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: rgba(220,195,130,0.6);
+  background: none;
+  border: none;
+  border-right: 1px solid rgba(200,168,80,0.18);
+  padding: 0.85rem 1.75rem;
+  cursor: pointer;
+  transition: color 0.2s, background 0.2s;
+  position: relative;
+  white-space: nowrap;
+}
+.nav-btn:last-child { border-right: none; }
+.nav-btn:hover { color: var(--gold-light); background: rgba(255,255,255,0.04); }
+.nav-btn.active { color: var(--gold-light); background: rgba(200,168,80,0.12); }
+.nav-btn.active::after {
+  content: '';
+  position: absolute;
+  bottom: -2px; left: 0; right: 0;
+  height: 2px;
+  background: var(--gold);
+}
+
+/* ── MAIN ── */
+.main-content {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 2.5rem 1.75rem 5rem;
+}
+.tab-content { display: none; }
+.tab-content.active { display: block; }
+
+/* ── STORY META & ORNAMENTS ── */
+.story-meta {
+  text-align: center;
+  color: var(--ink-light);
+  font-style: italic;
+  font-size: 0.95rem;
+  margin: 2rem 0 0.5rem;
+  letter-spacing: 0.05em;
+}
+.story-rule {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 1.2rem auto;
+  width: 55%;
+  opacity: 0.55;
+}
+.story-ornament {
+  text-align: center;
+  color: var(--gold-dark);
+  font-size: 1.1rem;
+  letter-spacing: 0.5rem;
+  margin: 1.75rem 0;
+  opacity: 0.75;
+}
+
+/* ── STORY BODY ── */
+.story-body p {
+  margin-bottom: 1.2em;
+  text-align: justify;
+  hyphens: auto;
+}
+.story-body > p:first-of-type::first-letter {
+  font-family: 'Glass Antiqua', serif;
+  font-size: 3.9em;
+  float: left;
+  line-height: 0.75;
+  margin: 0.08em 0.1em 0 0;
+  color: var(--forest);
+  text-shadow: 1px 2px 0 var(--gold-dark);
+}
+.story-body em { font-style: italic; }
+
+/* ── DECODER ── */
+.decoder {
+  display: inline;
+  position: relative;
+}
+.decoder-trigger {
+  font-family: inherit;
+  font-size: inherit;
+  font-style: inherit;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  color: var(--gold-dark);
+  border-bottom: 1.5px dotted var(--gold);
+  display: inline;
+  transition: color 0.15s;
+}
+.decoder-trigger::after {
+  content: ' ▾';
+  font-size: 0.68em;
+  vertical-align: middle;
+  color: var(--gold);
+}
+.decoder-trigger.open::after { content: ' ▴'; }
+.decoder-trigger:hover { color: var(--crimson); }
+.decoder-trigger.open { color: var(--crimson); border-bottom-style: solid; }
+
+.decoder-panel {
+  display: none;
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  z-index: 500;
+  width: 305px;
+  background: var(--panel-bg);
+  border: 1px solid var(--border);
+  border-top: 3px solid var(--gold);
+  border-radius: var(--radius);
+  padding: 0.85rem 1rem 0.9rem;
+  box-shadow: 0 5px 20px rgba(42,26,8,0.18);
+  font-size: 0.87rem;
+  line-height: 1.58;
+  color: var(--ink);
+  text-align: left;
+}
+.decoder-panel.open { display: block; }
+.decoder-panel.flip-left { left: auto; right: 0; }
+
+.decode-label {
+  display: block;
+  font-family: 'Glass Antiqua', serif;
+  font-size: 0.63rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--gold-dark);
+  margin-bottom: 0.12rem;
+}
+.decode-term {
+  display: block;
+  font-family: 'Glass Antiqua', serif;
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: var(--forest);
+  margin-bottom: 0.38rem;
+  border-bottom: 1px solid var(--parchment-dark);
+  padding-bottom: 0.28rem;
+}
+.decode-link {
+  display: block;
+  margin-top: 0.45rem;
+  font-family: 'Glass Antiqua', serif;
+  font-size: 0.68rem;
+  color: var(--forest);
+  text-decoration: none;
+  letter-spacing: 0.05em;
+}
+.decode-link:hover { text-decoration: underline; color: var(--crimson); }
+
+/* ── LIGHTBOX TRIGGER ── */
+.lb-trigger {
+  font-family: inherit;
+  font-size: inherit;
+  font-style: inherit;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  color: var(--forest);
+  border-bottom: 1.5px dashed var(--forest-light);
+  display: inline;
+  transition: color 0.15s;
+}
+.lb-trigger::before {
+  content: '✦ ';
+  font-size: 0.62em;
+  vertical-align: middle;
+  color: var(--forest-light);
+}
+.lb-trigger:hover { color: var(--crimson); }
+
+/* ── LIGHTBOX ── */
+.lightbox-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(30,18,5,0.7);
+  z-index: 1000;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  backdrop-filter: blur(3px);
+}
+.lightbox-overlay.open { display: flex; }
+.lightbox-box {
+  background: var(--parchment);
+  border: 1px solid var(--border);
+  border-top: 4px solid var(--gold);
+  border-radius: 6px;
+  max-width: 630px;
+  width: 100%;
+  max-height: 88vh;
+  overflow-y: auto;
+  box-shadow: 0 10px 50px rgba(30,18,5,0.35);
+}
+.lightbox-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.3rem 0.8rem;
+  border-bottom: 1px solid var(--parchment-dark);
+  background: linear-gradient(to right, rgba(45,90,46,0.07), transparent);
+}
+.lightbox-title {
+  font-family: 'Glass Antiqua', serif;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--forest);
+  letter-spacing: 0.04em;
+}
+.lightbox-close {
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  width: 28px; height: 28px;
+  cursor: pointer;
+  color: var(--ink-mid);
+  font-size: 0.78rem;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+  transition: background 0.15s;
+}
+.lightbox-close:hover { background: var(--parchment-dark); }
+.lightbox-body {
+  padding: 1.25rem 1.3rem 1.4rem;
+  font-size: 0.94rem;
+  line-height: 1.72;
+  color: var(--ink);
+}
+.lightbox-body h3 {
+  font-family: 'Glass Antiqua', serif;
+  font-size: 0.72rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--gold-dark);
+  margin: 1.2rem 0 0.4rem;
+  padding-bottom: 0.25rem;
+  border-bottom: 1px solid var(--parchment-dark);
+}
+.lightbox-body h3:first-child { margin-top: 0; }
+.lightbox-body p { margin-bottom: 0.75em; }
+.lightbox-body p:last-child { margin-bottom: 0; }
+.lightbox-body a { color: var(--forest); font-size: 0.84rem; }
+.lightbox-body a:hover { color: var(--crimson); }
+.lightbox-body em { font-style: italic; }
+
+/* ── ACCORDION ── */
+.accordion-item {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  margin-bottom: 0.55rem;
+  overflow: hidden;
+  background: var(--panel-bg);
+}
+.accordion-trigger {
+  width: 100%;
+  background: none;
+  border: none;
+  padding: 0.85rem 1.1rem;
+  text-align: left;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.75rem;
+  font-family: 'Glass Antiqua', serif;
+  font-size: 0.79rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  color: var(--forest);
+  transition: background 0.15s, color 0.15s;
+  border-left: 3px solid transparent;
+}
+.accordion-trigger:hover { background: var(--parchment-dark); }
+.accordion-trigger.open {
+  background: var(--parchment-dark);
+  color: var(--crimson);
+  border-left-color: var(--gold);
+}
+.accordion-arrow {
+  transition: transform 0.2s;
+  flex-shrink: 0;
+  color: var(--gold-dark);
+  font-size: 0.88rem;
+}
+.accordion-trigger.open .accordion-arrow { transform: rotate(180deg); }
+.accordion-panel {
+  display: none;
+  padding: 0.85rem 1.1rem 1rem;
+  font-size: 0.93rem;
+  line-height: 1.72;
+  border-top: 1px solid var(--parchment-dark);
+  color: var(--ink-mid);
+}
+.accordion-panel.open { display: block; }
+.accordion-panel p { margin-bottom: 0.7em; }
+.accordion-panel p:last-child { margin-bottom: 0; }
+.accordion-panel a { color: var(--forest); }
+.accordion-panel a:hover { color: var(--crimson); }
+.accordion-panel em { font-style: italic; }
+
+/* ── SECTION HEADERS ── */
+.section-title {
+  font-family: 'Glass Antiqua', serif;
+  font-size: clamp(1.25rem, 3.5vw, 1.8rem);
+  color: var(--forest);
+  text-align: center;
+  margin: 2rem 0 0.5rem;
+  letter-spacing: 0.04em;
+}
+.section-intro {
+  text-align: center;
+  color: var(--ink-mid);
+  font-style: italic;
+  font-size: 1rem;
+  margin: 0 auto 1.8rem;
+  max-width: 530px;
+  line-height: 1.65;
+}
+
+/* ── FURTHER READING ── */
+.reading-group-title {
+  font-family: 'Glass Antiqua', serif;
+  font-size: 0.72rem;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: var(--gold-dark);
+  margin: 2rem 0 0.7rem;
+  padding-bottom: 0.28rem;
+  border-bottom: 1px solid var(--border);
+}
+.reading-item {
+  padding: 0.6rem 0;
+  border-bottom: 1px dotted rgba(200,168,120,0.4);
+  display: flex;
+  align-items: baseline;
+  gap: 0.55rem;
+  flex-wrap: wrap;
+}
+.reading-item a {
+  font-weight: 600;
+  color: var(--forest);
+  text-decoration: none;
+  font-size: 0.93rem;
+}
+.reading-item a:hover { text-decoration: underline; color: var(--crimson); }
+.reading-desc {
+  color: var(--ink-light);
+  font-size: 0.87rem;
+  font-style: italic;
+  flex: 1 1 200px;
+}
+.reading-tag {
+  font-family: 'Glass Antiqua', serif;
+  font-size: 0.62rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  background: var(--parchment-dark);
+  color: var(--ink-mid);
+  padding: 0.1em 0.48em;
+  border-radius: 2px;
+  white-space: nowrap;
+}
+
+/* ── RESPONSIVE ── */
+@media (max-width: 580px) {
+  .nav-btn { padding: 0.7rem 0.9rem; font-size: 0.67rem; letter-spacing: 0.1em; }
+  .site-title { font-size: 1.35rem; }
+  .decoder-panel { width: 260px; }
+  .main-content { padding: 1.5rem 1rem 3rem; }
+  body { font-size: 17px; }
+}
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="site-header-ornament">❧ &nbsp;✦&nbsp; ❧</div>
+  <h1 class="site-title">How to Build a Raft</h1>
+  <div class="site-subtitle">An Annotated Reading &nbsp;·&nbsp; Theology, Mythology &amp; Folklore</div>
+</header>
+
+<nav class="nav-bar" role="navigation" aria-label="Story sections">
+  <button class="nav-btn active" onclick="switchTab('tab-story', this)">The Story</button>
+  <button class="nav-btn" onclick="switchTab('tab-mythology', this)">The Mythology</button>
+  <button class="nav-btn" onclick="switchTab('tab-theology', this)">The Theology</button>
+  <button class="nav-btn" onclick="switchTab('tab-reading', this)">Further Reading</button>
+</nav>
+
+<main class="main-content">
+
+<!-- ════════════════════════════════════════════════════════════
+     TAB 1 — THE STORY
+═════════════════════════════════════════════════════════════ -->
+<div id="tab-story" class="tab-content active">
+
+  <p class="story-meta">Originally written in 2010</p>
+  <hr class="story-rule">
+  <div class="story-ornament">❧ &nbsp;✦&nbsp; ❧</div>
+
+  <div class="story-body">
+
+    <p>Paradise. White sandy beaches lined with palm trees, lush forests, crystal clear, calm blue waters, majestic waterfalls in the lagoon and a fresh breeze that diffused the heat of the ever-present sunshine. All that was missing was a hammock in the shade and a piña colada. Rubbish. That's what John thought as he staggered up the white bloody sand, trying to reach the shade of the lush bloody forest, through the debris of the crash. He was not happy. He had woken up, face down in the sand, with a sunburnt neck, pain everywhere, cuts and bruises all over, no pants and a mouthful of salt water. On top of that, he needed to take a dump. Fat chance of that now; he couldn't bring himself to go on the plane, let alone in the bushes of some remote pacific island. Where his pants were, he had no idea, but he wondered, as he walked, how on Earth they had removed themselves from his person. He distinctly remembered putting a belt on, although he remembered little else. What made it particularly bizarre was that he still had his socks, shoes and knickers on, leading him to believe that they could not possibly have been removed in the crash.</p>
+
+    <p>He stopped for a breather. He was not as fit as he once was, a diet of cholesterol and liquorice had made sure of that. He surveyed the wreckage as he stood there, panting, halfway between the water and the shade.</p>
+
+    <p>Short and fat, with a bald head and beady eyes, he had been perfectly suited to life as a salesman in the city. He was certainly not suited to being a <span class="decoder" id="dec-crusoe"><button class="decoder-trigger" onclick="toggleDecoder('dec-crusoe', this)">Robinson Crusoe</button><span class="decoder-panel"><span class="decode-label">The Archetype</span><span class="decode-term">Robinson Crusoe</span>Daniel Defoe's 1719 castaway novel, in which a sole survivor builds civilisation on a tropical island through resourcefulness and Protestant Christian faith. John's journey echoes this myth — but where Crusoe masters his island through dominion and industry, John befriends it through community and service.<a class="decode-link" href="https://en.wikipedia.org/wiki/Robinson_Crusoe" target="_blank">→ Wikipedia</a></span></span>; he hated camping and the so-called 'outdoors'. But here he was, in the middle of bloody nowhere, with nothing for company but corpses and bits of burnt plane.</p>
+
+    <p>He hoped that others had survived, but he also hoped that if they had, they would stay clear of him. People got nasty in these situations; something about deserted islands brought out the worst in people. He knew this because he watched Survivor. No tribal council for him. No Sir. He would keep as much to himself as possible until help came or he died of some mysterious tropical virus.</p>
+
+    <p>As it turned out, there were no other survivors, just him. When he reached the shade, he plopped down onto the grass and leaned up against a palm tree. He was exhausted from his great trek of just over two hundred feet – uphill – sort of.</p>
+
+    <p>He was just thinking of what he was going to do for food when a coconut, or rather, three coconuts, fell on his head (because fat men eat more).</p>
+
+    <p>John woke to a magnificent sunrise. "For Pete's sake!" he shouted at the sun. "Couldn't you bloody well have the decency to start off cool, and heat up? That's what you do back in England! I call that double bloody standards, I do! Bugger off for a bit why don't you!"</p>
+
+    <p>The sun obliged and soon rain was coming down in buckets.</p>
+
+    <p>"Can't say I didn't ask for it," remarked a sopping John, glaring at the patch of light in the clouds where the sun was. "Bastard."</p>
+
+    <p>Based on his knowledge of survival, gleaned solely from the telly (he was a fan), John figured that he needed four basic things in order to survive: water, shelter, food and fire. Although his list went more like this: food, fire (to cook the food), water (to boil the food, or make sauces) and shelter (to keep the food in).</p>
+
+    <p>The coconuts would have made good breakfast, considering the circumstances, but he couldn't, for the life of him, open the blasted things. He remembered seeing a movie once where Tom Hanks had used a sharp stone, and ice-skates, to open them, but he also remembered that Tom Hanks ended up talking to a volleyball and parading around in a loin-cloth in the same film. Nevertheless, he thought it was a good idea to see what he could salvage from the wreckage, maybe even find a brolly to keep this ruddy rain off him.</p>
+
+    <p>Funnily enough, he did manage to find an umbrella, along with many other items in the bags of luggage strewn along the shore. He couldn't bring himself to search the bodies though – they gave him the willies. He decided to empty a suitcase and fill it with his loot, so as to not have to come back more than he had to. Among the items he found were: a lighter (which Tom Hanks could have used, if he hadn't started talking to a ball), a machete (he wasn't quite sure how that got on the plane), a pocket watch, a torch (the kind that fits on your head), batteries, an mp3 player (with good music, he hoped), and some very good books. His search also yielded clothing. Comfortable shoes and shirts and even a hat or two that caught his fancy. But, to his dismay, not a single pair of trousers or shorts would fit. He found a kilt, but he hated the Scots and so it just would not do. Eventually, he ended up wrapping a piece of cloth around his waist, like a sarong, not a kilt.</p>
+
+    <p>A little way up the shore he found the plane's food trolleys, with enough food and drinks to last him weeks.</p>
+
+    <p>Finally, after some searching, he discovered to his pleasant surprise that a large part of the plane had flown off during the crash and had landed a little way into the forest, somehow forming a sort of coincidental lean-to that was just big enough to shelter John and his things.</p>
+
+    <p>"Cor," he remarked. "It's easier than it looks, innit?"</p>
+
+    <p>Life on the island was miserable at first, but got more bearable over time.</p>
+
+    <p>John didn't struggle to survive. Fortune had favoured and cursed him in that department. His plane-crash shelter withstood most of the weather's fluctuations, with the only real problem being the floor (heavy rain turned it more into a pond than a floor). John solved this by digging a trench around his new home, using a piece of scrap metal as a spade. In the rain, the trench reminded him of a moat (but his dwelling stopped this childishness by reminding him that it was a far cry from a castle. John responded by pointing out to his shack that a man's home is his castle. The little lean-to seemed to stand a little taller after that).</p>
+
+    <p>A few days after the crash, John could not stand the smell of rotting bodies any longer, so he built an enormous bonfire and burnt the lot of 'em. It was gruelling work, but he managed to drag every one of the bodies to the fire, even the mangled pilots in the cockpit. He felt bad for burning them though, so he got out the <span class="decoder" id="dec-bible"><button class="decoder-trigger" onclick="toggleDecoder('dec-bible', this)">Bible he had found</button><span class="decoder-panel"><span class="decode-label">Sacred Text</span><span class="decode-term">The Bible — Prototype of the Tree House</span>This is the only Bible on the island, read aloud over a funeral pyre. The scene quietly foreshadows the story's deepest concern: the creation, preservation, and transmission of sacred stories. The Tree House John eventually builds is, in essence, the island's own scripture — born from the same impulse as this first reading.<a class="decode-link" href="https://en.wikipedia.org/wiki/Bible" target="_blank">→ Wikipedia</a></span></span> and read it aloud till the fire went out.</p>
+
+    <p>"<span class="decoder" id="dec-adam"><button class="decoder-trigger" onclick="toggleDecoder('dec-adam', this)">Adam</button><span class="decoder-panel"><span class="decode-label">The Fall of Man</span><span class="decode-term">Adam — First Man, First Exile</span>In Genesis, Adam is the first human, placed in a Paradise with only one prohibition. His choice to disobey — the original act of free will — is the origin of human exile, suffering, and the need for redemption. John delivers his verdict while stranded in a tropical paradise, surrounded by corpses, with no pants on. Context is everything.<a class="decode-link" href="https://en.wikipedia.org/wiki/Adam_and_Eve" target="_blank">→ Wikipedia</a></span></span>," he said at the end, "was a bloody daft twit, that's what he was."</p>
+
+    <p>After a while, John decided that palm leaves would make a nice flooring for his shack, but that made the fire ants think that the sky was falling (they were rather primitive, thought John, poor savages), and so they mounted a counter offensive against the offending entity – John.</p>
+
+    <p>He spent three days running up and down the beach, flailing about and smacking himself, trying to rid his clothes of the pesky creatures. Of course, there were no fire ants in his clothes, they remained in his shack, watching him and laughing.</p>
+
+    <p>In a meeting with the ant queen (John thought that she could lose a few pounds, but he didn't tell her that, she was royalty after all), he explained that the sky wasn't falling and so the fire ants agreed to an armistice. After that, they would bring him quite a few little odds and ends from the island, some of which were rather delicious (especially the strange little mushrooms), because they believed him to be some sort of <span class="decoder" id="dec-deity"><button class="decoder-trigger" onclick="toggleDecoder('dec-deity', this)">deity</button><span class="decoder-panel"><span class="decode-label">Divine Misidentification</span><span class="decode-term">Accidental Godhood</span>A recurring biblical pattern: the human tendency to worship the messenger rather than the Source. Moses, Paul, and Barnabas all faced identical misidentifications. John's repeated, frustrated denials — "I am no such thing!" — mirror the prophetic tradition of the reluctant and decidedly ordinary servant who is, nonetheless, somehow divine to those watching.<a class="decode-link" href="https://en.wikipedia.org/wiki/Acts_14" target="_blank">→ Acts 14 (Paul &amp; Barnabas at Lystra)</a></span></span>.</p>
+
+    <p>The food in the trolleys kept him fed, though he rationed it meticulously, wanting to avoid having to search for food for as long as he could. The problem came when the monkeys of the island developed a liking for plane food as well. They stole half of a trolley's contents one night, but brought everything back when they couldn't figure out how to open the packaging. John made an agreement with the chief, a rather solemn looking chimpanzee, to open and share half his food with the primates, in exchange for fresh fruit every day.</p>
+
+    <p>He also made friends, surprisingly, with the spiders. They scared him half to death at first, but their leader, Jerry, a small little green thing, explained that they would keep all the malicious, poisonous insects away, in exchange for shelter in the lean-to.</p>
+
+    <p>The <span class="decoder" id="dec-spiders"><button class="decoder-trigger" onclick="toggleDecoder('dec-spiders', this)">spiders</button><span class="decoder-panel"><span class="decode-label">The Sacred Storytellers</span><span class="decode-term">Anansi's Children</span>In West African and Caribbean folklore, Anansi the Spider <em>owns all stories</em>. He purchased them from the Sky God through cleverness. The island spiders — who hold stories communally, bicker over details, and need a human scribe — are Anansi's descendants in everything but name. The open Mythology tab has their full story.<a class="decode-link" href="https://en.wikipedia.org/wiki/Anansi" target="_blank">→ Anansi (Wikipedia)</a></span></span> were actually pleasant company according to John: they never bothered him, were always polite, and had the most extraordinary stories to tell. John particularly enjoyed the stories about <button class="lb-trigger" onclick="openLightbox('lb-lucifer')">a man named Lucy, who often dressed in women's clothes to lure men to their death</button> ("Always thought these tropical people were a bit 'fruity'," said John). Lucy apparently had some sort of constant rivalry with the old Hermit who could turn banana leaves into bacon, or so the spiders said. Some of the spiders said that the two men had been enemies since Lucy stole the Hermit's wife, while others said that Lucy stole the Hermit's wife because they were enemies. John didn't particularly care; he liked the stories, but felt that the endless debates among the spiders were pointless. As far as he was concerned, the spiders all agreed that Lucy couldn't be trusted and that the Hermit should get his wife back.</p>
+
+    <p>"What actually happened to his wife?" John asked one evening.</p>
+
+    <p>"She left him." said Jerry.</p>
+
+    <p>John thought of his own wife, Matilda, and what things back home were like without him there.</p>
+
+    <p>"She left him for Lucy?" he asked.</p>
+
+    <p>"No, actually. She said she needed 'time to herself', whatever that means. Rumour has it that she still visits the island and flirts with them both."</p>
+
+    <p>"That little tart!" exclaimed John "She ought to be ashamed of herself."</p>
+
+    <p>"You're exactly right." said the spiders. "That's why we tell the stories."</p>
+
+    <p>"What do you mean?"</p>
+
+    <p>"Well," explained Jerry (he was sitting on John's shoulder so that he could be heard), "If we tell the stories to all the animals, and everyone who comes to the island, eventually his wife might hear the stories, and know exactly how much he loves her, and how much he's done for her and then she'll realise how stupid she's been and come back to him."</p>
+
+    <p>"Fair enough," said John although he thought that it was a bit of a naïve notion.</p>
+
+    <p>"Problem is," Jerry continued. "None of us has ever met the Hermit really, we've seen Lucy, now and then, walking about the island like he owns the place, but never the Hermit, and so most of the animals don't believe that he even exists."</p>
+
+    <p>"But they're still good stories." said John. "Whether they're true or not, doesn't mean that the animals won't listen."</p>
+
+    <p>"It does though," Jerry said. "Some say they're true, others say they aren't, and the constant bickering means that the stories never get told. Even the spiders, who are honour-bound to tell the stories, spend more time nattering about the details than telling the stories."</p>
+
+    <p>"So why don't you make a rule, forbidding debate about the stories?"</p>
+
+    <p>"Because none of us knows the stories in full, we only know parts. We have to tell the stories in a group, because no one can tell a single story on their own. Even the spiders who are raised to tell stories spend their lives learning them. It's part of our culture."</p>
+
+    <p>"That is a problem," said John.</p>
+
+    <p>"Well, there isn't much we can do, is there?" said Jerry.</p>
+
+    <p>"You could write it all down." suggested John.</p>
+
+    <p>"None of us can read," said Jerry, "Or write, for that matter. Perhaps you could."</p>
+
+    <p>"Don't see why not," agreed John, "Don't have much else to do, do I? I'm not much of an author though, and I don't have anything to write with."</p>
+
+    <p>"I'm sure we can make a plan." said Jerry.</p>
+
+    <p>After that, John went to sleep thinking of Matilda and his sons Peter and Edward. He missed them terribly.</p>
+
+    <p>After several weeks, the food trolleys had finally been emptied of their contents, more by the monkeys than by John. He had begun to prefer the fruit anyway; it was better for him he thought, and not so bloody bland. When the plane food was no longer, he decided it was high time to become a vegetarian. Not because he didn't like meat anymore. No sir. There wasn't anything better than a good roast lamb according to him. He had just made friends with too many of the animals to even consider eating them. And he also didn't want to have to muck about catching the blighters, most of them were too fast for him anyhow.</p>
+
+    <p>He had almost lost count of the days, and he was sure that one of the boys had had a birthday in that time, which tugged at his heart a bit, but there wasn't anything he could do. By the sixth week or so, he had settled into a regular, albeit slightly monotonous, rhythm.</p>
+
+    <p>Every morning, the ants and monkeys would bring him breakfast. He didn't ask them to – the fire ants still thought he was a god (despite his many conversations with them explaining that he was no such thing) and the monkeys were such creatures of habit that they forgot about trading. However, John decided to pay them back by educating them in matters of civility and technology, which the monkeys appreciated, even when they had no idea what the blazes he was talking about. This little school of his took up half his morning, with lessons in literacy (teaching the monkeys to read and write, with sticks in the sand), mathematics (counting apples and bananas), sciences (how to make fire and the like, which terrified the poor primates so much that they almost joined the fire ants in worshipping him – until he cut himself on some coral whilst showing them the different swimming strokes, and the blood, not him, convinced them that he was, indeed, just a man), and finally cooking (his favourite lesson, always just before lunch).</p>
+
+    <p>After lunch, John and the animals spent a few hours gathering food for supper and fishing. He hadn't spoken to a fish and so he figured that they couldn't speak – when he finally had a conversation with a rather upset little lobster he was so scarred that he skipped dinner that evening and never fished again.</p>
+
+    <p>The late afternoon would be spent frolicking about with a little <span class="decoder" id="dec-david"><button class="decoder-trigger" onclick="toggleDecoder('dec-david', this)">purple ferret named David</button><span class="decoder-panel"><span class="decode-label">The Silent Guide</span><span class="decode-term">David — He Who Leads to the King</span>David is wordless, inexplicably present, and the colour of royalty. In the Hebrew Bible, David is the shepherd-king who bridges the human and the divine — forefather of the Messiah. This David's silence is his defining quality: he asks nothing, reveals nothing, and yet leads John directly to the Hermit at the story's climax. Watch for him standing at John's feet during the King offer.<a class="decode-link" href="https://en.wikipedia.org/wiki/David_(biblical_figure)" target="_blank">→ Wikipedia</a></span></span>, who always knew when they were having mushrooms in their lunchtime lesson even though he never participated, the rascal. David was the only animal John had met that never said a word, but it didn't mean that he was stupid. In fact John thought he was possibly smarter than many of the animals would ever be. If David wasn't around – which wasn't often because John and the class rather enjoyed putting mushrooms in <em>everything</em> – then the afternoon was spent reading or playing cricket, which John was teaching the monkeys, and they were quite good by the third month or so.</p>
+
+    <p>Evenings were John's favourite as each would be spent telling stories. John would tell the animals about England, talking about its people, its politics and its history. However he spoke mostly about his family and the life he had once had there because he was terrified that he might never get back, or worse, forget. The spiders would then tell the stories of the villainous Lucy and the old Hermit, in their unique communal manner. They would often argue about the stories, but this became a part of the evening and some of the animals, who usually sat in perfect silence so as to hear the tiny spiders, even started joining in when they started to know the characters and the back story, especially the ruddy owls, who were, according to John, not wise at all, just bloody arrogant. John however, never joined in the arguing. Once the spiders started he became a silent scribe. He would use a bit of charcoal as a pencil and write the stories on the bits of scrap metal that were still around from the crash. Afterwards he would sit up long after the animals had left or fallen asleep and etch each letter permanently and meticulously into the metal with a very sharp stone he had found one day.</p>
+
+    <p>The nightly gatherings became increasingly popular, with more and more animals each night, until over half of the island's inhabitants were spending their evenings listening to John and the spiders. John even had to make a sort of ramshackle megaphone – which was a seriously tricky business mind you – so that the little spiders, especially Jerry, could be heard.</p>
+
+    <p>After almost a year, John had finished writing all the stories that the spiders had among them to tell. He titled the work <em>The Hermit and His Adventures</em>. He didn't mention Lucy in the title because the Hermit was the hero in all the stories and Lucy was, in his opinion, a daft twit. The spiders asked him to compile the stories into a book. John almost laughed at the suggestion – although he didn't, mind you, because that would hurt the spiders' feelings and he had grown too fond of the things, bless their souls, to do that. He explained that he had used almost half the plane in scrap metal and a book of that size would most certainly be too heavy to ever be of use.</p>
+
+    <p>Instead, he proposed that all the animals work together to build a large tree house and mount the pages on the sides, so that everyone who wanted to could visit and read the stories themselves. Even if they couldn't read, the stories could be told from the tree house every night, with the pages on the walls to help anyone who forgot how a story went.</p>
+
+    <p>The spiders nearly fell off their own webs at the suggestion. Anyone who has met a spider can tell you that it takes something truly remarkable to do that. Well, a strong wind might do the trick too, but not in this case. They said that it was the best idea they'd ever heard and that they would start drawing plans immediately. John had taught them very little architecture, but a lot about the importance of planning. Of course, spiders are natural architects, probably better than people, so they knew what they were doing.</p>
+
+    <p>The other animals, who loved the stories, offered their services as well. Even the owls promised to pitch in at no cost (which surprised John because they thought themselves too bloody important to do anything for free). They decided to build the Tree House on the <button class="lb-trigger" onclick="openLightbox('lb-baobab')">enormous baobab tree that stood in the middle of a very large clearing a little way inland</button>. Heaven only knows how a baobab ended up here, thought John. What was more bizarre was that it was the only baobab in the only clearing on the island – and, though John didn't know it, it was precisely seven miles from his hut (no longer a lean-to, after more than a year of living), in the direction of his beloved England.</p>
+
+    <p>One morning after lunch, David the ferret came to play. John's students had all gone to work on the tree house, and John wanted to go help too, but he couldn't resist a quick game of catch-me-if-you-can-fatty, which he had never managed to win, even in the far fitter, slimmer and healthier body he had developed on the island (he was still bald though). The little fellow was just too quick for him. He chased David, this way and that, running and jumping, with a huge grin on his face, laughing his big, throaty laugh. David dodged, ducked, and dived, changing direction in a split second and at one point he doubled back through John's legs in a flash of purple fur and John, though he wasn't fat, was still subject to the laws of gravity and thus came tumbling down, landing face first in the sand.</p>
+
+    <p>The first sight that greeted him, as he came up spluttering and laughing, was a pair of pristine, expensive looking, black leather shoes, now specked with sand that had once been in his mouth. The owner of such lovely shoes was naturally not impressed. John could see in his face – which, by the way, could make women swoon, with chiselled features, slick dark hair (under a tipped bowler hat) and a perfectly trimmed goatee – that he was fighting the urge to let fly with a number of very colourful combinations of four-letter words. The man was wearing a <span class="decoder" id="dec-lucy-suit"><button class="decoder-trigger" onclick="toggleDecoder('dec-lucy-suit', this)">black pinstripe suit, with a red shirt and a black tie</button><span class="decoder-panel"><span class="decode-label">The Adversary Appears</span><span class="decode-term">Lucy — Dressed for the Part</span>Black suit, red shirt, dark goatee, charming smile: the iconography of the Devil in Western tradition. "Lucy" is the animals' corruption of <em>Lucifer</em> (Latin: <em>lux ferre</em>, light-bearer), the fallen angel whose defining power is disguise and persuasion. He has barely updated his wardrobe since Milton's <em>Paradise Lost</em>.<a class="decode-link" href="https://en.wikipedia.org/wiki/Lucifer" target="_blank">→ Wikipedia: Lucifer</a></span></span>. He had a cold look in his dark eyes, but it quickly disappeared when he opened his mouth in a very charming smile. Mind you John wouldn't have called it charming, more like – friendly, with a sense of power – yes, that's it.</p>
+
+    <p>"Hello, John."</p>
+
+    <p>"Afternoon," said John, "How d'you know my name, mate? I ain't seen your face. Never."</p>
+
+    <p>"You have quite a reputation amongst the animals of the island. I'm told you are a gifted teacher and storyteller."</p>
+
+    <p>"Oh no, no, no," laughed John, "Nothin' of the sort! The spiders are the storytellers. They have the best stories by far, and the way they tell 'em is pure magic, I tell you. As for my students, they're just good learners is all. Pick up on things real quick, they do. I really don't do much except tell 'em and show 'em."</p>
+
+    <p>"You're too modest. The spiders have been telling the stories for years without the response generated since your arrival."</p>
+
+    <p>"But that wasn't because they aren't good storytellers," said John, "They were just disorganized. All they needed was to stop their endless bickering among 'emselves and they were right as rain. Mind you, they haven't completely stopped bickering, it's part of what makes the stories so much fun to listen to. And the little ones always have to ask questions so as to learn 'em see?"</p>
+
+    <p>"Never mind all that. Without you, the spiders and indeed all the animals, would not be where they are now. Your guidance and counsel has ushered in a new era for this island. And yet they haven't even remotely thanked you adequately enough."</p>
+
+    <p>"I wouldn't say that," said John. He was a tad offended by this man accusing his friends of ingratitude. "They've given me plenty of things, helped me with just about everything and most importantly sir, they didn't eat me or make my life miserable. Quite the opposite actually, thank you very much."</p>
+
+    <p>The man looked a little affronted for a moment, but he quickly composed himself and flashed his smile once again.</p>
+
+    <p>"Either way, I think you'll agree that these creatures need some form of coherent government – they're far too primitive to govern themselves effectively and the leaders of the different species pose a constant threat of war to each other."</p>
+
+    <p>John couldn't deny that. Many of the animal groups didn't like the others. The monkeys often argued with the snakes and the owls often lorded themselves over everyone, but it usually amounted to nothing more than a few heated arguments about trivial matters and at worst minor offences or scuffles.</p>
+
+    <p><button class="lb-trigger" onclick="openLightbox('lb-temptation')">"I think you would be ideal as King of the island,"</button></p>
+
+    <p>"King, you say?" said John. He liked the sound of that.</p>
+
+    <p>"I could make you King. You would have a castle and courtiers and <em>feasts</em>."</p>
+
+    <p>John's stomach growled, and he could swear that he saw a castle appear on the headland behind the man as it was mentioned, although that could have been the mushrooms. David the ferret came and stood at John's feet, watching the interaction.</p>
+
+    <p>"Imagine it John. Roasts every day. Bangers and mash for breakfast. All the bacon you could want."</p>
+
+    <p>"Oh no, I couldn't do that sir," replied John (he had forgotten about meat entirely – in fact, he had actually been dreaming of the mushroom and pineapple pizzas which he planned to teach his students how to make the very next day.), "I just wouldn't feel right eating any of the Porkers, and Barry would never allow it. He's a very caring boar you know. Helped me find the best mud to use on the walls of my hut, bless him."</p>
+
+    <p>"Well then you could eat fruit! I don't care."</p>
+
+    <p>"All right. Keep your pants on." said John, startled by the sudden harshness in the man's voice. "I was just saying that I don't much care for meat any more. That's all."</p>
+
+    <p>"Well, as King you could do what you like. You could <em>own</em> this island John. It would be yours."</p>
+
+    <p>"Yeah – Hang on a moment," exclaimed John, "Who are you to give it to me anyway? This isn't <em>your</em> island, is it?"</p>
+
+    <p>"As a matter of fact it is."</p>
+
+    <p>"Oh really?" said John skeptically. He didn't trust this man anymore. "If it's yours, then why on Earth do you want to give it to me 'ey?"</p>
+
+    <p>"I have no use for it. I have more important endeavours to attend to, and I'm generous. I think you would make a fine King."</p>
+
+    <p>"Well you don't get something for nothing, do you now?" remarked John – twenty years of selling things had taught him that. "What's it going to cost me to become King then?"</p>
+
+    <p>"Nothing."</p>
+
+    <p>"Rubbish," said John, "There's always a condition of some sort, even if there ain't a price tag."</p>
+
+    <p>"Well, you would have to agree to cease all construction on the Tree House. That is all."</p>
+
+    <p>"What?" shouted John. He was angry now. "You're bloody barmy if you think I'd do that! It means too much to everyone, not just the spiders. We've all worked long and hard at it. It's united everyone better than any King ever could. No sir! I would rather live like a peasant, and see the benefits of that Tree House in the animals than be King of the miserable lot they'd be without it. So, if you don't mind, I will decline your offer sir and say goodbye right now. Thank you very much for the vote of confidence, but I'd rather have happy animals than be happy idiot in an empty castle. And besides, I don't want to be King at all, thank you very much, I just want to go home to my wife and my boys."</p>
+
+    <p>"Very well then. I will have to prevent the construction of it myself. You have been warned. That thing will not be built. <em>Not on my watch.</em>"</p>
+
+    <p>With that, the man turned and walked off. John stood there, fuming.</p>
+
+    <p>"That idiot threatened <em>me</em>." he said to David, who had climbed onto his shoulder while he was ranting. "I'll show him. I'm not scared of that prissy, namby-pamby little fart. No sir! He'll see. That Tree House is going to be built no matter what that twit tries to do. Come on David, we've got to tell Jerry and the others."</p>
+
+    <p>The building of the Tree House was marred by bad luck from that day on. Animals often got sudden spells of sickness and couldn't work, materials often went missing and the animals got more irritable with the growing fatigue. One day, something truly terrible happened.</p>
+
+    <p>The animals had all finished for the day and had gathered outside John's hut as usual for the nightly story, when thick black smoke drifted into the crowd. It meant only one thing. Fire. The panic was tremendous at first, but calmed when the Porkers, who were a very sensible lot, told everyone to carry as much water and sand as they could and find the source of the fire. The biggest fear was that the whole forest was ablaze, but it turned out, both luckily and horribly, to be only the Tree House that was burning. Construction had almost been completed and it was enormous, so putting it out took almost all night and by the end of it, all that remained were a few pieces of charcoal and lots of ash.</p>
+
+    <p>Remarkably, the baobab was completely unscathed.</p>
+
+    <p>There was a sickly silence around the clearing, the kind of awe and horror that follows a particularly nasty event, like when people first visited the concentration camps after World War Two. The animals didn't know what to do. Some of them wept, some were so angry they couldn't utter a sound and others were so flabbergasted by the blatant terrorism that they stood with their mouths open, staring at the bits of charcoal and ash. John felt terrible. He knew he had brought this on the poor creatures. He, in true pig-headed fashion, had ignored all danger and pushed these creatures to invest all their hopes and dreams in the building of this structure that now no longer existed. He hung his head and let the tears stream from his eyes in silence. He didn't know how to apologise to them, didn't know how to express just how sorry he was for ever even suggesting this blasted thing. All he wanted right now was to be back home in England, holding Matilda in his arms.</p>
+
+    <p>"What do we do now?" asked a young lemur.</p>
+
+    <p>"Well that's very simple," responded a voice from somewhere in the crowd. It sounded new and old at the same time. Or rather, old with lots of life in it. That's what John thought at least. He looked around for the speaker. "We build another one."</p>
+
+    <p>"But it took so long to build this one!" protested a monkey.</p>
+
+    <p>"And what's to say <em>that</em> one won't be burned?" tooted an owl.</p>
+
+    <p>"Nothing," said a small voice from the tree. It was Jerry – he had told the spiders to bring the megaphone so that he could help guide the animals in fighting the fire. "But remember the story about when Lucy tied the Hermit to the tree in the cave inside the Northern Cliffs, hoping that <span class="decoder" id="dec-harold"><button class="decoder-trigger" onclick="toggleDecoder('dec-harold', this)">Harold the Sea Monster</button><span class="decoder-panel"><span class="decode-label">The Ancient Beast</span><span class="decode-term">Harold — Leviathan, Tamed</span>Leviathan is the great sea monster of the Hebrew Bible: a symbol of primal chaos and the power of death. In Job, only God can subdue it. The Hermit not only survives Harold but converts him from destroyer to liberator — the enemy bites the ropes off. This mirrors the theological claim that what appears to destroy the righteous ultimately serves them.<a class="decode-link" href="https://en.wikipedia.org/wiki/Leviathan" target="_blank">→ Wikipedia: Leviathan</a></span></span> would eat him up. The Hermit was in there for <span class="decoder" id="dec-three-days"><button class="decoder-trigger" onclick="toggleDecoder('dec-three-days', this)">three days</button><span class="decoder-panel"><span class="decode-label">The Resurrection Pattern</span><span class="decode-term">Three Days — Death and Return</span>In Christian theology, Jesus was crucified, entombed, and rose on the third day. Three days in darkness — bound, apparently abandoned — followed by emergence and renewed life. The Hermit's three days in the cave, the scratch marks on his arms and legs, and his emergence with an unexpected new friend are a point-for-point echo of the resurrection narrative.<a class="decode-link" href="https://en.wikipedia.org/wiki/Resurrection_of_Jesus" target="_blank">→ Wikipedia</a></span></span>, and he could have given up, but he didn't. He waited for Harold to come. And when Harold came, the Hermit tricked him into biting the ropes off instead of his arms and he came out of the cave, with only scratch marks on his arms and legs and a new friend. Do you think we'd have that story if the Hermit had simply given up? I don't think so. He didn't give up, and we shouldn't either. If we do, it would simply be doing exactly what that man wants us to do. But together, we can prove him wrong."</p>
+
+    <p>The animals stirred. Many of the younger ones whooped and cheered (it was their favourite story you see) and the older ones murmured in agreement. Soon the animals were all making plans for a new Tree House – a bigger, better one too, they thought. Two of the foxes said that they should post a night watch, to prevent any further sabotage, and this suggestion was greeted with more enthusiasm than they expected – their sudden promotion to Head Watchmen.</p>
+
+    <p>The second Tree House was built faster and more elaborately than the first. Not without problems though. The man from the beach somehow managed to interfere with the project almost every day, but the watchmen never caught him or saw him do it. Their presence did, however, ensure that nothing happened to the Tree House at night. The bats and owls proved to be excellent watchmen in that regard because they could stay awake all night and even preferred keeping a night vigil instead of working during the day.</p>
+
+    <p>In six months it was complete, and the opening ceremony was a wondrous affair. The animals had a tremendous feast and there was singing (well, to them it was singing, to John it sounded like a lot of noise, but he didn't mind) and dancing (running about more like) and an all night Storytelling, in which all the stories were told as the Plates (the bits of metal from the plane) were mounted.</p>
+
+    <p>John woke up late the next morning and saw, to his surprise, that David was sitting and waiting patiently at his feet.</p>
+
+    <p>"Hello David," said John groggily (he wasn't a 'morning person'), "What are you doing here? We don't have any mushrooms today. Do you want to play?"</p>
+
+    <p>"No, not quite. Not today Mister John." said David.</p>
+
+    <p>If John wasn't lying down, he would have fallen clean over. He was speechless.</p>
+
+    <p>"There's someone who wants to see you," said David, "Follow me."</p>
+
+    <p>"Alright, but can we go slow today?" said John, "Had a bit of a rough night, see?"</p>
+
+    <p>"Certainly," replied David, before setting off.</p>
+
+    <p>John followed David along the shore for a long while before he veered off into the forest. That part of the journey was more difficult. David twisted and turned and leapt up onto this, down onto that, under this and over that. John was just about to ask for a break when David came to a stop. They were in a small glade, more like a largish gap in the trees than anything else. All around them were <span class="decoder" id="dec-stones"><button class="decoder-trigger" onclick="toggleDecoder('dec-stones', this)">gigantic stone slabs that reminded him of a sort of cross between Stonehenge and the statues on Easter Island</button><span class="decoder-panel"><span class="decode-label">Sacred Threshold</span><span class="decode-term">Standing Stones — Liminal Space</span>Stonehenge and the Easter Island moai both mark places where the human encounters something beyond itself — sites of ritual, ancestor-contact, and cosmic orientation. Stone circles worldwide signal: <em>this ground is different</em>. Stones that look like abysses but show your reflection suggest a threshold where identity and eternity meet face to face.<a class="decode-link" href="https://en.wikipedia.org/wiki/Megalith" target="_blank">→ Wikipedia: Megaliths</a></span></span>. The most curious thing about the slabs was the stone they were made of. Each stone was black – so black that it seemed like you were staring into a chasm when you looked at it and despite this, John could swear he saw his reflection in them even though they were rough and not polished.</p>
+
+    <p>"Funny place," he remarked to David, "What do they call this ty – David?"</p>
+
+    <p>David was gone. And sitting on the stone behind him was a man who just happened to be wearing his pants.</p>
+
+    <p>This wasn't the same man who had offered to make John the King of the island. This man didn't have a suit, or any clothes for that matter, just John's missing pants. John would later say that he was a scrawny bloke, with wild white hair, a beard as long as his body and more wrinkles than a prune that's been left in the sun long enough to become a raisin. But, if he looked old, he certainly didn't seem it. It seemed to John that this man had more life in him than a whole fleet of school buses put together, but he couldn't figure out why. The only thing he could think of was the man's eyes, which were so blue that they were both deep and dazzling simultaneously. In fact, the old man's eyes and the way he looked at John made him want to look away, but he couldn't because they reminded him so much of – of – of – <em>home</em>.</p>
+
+    <p>The only thing the man had on him, besides John's pants, was a brown bag slung over his shoulder.</p>
+
+    <p>Eventually John brought himself to speech.</p>
+
+    <p>"You've got my pants," was all he could think of saying. Something about this man threw him out of sorts completely.</p>
+
+    <p>The old man laughed.</p>
+
+    <p>"I do. Would you like them back?"</p>
+
+    <p>"Naaah," said John, "You keep 'em. They wouldn't fit me now anyway."</p>
+
+    <p>"Thank you. But perhaps you would like to have this back."</p>
+
+    <p>He reached into his pocket, pulled out John's wallet and tossed it to him. John caught it and immediately opened it, pulling out the old photograph that he used to keep in there. It was a picture of himself, with Matilda and the boys, taken outside their house in Essex the day they had moved in. John felt the tears welling up in his eyes and an enormous lump in his throat.</p>
+
+    <p>"Thank you," he spluttered, "Thank you so so so much."</p>
+
+    <p>The man simply smiled, and looked at John as though he understood perfectly what it meant to miss one's wife and family.</p>
+
+    <p>"Why'd you take 'em?" asked John after a while, "My pants."</p>
+
+    <p>"Because, at the time, you didn't need them."</p>
+
+    <p>"What do you mean?" asked John.</p>
+
+    <p>The man simply smiled and John knew that he didn't really need to know.</p>
+
+    <p>"So who are you anyhow?" asked John.</p>
+
+    <p>"I am me."</p>
+
+    <p>"Come again." said John.</p>
+
+    <p>"I am myself. That is who I am. Can't be anything but myself. But if you want to know what to call me, you already know."</p>
+
+    <p>"<span class="decoder" id="dec-hermit"><button class="decoder-trigger" onclick="toggleDecoder('dec-hermit', this)">You're the old Hermit?</button><span class="decoder-panel"><span class="decode-label">The Reveal</span><span class="decode-term">The Hermit — "I Am Who I Am"</span>"I am me… can't be anything but myself" echoes God's self-declaration in Exodus 3:14: <em>"I AM WHO I AM."</em> His eyes remind John of <em>home</em>. He knows John's name without introduction. He has been present all along — behind the stories, behind the island, patiently wearing John's pants. He is the one the stories are about, and the one John has been unknowingly serving all year.<a class="decode-link" href="https://en.wikipedia.org/wiki/I_Am_that_I_Am" target="_blank">→ Wikipedia: I AM WHO I AM</a></span></span>" said John.</p>
+
+    <p>"Among other names, yes."</p>
+
+    <p>"Blimey," breathed John, "I thought you were just a myth of the island, I did."</p>
+
+    <p>"Come now, you know that isn't true."</p>
+
+    <p>"Well, I always hoped you were real," admitted John, "Does that mean that the bloke on the beach – the one in the suit – that was Lucy?"</p>
+
+    <p>Again the Hermit laughed.</p>
+
+    <p>"Don't let him hear you say that. He hates the animals for calling him that."</p>
+
+    <p>"So it isn't his name?" said John, "I thought he called himself that 'cause he's a fruit. The spiders say he dresses in drag."</p>
+
+    <p>"Oh they do? Bless them, the poor things. No, he has many disguises. He once even pretended to be me!"</p>
+
+    <p>"I remember that one." laughed John, "By the way, he told me that he owns the island. Is that true?"</p>
+
+    <p>"He likes to think so. But in truth, he only owns his disguises. The only power he has is over those who let him have it."</p>
+
+    <p>"Arrogant twit," muttered John, "Tried to sell me the island, he did. Said I'd be King. Told him where to get off though, mind you. He wanted to stop the animals building the Tree House the tricky blighter."</p>
+
+    <p>"Indeed. However, it's very fortunate that you didn't succumb to his influence. Your love of food was almost your downfall."</p>
+
+    <p>"Maybe. What do you rate would've happened if I had chosen to be King?" asked John.</p>
+
+    <p>"Well, you wouldn't be talking to me now. But never mind that, what matters is what <em>is</em>, not what could be. That said, I am very grateful that you chose to put the welfare and freedom of the animals ahead of your own comfort, and appetite."</p>
+
+    <p>"It's their island, innit?" shrugged John, "They were here first, and they'll be here after. What say do I have?"</p>
+
+    <p>"In that moment, you had all the say in the world. And for your choice, the animals are the better. It is a deed for which I will reward you."</p>
+
+    <p>"No bacon, please," said John, "I know the banana leaves trick, but I'm a vegetarian now."</p>
+
+    <p>The Hermit roared with laughter.</p>
+
+    <p>"No, no, no. I wouldn't do that. It was a once off thing that. But bless the spiders for telling it to you, it is indeed one of my favourite stories. No, I will give you a gift. What would you like most in the world?"</p>
+
+    <p>John didn't hesitate.</p>
+
+    <p>"Well," he said, "If it's at all possible, I would really love to go home. More than I can say."</p>
+
+    <p>The Hermit smiled, climbed off the stone and approached John.</p>
+
+    <p>"I thought you would ask that."</p>
+
+    <p>He opened his bag and pulled out a large book, bound in leather.</p>
+
+    <p>"This has everything you need to know in order to get home."</p>
+
+    <p>He handed the book to John.</p>
+
+    <p>"But before you leave, there is one more story to be written. It's called <em>The Stranger from the Skies</em>. You know how it goes. Teach it to the spiders, they will be very happy to have a new story to tell. It's what they were born to do."</p>
+
+    <p>And with that, the Hermit turned to leave.</p>
+
+    <p>"Hang on a minute," said John.</p>
+
+    <p>The Hermit stopped and looked back, slightly bemused.</p>
+
+    <p>"How's the missus?" asked John.</p>
+
+    <p>The Hermit chuckled but looked suddenly sad.</p>
+
+    <p>"Well, she isn't where I would like her to be, but she'll come back."</p>
+
+    <p>"I'm sure of it," assured John, "You're too good to ignore forever."</p>
+
+    <p>"Thank you, John. Stay in touch when you're back in England will you? I'm sure you've figured out how to reach me."</p>
+
+    <p>The Hermit left. John didn't bother calling after him, he knew from the stories that the Hermit was a busy man. Boy, how Jerry would love to hear this, and all the animals too. Although he suspected that they would be sad that they were not around to meet the Hermit. John suspected though, that this was how the Hermit liked it. He looked down at the book in his hands.</p>
+
+    <p>"So you're supposed to tell me how to get home?" he said.</p>
+
+    <p>He turned it over in his hands and saw the title emblazoned in large gold letters across the leather cover.</p>
+
+    <p><span class="decoder" id="dec-raft-title"><button class="decoder-trigger" onclick="toggleDecoder('dec-raft-title', this)"><em>How to Build a Raft.</em></button><span class="decoder-panel"><span class="decode-label">The Meta-Loop</span><span class="decode-term">The Book That Is Its Own Story</span>The Hermit gives John a book to guide him home — and the book is the story you just read. Its title is the story's title. Scripture, in this reading, is not a set of rules handed down from above: it is the record of what an ordinary person did in the presence of the Divine — and it is given back to that same person as a guide for finding the way home. The story is the raft.<a class="decode-link" href="https://en.wikipedia.org/wiki/Metafiction" target="_blank">→ Wikipedia: Metafiction</a></span></span></p>
+
+  </div><!-- .story-body -->
+</div><!-- #tab-story -->
+
+
+<!-- ════════════════════════════════════════════════════════════
+     TAB 2 — THE MYTHOLOGY
+═════════════════════════════════════════════════════════════ -->
+<div id="tab-mythology" class="tab-content">
+
+  <div class="section-title">The Lore &amp; the Legends</div>
+  <p class="section-intro">The island did not spring from nothing. It is woven from very old cloth — spider-silk, sea-monster bones, and the wood of a tree whose roots are in heaven.</p>
+  <div class="story-ornament">❧ &nbsp;✦&nbsp; ❧</div>
+
+  <div class="accordion-item">
+    <button class="accordion-trigger" onclick="toggleAccordion(this)">
+      <span class="accordion-trigger-text">Anansi the Spider God — He Who Owns All Stories</span>
+      <span class="accordion-arrow">▾</span>
+    </button>
+    <div class="accordion-panel">
+      <p>In the Akan tradition of West Africa — and throughout the African diaspora, carried by enslaved people into the Caribbean — Anansi the Spider is the trickster deity who owns all stories in the world. Before Anansi, stories belonged to Nyame the Sky God, who kept them locked away. Anansi purchased them through cleverness alone: he captured a hornets' nest, a python, and a leopard in succession, presenting each to Nyame as payment. From that day, all stories were called "Anansi stories."</p>
+      <p>The island spiders are unmistakably Anansi's children. They hold stories communally, pass them down through passionate argument, and understand instinctively that stories are not entertainment but the means by which a community remembers who it is and what it believes. They even recognise, as Anansi did, that a story told badly — or not told at all — is worse than silence. Their endless bickering over details is not dysfunction; it is the living quality of the tradition.</p>
+      <p>John's role — organising, scribing, amplifying — is the role of the human who receives the gift of story and is changed by it. He doesn't own the stories. He just helps them travel.</p>
+      <p><a href="https://en.wikipedia.org/wiki/Anansi" target="_blank">→ Anansi (Wikipedia)</a></p>
+    </div>
+  </div>
+
+  <div class="accordion-item">
+    <button class="accordion-trigger" onclick="toggleAccordion(this)">
+      <span class="accordion-trigger-text">Lucy and the Trickster — From Loki to Lucifer</span>
+      <span class="accordion-arrow">▾</span>
+    </button>
+    <div class="accordion-panel">
+      <p>Every major mythological tradition features a figure who lies, changes shape, tempts the righteous, and disrupts the divine order. In Norse mythology this is Loki — shapeshifter, father of monsters, ultimately the agent of Ragnarök. In West African and Native American traditions, the Trickster takes the form of Coyote, Raven, or Anansi himself. In the Abrahamic faiths, he is the Adversary: the Serpent in the Garden, the Satan of Job, the Lucifer of Christian tradition.</p>
+      <p>What unites all these figures is their relationship to language. The Trickster does not overpower — he persuades. He offers genuine gifts. He reframes reality until the good-hearted person voluntarily chooses wrongly. Lucy's offer of kingship is pure trickster mechanics: a real benefit (comfort, power, food) attached to a concealed cost (the destruction of the one thing that unites the community). The condition is revealed only after John has already imagined the throne.</p>
+      <p>Notably, the animals call him "Lucy" — a soft, domestic name — without knowing they have stumbled onto his true nature. This mirrors a widespread folkloric pattern: to speak the devil's name directly invites him in, so it must be corrupted, softened, mispronounced.</p>
+      <p><a href="https://en.wikipedia.org/wiki/Trickster" target="_blank">→ Trickster archetype (Wikipedia)</a></p>
+    </div>
+  </div>
+
+  <div class="accordion-item">
+    <button class="accordion-trigger" onclick="toggleAccordion(this)">
+      <span class="accordion-trigger-text">The Baobab as World Tree — The Axis Mundi</span>
+      <span class="accordion-arrow">▾</span>
+    </button>
+    <div class="accordion-panel">
+      <p>The World Tree — Norse Yggdrasil, Hindu Ashvattha, the Cosmic Cedar of ancient Mesopotamia, the Tree of Life in Eden — is one of the oldest symbols in human religion. It stands at the centre of the cosmos, connecting the world below with the world above, with humanity living in its branches. It is both map and axis: the point around which everything turns.</p>
+      <p>The baobab in this story carries every mark of a World Tree. It stands alone in the only clearing, at the obvious and self-evident centre of island life. It is the chosen site for the building that will hold the community's sacred stories. It survives the fire that destroys everything built around it. And it stands precisely seven miles from John's hut — in the direction of England, toward home.</p>
+      <p>In African folklore specifically, the baobab is "the tree of life." An old story explains its strange, branch-like roots by saying that God planted it upside-down. It grows with its roots in the sky. It is, literally, a tree rooted in heaven.</p>
+      <p><a href="https://en.wikipedia.org/wiki/Axis_mundi" target="_blank">→ Axis Mundi (Wikipedia)</a> &nbsp;·&nbsp; <a href="https://en.wikipedia.org/wiki/Adansonia" target="_blank">→ The Baobab Tree (Wikipedia)</a></p>
+    </div>
+  </div>
+
+  <div class="accordion-item">
+    <button class="accordion-trigger" onclick="toggleAccordion(this)">
+      <span class="accordion-trigger-text">The Stranger from the Skies — A Universal Myth</span>
+      <span class="accordion-arrow">▾</span>
+    </button>
+    <div class="accordion-panel">
+      <p>Across mythologies, a recurring story type involves an outsider who arrives in an unfamiliar world — often from above or beyond — and transforms the community they encounter. Sometimes they are a culture hero who brings fire, agriculture, or writing. Sometimes they are a sacrificial figure whose departure enables new life. Almost always, their story becomes the community's founding narrative.</p>
+      <p>The Hermit calls the final story <em>The Stranger from the Skies</em> — and means John himself. John falls from the sky in a plane crash. He brings literacy, fire (literally), cooking, cricket, and — most essentially — the means to record and transmit the sacred stories. He is accidental but essential. The community could not become what it was meant to be without him.</p>
+      <p>This pattern appears in the myths of Prometheus (who brings fire to humanity), Orpheus (whose music tames wild animals), and the culture heroes of indigenous traditions worldwide. What distinguishes John is that he is entirely ordinary — a bald salesman from Essex with no special powers. The myth is democratised. The stranger from the skies is just a decent man who showed up.</p>
+      <p><a href="https://en.wikipedia.org/wiki/Culture_hero" target="_blank">→ Culture Hero (Wikipedia)</a></p>
+    </div>
+  </div>
+
+  <div class="accordion-item">
+    <button class="accordion-trigger" onclick="toggleAccordion(this)">
+      <span class="accordion-trigger-text">The Sacred Number Seven — Why Seven Miles?</span>
+      <span class="accordion-arrow">▾</span>
+    </button>
+    <div class="accordion-panel">
+      <p>The narrator tells us the baobab stands precisely seven miles from John's hut — in the direction of England. The number seven appears across virtually every major religious and mythological tradition as a marker of divine completeness and sacred significance.</p>
+      <p>In the Hebrew Bible, creation takes six days and rests on the seventh (the Sabbath). The Book of Revelation is structured around seven seals, seven trumpets, and seven bowls. In ancient Mesopotamia, seven was the number of cosmic completeness: seven planets, seven gates of the underworld, seven days in a week. In Islamic tradition there are seven heavens. In Hindu cosmology, seven chakras. Seven colours in the rainbow. Seven notes in the scale.</p>
+      <p>The detail that it is also "in the direction of England" — toward home, toward Matilda and the boys — is the story's quiet claim: the sacred and the domestic point the same direction. The World Tree is not in some remote, intimidating elsewhere. It is seven miles from where you sleep, and it faces home.</p>
+    </div>
+  </div>
+
+</div><!-- #tab-mythology -->
+
+
+<!-- ════════════════════════════════════════════════════════════
+     TAB 3 — THE THEOLOGY
+═════════════════════════════════════════════════════════════ -->
+<div id="tab-theology" class="tab-content">
+
+  <div class="section-title">The Deeper Current</div>
+  <p class="section-intro">Beneath the mishaps of a stranded Englishman runs a set of ancient theological questions — about temptation, sacrifice, idolatry, scripture, and the God who leaves his wife's address with the spiders.</p>
+  <div class="story-ornament">❧ &nbsp;✦&nbsp; ❧</div>
+
+  <div class="accordion-item">
+    <button class="accordion-trigger" onclick="toggleAccordion(this)">
+      <span class="accordion-trigger-text">The Temptation Scene — Echoes of Matthew 4</span>
+      <span class="accordion-arrow">▾</span>
+    </button>
+    <div class="accordion-panel">
+      <p>In Matthew 4:1–11, after forty days of fasting in the wilderness, Jesus is approached by the devil and offered all the kingdoms of the world in exchange for worship. Jesus refuses with a quotation from scripture. The devil departs.</p>
+      <p>Lucy's offer follows this structure with remarkable fidelity. The setting is wilderness. The offer is sovereignty — King of the island, castle, feasts. The hidden condition is gradually revealed: abandon the Tree House, the one thing that serves others rather than the self. And crucially, the temptation is calibrated to the specific individual: Lucy knows John's weakness precisely and offers roasts, bangers and mash, and bacon. The tempter does not offer generic evil but the specific good that will most effectively distract the specific person.</p>
+      <p>John's refusal is instinctive and gloriously untheological: "I'd rather have happy animals than be happy idiot in an empty castle." He is saved, in part, by having become a vegetarian, and by genuinely not wanting to be King. This is, accidentally, quite good theology — the best resistance to temptation is not having the particular desire being exploited.</p>
+      <p><a href="https://en.wikipedia.org/wiki/Temptation_of_Christ" target="_blank">→ The Temptation of Christ (Wikipedia)</a></p>
+    </div>
+  </div>
+
+  <div class="accordion-item">
+    <button class="accordion-trigger" onclick="toggleAccordion(this)">
+      <span class="accordion-trigger-text">Three Days in the Cave — The Hermit's Resurrection</span>
+      <span class="accordion-arrow">▾</span>
+    </button>
+    <div class="accordion-panel">
+      <p>Jerry's story about the Hermit is told at the lowest moment in the narrative: the Tree House has just burned. The animals are in despair. The story Jerry chooses is the one about the Hermit being bound to a tree in a cave for three days, with a sea monster coming to devour him — who instead bites off his ropes and becomes his friend.</p>
+      <p>The parallels to the crucifixion and resurrection are precise. The Hermit is bound to a tree (crucified). He is in darkness, in a cave, awaiting death (entombment). Three days pass. He emerges not merely alive but transformed — with scratch marks on his arms and legs (wounds), and with an enemy converted to an ally.</p>
+      <p>Jerry is not merely a storyteller here; he is a preacher, wielding the community's own sacred narrative as a source of courage in catastrophe. The story has power precisely because the animals already know and love it. It is, by this point, their scripture — and this is the moment it functions as scripture is meant to: not as history, but as the key to understanding what is happening right now.</p>
+      <p><a href="https://en.wikipedia.org/wiki/Resurrection_of_Jesus" target="_blank">→ Resurrection of Jesus (Wikipedia)</a></p>
+    </div>
+  </div>
+
+  <div class="accordion-item">
+    <button class="accordion-trigger" onclick="toggleAccordion(this)">
+      <span class="accordion-trigger-text">How Sacred Texts Are Made — The Story of the Plates</span>
+      <span class="accordion-arrow">▾</span>
+    </button>
+    <div class="accordion-panel">
+      <p>The story offers a careful account of how sacred text comes into being. The spiders have stories but cannot write. John can write but has no stories. The animals gather and argue; the debates are not obstacles to transmission but are themselves part of the process — each argument is an act of interpretation and communal ownership. John listens, scribes on charcoal, then etches permanently into metal. Oral tradition becomes written record.</p>
+      <p>This mirrors what historians of religion say about the origins of biblical literature: oral traditions, preserved by dedicated custodians, were eventually committed to writing by literate insiders during periods of crisis or transition. The argument over details is not a failure of the tradition but a sign of its vitality. Traditions that don't argue have stopped caring.</p>
+      <p>The metal "Plates" from the crashed plane are worth noting. In religious history, metal plates have been associated with durable and authoritative inscription — the Ten Commandments on stone, the Book of Mormon on golden plates. The crash that brought destruction also delivered the record-keeping material. Even the disaster had a purpose, though no one knew it at the time.</p>
+    </div>
+  </div>
+
+  <div class="accordion-item">
+    <button class="accordion-trigger" onclick="toggleAccordion(this)">
+      <span class="accordion-trigger-text">The Fire Ants and the Problem of Idolatry</span>
+      <span class="accordion-arrow">▾</span>
+    </button>
+    <div class="accordion-panel">
+      <p>The fire ants worship John. He keeps explaining that he is not a god. They keep bringing him mushrooms and tribute anyway. It is, the story says, part of their culture.</p>
+      <p>This is a recurring theme in the Hebrew Bible. When Moses comes down from Sinai, the Israelites have built a golden calf in his absence. When Paul and Barnabas heal a lame man in Lystra, the crowd declares them Zeus and Hermes and attempts to sacrifice oxen to them. The human impulse to worship the visible, the local, and the immediately impressive is treated throughout scripture as both understandable and theologically catastrophic.</p>
+      <p>John's patient, repeated, frustrated insistence that he is just a man — while still accepting the mushrooms, because honestly, what are you going to do — is a gentle comic portrait of this problem. The fire ants' error is not malicious; it is simply the natural response of creatures who encounter something that seems to exceed them. The challenge for the one being worshipped is to redirect that reverence without crushing the relationship, which John manages, mostly, by accident.</p>
+    </div>
+  </div>
+
+  <div class="accordion-item">
+    <button class="accordion-trigger" onclick="toggleAccordion(this)">
+      <span class="accordion-trigger-text">The Hermit's Wife — The Church, the Bride, and the Wandering Beloved</span>
+      <span class="accordion-arrow">▾</span>
+    </button>
+    <div class="accordion-panel">
+      <p>The most theologically surprising element of the story is the Hermit's wife: a woman who "needed time to herself," who still visits the island occasionally, who has not yet come home. She flirts with both the Hermit and Lucy. The Hermit believes she will return. He is quietly sad about it.</p>
+      <p>The primary layer — the intentional one — is the Christian concept of the <em>Bride of Christ</em>. In the New Testament, the Church is described as Christ's bride, awaiting the final union (Revelation 19:7, Ephesians 5:25–27). If the Hermit is an analogue for God, his wife is the Church: beloved, covenanted, but presently wandering. She still visits the island — she has not entirely abandoned the faith — but she is also flirting with Lucy, which is a compact and painfully accurate description of the Church's historical relationship with worldly power, compromise, and the very Adversary she ought to be fleeing.</p>
+      <p>This makes John's parting assurance — "You're too good to ignore forever" — suddenly enormous. He is, accidentally, encouraging God about his own Church. The Hermit receives it with real gratitude. He needed to hear it. And the instruction to "stay in touch when you're back in England" takes on a second meaning: John is being sent back into the world as a member of that wandering, flirtatious, not-yet-home Bride. The Hermit is trusting him to be part of her return.</p>
+      <p>Secondary layers enrich this without displacing it. In Jewish mystical tradition, the <em>Shekinah</em> is the feminine divine presence — the face of God that dwells with Israel in exile and longs to return to union. In Gnostic Christianity, <em>Sophia</em> (Wisdom) descends into the material world and becomes lost. In the Song of Songs, the absent beloved is the soul in estrangement from God. The Hermit's wife carries all of these overtones — but the story's beating heart is the simpler, more personal, more ecclesial one: God is waiting for his Church to come home, and is not too proud to be glad when a bald vegetarian from Essex tells him she will.</p>
+      <p><a href="https://en.wikipedia.org/wiki/Bride_of_Christ" target="_blank">→ Bride of Christ (Wikipedia)</a> &nbsp;·&nbsp; <a href="https://en.wikipedia.org/wiki/Shekinah" target="_blank">→ Shekinah (Wikipedia)</a></p>
+    </div>
+  </div>
+
+</div><!-- #tab-theology -->
+
+
+<!-- ════════════════════════════════════════════════════════════
+     TAB 4 — FURTHER READING
+═════════════════════════════════════════════════════════════ -->
+<div id="tab-reading" class="tab-content">
+
+  <div class="section-title">Further Reading</div>
+  <p class="section-intro">For those who wish to follow the threads deeper into the forest.</p>
+  <div class="story-ornament">❧ &nbsp;✦&nbsp; ❧</div>
+
+  <div class="reading-group-title">The Spider Traditions</div>
+
+  <div class="reading-item">
+    <a href="https://en.wikipedia.org/wiki/Anansi" target="_blank">Anansi (Wikipedia)</a>
+    <span class="reading-desc">The West African spider trickster-god who owns all stories — the most direct mythological ancestor of the island spiders.</span>
+    <span class="reading-tag">Mythology</span>
+  </div>
+  <div class="reading-item">
+    <a href="https://en.wikipedia.org/wiki/Anansi_Boys" target="_blank">Anansi Boys — Neil Gaiman</a>
+    <span class="reading-desc">What happens when Anansi's sons must carry on his legacy of stories. The closest literary relative to this story's concerns.</span>
+    <span class="reading-tag">Fiction</span>
+  </div>
+  <div class="reading-item">
+    <a href="https://en.wikipedia.org/wiki/American_Gods" target="_blank">American Gods — Neil Gaiman</a>
+    <span class="reading-desc">Old gods surviving in new disguises — directly relevant to Lucy's suit-wearing, island-wandering persistence.</span>
+    <span class="reading-tag">Fiction</span>
+  </div>
+
+  <div class="reading-group-title">The Trickster and the Adversary</div>
+
+  <div class="reading-item">
+    <a href="https://en.wikipedia.org/wiki/Lucifer" target="_blank">Lucifer (Wikipedia)</a>
+    <span class="reading-desc">The full theological and mythological history of Lucy's true name — from the morning star to the fallen angel.</span>
+    <span class="reading-tag">Theology</span>
+  </div>
+  <div class="reading-item">
+    <a href="https://en.wikipedia.org/wiki/Trickster" target="_blank">Trickster (Wikipedia)</a>
+    <span class="reading-desc">How the cross-cultural trickster figure operates across mythology, folklore, and religion worldwide.</span>
+    <span class="reading-tag">Mythology</span>
+  </div>
+  <div class="reading-item">
+    <a href="https://en.wikipedia.org/wiki/Paradise_Lost" target="_blank">Paradise Lost — John Milton</a>
+    <span class="reading-desc">The poem that fixed the image of a charming, persuasive, well-dressed Satan in Western imagination. Lucy's literary great-grandfather.</span>
+    <span class="reading-tag">Literature</span>
+  </div>
+
+  <div class="reading-group-title">Sacred Texts and Their Origins</div>
+
+  <div class="reading-item">
+    <a href="https://en.wikipedia.org/wiki/Oral_tradition" target="_blank">Oral Tradition (Wikipedia)</a>
+    <span class="reading-desc">How stories are preserved, debated, and transmitted in cultures without writing — the exact process the island spiders embody.</span>
+    <span class="reading-tag">Religion</span>
+  </div>
+  <div class="reading-item">
+    <a href="https://en.wikipedia.org/wiki/Documentary_hypothesis" target="_blank">The Documentary Hypothesis (Wikipedia)</a>
+    <span class="reading-desc">The scholarly theory that the Torah was compiled from multiple earlier oral and written sources — a real-world version of the spider debates.</span>
+    <span class="reading-tag">Biblical Studies</span>
+  </div>
+  <div class="reading-item">
+    <a href="https://en.wikipedia.org/wiki/Axis_mundi" target="_blank">Axis Mundi / The World Tree (Wikipedia)</a>
+    <span class="reading-desc">The universal symbol of the sacred centre — the deep mythological roots of the baobab.</span>
+    <span class="reading-tag">Mythology</span>
+  </div>
+
+  <div class="reading-group-title">The Castaway and the Temptation</div>
+
+  <div class="reading-item">
+    <a href="https://en.wikipedia.org/wiki/Robinson_Crusoe" target="_blank">Robinson Crusoe — Daniel Defoe</a>
+    <span class="reading-desc">The foundational castaway narrative that John consciously echoes and quietly subverts — with community, friendship, and fewer colonial assumptions.</span>
+    <span class="reading-tag">Literature</span>
+  </div>
+  <div class="reading-item">
+    <a href="https://en.wikipedia.org/wiki/Temptation_of_Christ" target="_blank">The Temptation of Christ (Wikipedia)</a>
+    <span class="reading-desc">The biblical account of the devil's offer of all earthly kingdoms — the direct template for Lucy's offer on the beach.</span>
+    <span class="reading-tag">Theology</span>
+  </div>
+  <div class="reading-item">
+    <a href="https://en.wikipedia.org/wiki/Shekinah" target="_blank">Shekinah (Wikipedia)</a>
+    <span class="reading-desc">The feminine divine presence in Jewish tradition — the wandering, longed-for figure behind the Hermit's absent wife.</span>
+    <span class="reading-tag">Theology</span>
+  </div>
+
+</div><!-- #tab-reading -->
+
+</main>
+
+
+<!-- ════════════════════════════════════════════════════════════
+     LIGHTBOXES
+═════════════════════════════════════════════════════════════ -->
+
+<div class="lightbox-overlay" id="lb-lucifer" onclick="closeLightboxOnOverlay(event, 'lb-lucifer')">
+  <div class="lightbox-box">
+    <div class="lightbox-header">
+      <span class="lightbox-title">Lucy — The Lightbringer in Disguise</span>
+      <button class="lightbox-close" onclick="closeLightbox('lb-lucifer')">✕</button>
+    </div>
+    <div class="lightbox-body">
+      <h3>The Name</h3>
+      <p>The animals call the Adversary "Lucy" — a soft, domestic name that masks his nature. His true name is Lucifer, from the Latin <em>lux ferre</em>: "light-bearer." In the Hebrew Bible, the figure who would become Lucifer was originally a brilliant heavenly being — the morning star — whose pride led to a catastrophic fall. The name survived the fall; the nature did not.</p>
+      <h3>The Costume</h3>
+      <p>Lucy appears in black suit, red shirt, black tie, chiselled features, perfectly trimmed goatee, and a smile described as "friendly, with a sense of power." This is the iconography of the Adversary as Western imagination fixed him — elegant, charming, not monstrous. John Milton's Satan in <em>Paradise Lost</em> was the template: the most beautiful of the angels, fallen but not yet visibly ruined. John would not have called the smile charming. He was right not to.</p>
+      <h3>The Method</h3>
+      <p>Lucy does not threaten John. He flatters him, appeals to his stomach, and offers real goods. The condition — abandoning the Tree House — is revealed only after John has already imagined himself as King. This is the adversarial method in every tradition: the cost is concealed until the heart is already half-committed. John's salvation is that he isn't especially interested in being King, and the moment he imagines it he immediately thinks of his friends.</p>
+      <h3>The Limit</h3>
+      <p>The Hermit defines Lucy's power precisely: "He only owns his disguises. The only power he has is over those who let him have it." This is an exact theological statement: the Adversary's power is persuasive, not coercive. It depends entirely on voluntary cooperation. John simply — and stubbornly — declines.</p>
+      <p><a href="https://en.wikipedia.org/wiki/Lucifer" target="_blank">→ Lucifer (Wikipedia)</a> &nbsp;·&nbsp; <a href="https://en.wikipedia.org/wiki/Paradise_Lost" target="_blank">→ Paradise Lost (Wikipedia)</a></p>
+    </div>
+  </div>
+</div>
+
+<div class="lightbox-overlay" id="lb-temptation" onclick="closeLightboxOnOverlay(event, 'lb-temptation')">
+  <div class="lightbox-box">
+    <div class="lightbox-header">
+      <span class="lightbox-title">The King Offer — Echoes of Matthew 4</span>
+      <button class="lightbox-close" onclick="closeLightbox('lb-temptation')">✕</button>
+    </div>
+    <div class="lightbox-body">
+      <h3>The Biblical Account</h3>
+      <p>In Matthew 4:1–11, after forty days of fasting in the wilderness, Jesus is taken by the devil to a high mountain and shown all the kingdoms of the world. "All these I will give you," the devil says, "if you will bow down and worship me." Jesus refuses with scripture. The devil departs.</p>
+      <h3>The Parallel</h3>
+      <p>Lucy's offer follows the same structure. The setting is wilderness. The offer is sovereignty — "King of the island," with a castle and feasts. The worship demanded is not explicit obeisance but its functional equivalent: abandon the thing that serves others (the Tree House) for the thing that serves only yourself (the throne). The condition is not revealed until John has already been painted a picture of royal comfort.</p>
+      <p>Note that Lucy tailors the temptation to John's particular weakness — food — just as the devil's first temptation targeted Jesus's hunger after forty days of fasting. The tempter calibrates to the individual. He knows his subject.</p>
+      <h3>The Refusal</h3>
+      <p>Jesus refuses with scripture. John refuses with stubbornness, loyalty, and a digression about a caring boar named Barry. Both refusals share the same root: a rejection of private comfort at the expense of others. John's refusal is not sophisticated, but it is total. "I'd rather have happy animals than be happy idiot in an empty castle." This is, accidentally, quite good theology.</p>
+      <h3>The Sequel</h3>
+      <p>In the Gospel account, the devil departs and angels come to minister to Jesus. On the island, Lucy departs and begins sabotaging the Tree House. The structure holds. The adversary who cannot persuade resorts to destruction — and ultimately fails at that too.</p>
+      <p><a href="https://en.wikipedia.org/wiki/Temptation_of_Christ" target="_blank">→ Temptation of Christ (Wikipedia)</a></p>
+    </div>
+  </div>
+</div>
+
+<div class="lightbox-overlay" id="lb-baobab" onclick="closeLightboxOnOverlay(event, 'lb-baobab')">
+  <div class="lightbox-box">
+    <div class="lightbox-header">
+      <span class="lightbox-title">The Baobab — Rooted in Heaven</span>
+      <button class="lightbox-close" onclick="closeLightbox('lb-baobab')">✕</button>
+    </div>
+    <div class="lightbox-body">
+      <h3>The Anomaly</h3>
+      <p>The baobab does not belong on a Pacific island. Baobabs are native to mainland Africa and Madagascar; their presence anywhere else requires human intervention, divine placement, or outright impossibility. The narrator does not explain it. "Heaven only knows how a baobab ended up here," John thinks. The answer is implied in the question.</p>
+      <h3>African Folklore</h3>
+      <p>In African traditional belief, the baobab is "the tree of life." Its enormous trunk stores thousands of litres of water; its fruit, bark, and leaves are nutritious and medicinal. An old story explains its upturned appearance — branches like roots reaching skyward — by saying that God planted it upside-down. It grows with its roots in the sky. It is a tree that belongs, in its deepest nature, to heaven.</p>
+      <h3>The Axis Mundi</h3>
+      <p>The World Tree — Norse Yggdrasil, Hindu Ashvattha, the Tree of Life in Eden — stands at the centre of the cosmos, connecting earth to heaven. It is the axis around which everything turns. The island's baobab stands alone in the only clearing, at the centre of island life. It is the obvious site for the Tree House. And it is the only thing that survives the fire — indestructible, because it belongs to a different order of reality than the things built around it.</p>
+      <h3>Seven Miles from Home</h3>
+      <p>The baobab stands precisely seven miles from John's hut, in the direction of England. Seven is the number of divine completeness across virtually every religious tradition. That the sacred centre is also oriented toward home is the story's quiet theological claim: the path to the World Tree runs toward where you most want to be.</p>
+      <p><a href="https://en.wikipedia.org/wiki/Adansonia" target="_blank">→ Baobab Tree (Wikipedia)</a> &nbsp;·&nbsp; <a href="https://en.wikipedia.org/wiki/Axis_mundi" target="_blank">→ Axis Mundi (Wikipedia)</a></p>
+    </div>
+  </div>
+</div>
+
+
+<!-- ════════════════════════════════════════════════════════════
+     SCRIPTS
+═════════════════════════════════════════════════════════════ -->
+<script>
+  // ── Tab switching ──
+  function switchTab(tabId, btn) {
+    document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById(tabId).classList.add('active');
+    btn.classList.add('active');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  // ── Decoder ──
+  function toggleDecoder(id, btn) {
+    const wrapper = document.getElementById(id);
+    const panel = wrapper.querySelector('.decoder-panel');
+    const isOpen = panel.classList.contains('open');
+
+    document.querySelectorAll('.decoder-panel.open').forEach(p => p.classList.remove('open'));
+    document.querySelectorAll('.decoder-trigger.open').forEach(b => b.classList.remove('open'));
+
+    if (!isOpen) {
+      panel.classList.add('open');
+      btn.classList.add('open');
+      const rect = panel.getBoundingClientRect();
+      if (rect.right > window.innerWidth - 16) {
+        panel.classList.add('flip-left');
+      } else {
+        panel.classList.remove('flip-left');
+      }
+    }
+  }
+
+  document.addEventListener('click', function(e) {
+    if (!e.target.closest('.decoder')) {
+      document.querySelectorAll('.decoder-panel.open').forEach(p => p.classList.remove('open'));
+      document.querySelectorAll('.decoder-trigger.open').forEach(b => b.classList.remove('open'));
+    }
+  });
+
+  // ── Lightbox ──
+  function openLightbox(id) {
+    document.getElementById(id).classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeLightbox(id) {
+    document.getElementById(id).classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  function closeLightboxOnOverlay(e, id) {
+    if (e.target === document.getElementById(id)) closeLightbox(id);
+  }
+
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+      document.querySelectorAll('.lightbox-overlay.open').forEach(el => el.classList.remove('open'));
+      document.body.style.overflow = '';
+    }
+  });
+
+  // ── Accordion ──
+  function toggleAccordion(btn) {
+    const panel = btn.nextElementSibling;
+    const isOpen = btn.classList.contains('open');
+    document.querySelectorAll('.accordion-trigger.open').forEach(b => {
+      b.classList.remove('open');
+      b.nextElementSibling.classList.remove('open');
+    });
+    if (!isOpen) {
+      btn.classList.add('open');
+      panel.classList.add('open');
+    }
+  }
+</script>
+</body>
+</html>

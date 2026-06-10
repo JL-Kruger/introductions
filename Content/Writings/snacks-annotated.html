@@ -1,0 +1,967 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Snacks — Annotated</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,700&family=Crimson+Pro:ital,wght@0,400;0,600;1,400&family=Pacifico&display=swap" rel="stylesheet">
+  <style>
+    /* ========= CUSTOM PROPERTIES ========= */
+    :root {
+      --bg: #FDF5EC;
+      --bg2: #FFF0E0;
+      --text: #2C1810;
+      --text-muted: #8B5E4A;
+      --border: #E8C8A0;
+
+      --pink: #C04070;
+      --pink-mid: #E0739A;
+      --pink-light: #F8D0E4;
+      --pink-pale: #FFF0F6;
+
+      --cyan: #1A9A8E;
+      --cyan-mid: #4ABFB5;
+      --cyan-light: #C0EAE7;
+      --cyan-pale: #F0FAFA;
+
+      --amber: #9A6800;
+      --amber-mid: #C8A020;
+      --amber-light: #F2DFA0;
+      --amber-pale: #FFFBEF;
+
+      --card-bg: #FFF8F2;
+      --shadow: rgba(44, 24, 16, 0.12);
+    }
+
+    /* ========= RESET & BASE ========= */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Crimson Pro', Georgia, serif;
+      background-color: var(--bg);
+      color: var(--text);
+      line-height: 1.75;
+      font-size: 18px;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
+    }
+
+    /* ========= HEADER ========= */
+    header {
+      background: linear-gradient(150deg, var(--pink-light) 0%, #FFE8C8 50%, var(--cyan-light) 100%);
+      padding: 52px 24px 44px;
+      text-align: center;
+      border-bottom: 2px solid var(--pink-mid);
+      position: relative;
+      overflow: hidden;
+    }
+
+    header::before {
+      content: '✦  ✧  ✦  ✧  ✦  ✧  ✦';
+      position: absolute;
+      top: 14px; left: 0; right: 0;
+      text-align: center;
+      color: var(--pink-mid);
+      font-size: 11px;
+      letter-spacing: 6px;
+      opacity: 0.55;
+    }
+
+    header::after {
+      content: '✦  ✧  ✦  ✧  ✦  ✧  ✦';
+      position: absolute;
+      bottom: 14px; left: 0; right: 0;
+      text-align: center;
+      color: var(--amber-mid);
+      font-size: 11px;
+      letter-spacing: 6px;
+      opacity: 0.55;
+    }
+
+    .site-title {
+      font-family: 'Pacifico', cursive;
+      font-size: 3.8rem;
+      color: var(--pink);
+      line-height: 1;
+      margin-bottom: 10px;
+      text-shadow: 2px 3px 0 var(--amber-light), 3px 6px 0 var(--shadow);
+    }
+
+    .site-sub {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-style: italic;
+      font-size: 0.95rem;
+      color: var(--text-muted);
+      letter-spacing: 4px;
+      text-transform: uppercase;
+    }
+
+    /* ========= NAV ========= */
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      display: flex;
+      background: var(--card-bg);
+      border-bottom: 2px solid var(--border);
+      box-shadow: 0 2px 14px var(--shadow);
+      overflow-x: auto;
+    }
+
+    nav button {
+      flex: 1;
+      padding: 15px 18px;
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: 0.88rem;
+      font-weight: 700;
+      letter-spacing: 0.3px;
+      color: var(--text-muted);
+      background: transparent;
+      border: none;
+      border-right: 1px solid var(--border);
+      border-bottom: 3px solid transparent;
+      cursor: pointer;
+      transition: all 0.18s ease;
+      white-space: nowrap;
+    }
+
+    nav button:last-child { border-right: none; }
+    nav button:hover { background: var(--bg2); color: var(--text); }
+
+    nav button.active.white { background: var(--bg); color: var(--text); border-bottom-color: var(--text); }
+    nav button.active.pink  { background: var(--pink-pale); color: var(--pink); border-bottom-color: var(--pink); }
+    nav button.active.cyan  { background: var(--cyan-pale); color: var(--cyan); border-bottom-color: var(--cyan); }
+
+    /* ========= MAIN / TABS ========= */
+    main {
+      max-width: 780px;
+      margin: 0 auto;
+      padding: 44px 24px 90px;
+    }
+
+    .tab { display: none; }
+    .tab.active { display: block; }
+
+    /* ========= PROSE ========= */
+    .prose p {
+      margin-bottom: 1.45em;
+      font-size: 1.07rem;
+    }
+    .prose p:last-child { margin-bottom: 0; }
+
+    /* ========= DECODERS ========= */
+    .dc { display: inline; position: relative; }
+
+    .dc-btn {
+      font-family: 'Crimson Pro', Georgia, serif;
+      font-size: inherit;
+      line-height: inherit;
+      background: none;
+      border: none;
+      border-bottom: 2px dashed;
+      cursor: pointer;
+      padding: 0 2px;
+      transition: background 0.15s ease;
+    }
+
+    .dc-btn.pink  { color: var(--pink);  border-color: var(--pink-mid); }
+    .dc-btn.cyan  { color: var(--cyan);  border-color: var(--cyan-mid); }
+    .dc-btn.amber { color: var(--amber); border-color: var(--amber-mid); }
+
+    .dc-btn::after { content: ' ▾'; font-size: 0.72em; opacity: 0.65; }
+    .dc-btn.open::after { content: ' ▴'; }
+
+    .dc-btn.pink:hover,  .dc-btn.pink.open  { background: var(--pink-light);  }
+    .dc-btn.cyan:hover,  .dc-btn.cyan.open  { background: var(--cyan-light);  }
+    .dc-btn.amber:hover, .dc-btn.amber.open { background: var(--amber-light); }
+
+    .dc-panel {
+      display: none;
+      position: absolute;
+      top: calc(100% + 6px);
+      left: 0;
+      z-index: 500;
+      width: 320px;
+      border-radius: 10px;
+      padding: 14px 17px 17px;
+      font-family: 'Crimson Pro', Georgia, serif;
+      font-size: 0.94rem;
+      line-height: 1.58;
+      box-shadow: 0 8px 28px var(--shadow), 0 2px 6px var(--shadow);
+    }
+
+    .dc-panel.pink  { background: var(--pink-pale);  border: 1.5px solid var(--pink-mid);  }
+    .dc-panel.cyan  { background: var(--cyan-pale);  border: 1.5px solid var(--cyan-mid);  }
+    .dc-panel.amber { background: var(--amber-pale); border: 1.5px solid var(--amber-mid); }
+
+    .dc-panel.open { display: block; }
+    .dc-panel.flip { left: auto; right: 0; }
+
+    .d-tag {
+      display: block;
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 1.6px;
+      text-transform: uppercase;
+      margin-bottom: 3px;
+    }
+    .d-tag.pink  { color: var(--pink);  }
+    .d-tag.cyan  { color: var(--cyan);  }
+    .d-tag.amber { color: var(--amber); }
+
+    .d-head {
+      display: block;
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: 1.08rem;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 8px;
+    }
+
+    .d-link {
+      display: block;
+      margin-top: 10px;
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: 0.8rem;
+      font-weight: 700;
+      text-decoration: none;
+    }
+    .d-link.pink  { color: var(--pink);  }
+    .d-link.cyan  { color: var(--cyan);  }
+    .d-link.amber { color: var(--amber); }
+    .d-link:hover { text-decoration: underline; }
+
+    /* ========= LIGHTBOX TRIGGER ========= */
+    .lb-t {
+      font-family: 'Crimson Pro', Georgia, serif;
+      font-size: inherit;
+      line-height: inherit;
+      background: none;
+      border: none;
+      border-bottom: 2px solid;
+      cursor: pointer;
+      padding: 0 2px;
+      transition: background 0.15s;
+    }
+    .lb-t.amber { color: var(--amber); border-color: var(--amber-mid); }
+    .lb-t.amber:hover { background: var(--amber-light); }
+    .lb-t.cyan  { color: var(--cyan);  border-color: var(--cyan-mid);  }
+    .lb-t.cyan:hover  { background: var(--cyan-light);  }
+
+    /* ========= LIGHTBOX ========= */
+    .lb-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 2000;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      background: rgba(44, 24, 16, 0.52);
+      backdrop-filter: blur(3px);
+    }
+    .lb-overlay.open { display: flex; }
+
+    .lb-box {
+      background: var(--card-bg);
+      border-radius: 14px;
+      max-width: 620px;
+      width: 100%;
+      max-height: 88vh;
+      overflow-y: auto;
+      box-shadow: 0 20px 70px rgba(0,0,0,0.28);
+    }
+    .lb-box.amber { border-top: 4px solid var(--amber); }
+    .lb-box.cyan  { border-top: 4px solid var(--cyan);  }
+
+    .lb-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      padding: 22px 26px 16px;
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      background: var(--card-bg);
+      border-radius: 14px 14px 0 0;
+    }
+
+    .lb-eyebrow {
+      display: block;
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 1.6px;
+      text-transform: uppercase;
+      margin-bottom: 3px;
+    }
+    .lb-eyebrow.amber { color: var(--amber); }
+    .lb-eyebrow.cyan  { color: var(--cyan);  }
+
+    .lb-title {
+      display: block;
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: 1.28rem;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .lb-close {
+      background: none;
+      border: none;
+      font-size: 1.1rem;
+      cursor: pointer;
+      color: var(--text-muted);
+      padding: 2px 6px;
+      margin-left: 16px;
+      flex-shrink: 0;
+      transition: color 0.15s;
+    }
+    .lb-close:hover { color: var(--text); }
+
+    .lb-body { padding: 22px 26px 30px; }
+
+    .lb-body h3 {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 8px;
+      margin-top: 22px;
+    }
+    .lb-body h3:first-child { margin-top: 0; }
+
+    .lb-body p {
+      font-size: 0.96rem;
+      line-height: 1.62;
+      color: var(--text);
+      margin-bottom: 0.8em;
+    }
+    .lb-body p:last-of-type { margin-bottom: 0; }
+
+    .lb-src {
+      display: inline-block;
+      margin-top: 18px;
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: 0.82rem;
+      font-weight: 700;
+      text-decoration: none;
+    }
+    .lb-src.amber { color: var(--amber); }
+    .lb-src.cyan  { color: var(--cyan);  }
+    .lb-src:hover { text-decoration: underline; }
+
+    /* ========= ACCORDION ========= */
+    .acc {
+      border: 1.5px solid var(--border);
+      border-radius: 9px;
+      margin-bottom: 12px;
+      overflow: hidden;
+    }
+
+    .acc-btn {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 17px 22px;
+      background: var(--card-bg);
+      border: none;
+      cursor: pointer;
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--text);
+      text-align: left;
+      gap: 12px;
+      transition: background 0.15s ease;
+    }
+    .acc-btn:hover { background: var(--bg2); }
+    .acc-btn.open  { background: var(--bg2); }
+
+    .acc-arrow { font-size: 1.1rem; flex-shrink: 0; transition: transform 0.2s ease; }
+    .acc-arrow.pink { color: var(--pink); }
+    .acc-arrow.cyan { color: var(--cyan); }
+    .acc-btn.open .acc-arrow { transform: rotate(180deg); }
+
+    .acc-panel {
+      display: none;
+      padding: 18px 22px 22px;
+      border-top: 1px solid var(--border);
+      background: #FFFFFF;
+    }
+    .acc-panel.open { display: block; }
+
+    .acc-panel p {
+      font-size: 0.98rem;
+      line-height: 1.68;
+      margin-bottom: 1em;
+    }
+    .acc-panel p:last-child { margin-bottom: 0; }
+    .acc-panel strong { font-weight: 600; }
+
+    /* ========= BIAS NOTE ========= */
+    .bias {
+      padding: 14px 20px;
+      border-radius: 9px;
+      margin-bottom: 28px;
+      font-size: 0.93rem;
+      line-height: 1.62;
+      font-style: italic;
+    }
+    .bias.pink { background: var(--pink-light); border-left: 4px solid var(--pink); }
+    .bias.cyan { background: var(--cyan-light); border-left: 4px solid var(--cyan); }
+    .bias strong {
+      font-style: normal;
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: 0.76rem;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+
+    /* ========= TAB HEADINGS ========= */
+    .tab-heading {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: 1.9rem;
+      font-weight: 700;
+      margin-bottom: 6px;
+      line-height: 1.2;
+    }
+    .tab-heading.pink  { color: var(--pink);  }
+    .tab-heading.cyan  { color: var(--cyan);  }
+    .tab-heading.white { color: var(--text);  }
+
+    .tab-sub {
+      font-family: 'Crimson Pro', Georgia, serif;
+      font-style: italic;
+      font-size: 0.96rem;
+      color: var(--text-muted);
+      margin-bottom: 30px;
+    }
+
+    .tab-divider {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 32px 0;
+    }
+
+    /* ========= LB PROMPT STRIP ========= */
+    .lb-intro {
+      margin-bottom: 26px;
+      padding: 13px 18px;
+      background: var(--cyan-pale);
+      border: 1.5px solid var(--cyan-light);
+      border-radius: 9px;
+      font-size: 0.93rem;
+      font-style: italic;
+      color: var(--text-muted);
+    }
+
+    /* ========= FURTHER READING ========= */
+    .fr-group { margin-bottom: 36px; }
+
+    .fr-group-title {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 2.5px;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+      padding-bottom: 7px;
+      border-bottom: 1px solid var(--border);
+    }
+    .fr-group-title.pink  { color: var(--pink);  }
+    .fr-group-title.cyan  { color: var(--cyan);  }
+    .fr-group-title.amber { color: var(--amber); }
+
+    .fr-item {
+      display: block;
+      padding: 13px 0;
+      border-bottom: 1px solid var(--border);
+      text-decoration: none;
+      transition: background 0.12s;
+    }
+    .fr-item:last-child { border-bottom: none; }
+
+    .fr-title {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--text);
+      display: block;
+      margin-bottom: 2px;
+    }
+    .fr-item:hover .fr-title { text-decoration: underline; }
+
+    .fr-desc {
+      font-size: 0.88rem;
+      color: var(--text-muted);
+      font-style: italic;
+    }
+
+    /* ========= RESPONSIVE ========= */
+    @media (max-width: 600px) {
+      .site-title { font-size: 2.6rem; }
+      .dc-panel { width: 280px; }
+      nav button { padding: 12px 12px; font-size: 0.78rem; }
+      main { padding: 28px 16px 70px; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="site-title">Snacks</div>
+  <div class="site-sub">annotated fiction</div>
+</header>
+
+<nav>
+  <button class="active white" onclick="go('story',this,'white')">The Story</button>
+  <button onclick="go('protagonist',this,'pink')">Who Is Mel?</button>
+  <button onclick="go('romcom',this,'cyan')">The Formula</button>
+  <button onclick="go('further',this,'white')">Further Reading</button>
+</nav>
+
+<main>
+
+  <!-- ==============================
+       TAB: STORY
+  =============================== -->
+  <div class="tab active" id="tab-story">
+    <div class="prose">
+
+      <p>It was <span class="dc" id="dec-dark-stormy"><button class="dc-btn cyan" onclick="tog('dec-dark-stormy',this)">a dark and stormy night</button><span class="dc-panel cyan"><span class="d-tag cyan">◈ Genre Signal</span><span class="d-head">The Contract</span>"It was a dark and stormy night" is the most famous opening line in bad fiction — the first line of Edward Bulwer-Lytton's 1830 novel <em>Paul Clifford</em>, now synonymous with clichéd writing via the annual Bulwer-Lytton Fiction Contest for intentionally terrible opening sentences. Using it here is a genre signal: the story knows it is a romcom and is announcing that contract upfront. What follows takes the announcement seriously.<a class="d-link cyan" href="https://en.wikipedia.org/wiki/Bulwer-Lytton_Fiction_Contest" target="_blank">→ Bulwer-Lytton Fiction Contest</a></span></span>, and she was alone. And bored – she was mind-numbingly, soul-crushingly bored. Granted, she thought as she stood in front of the kitchen cupboard door, she had brought this on herself in a way. Snacks, why were there never any snacks in the cupboard? Was it too much to ask for the small collection of nibbles to be re-stocked for times such as these? She'd have words with Jerry over this.</p>
+
+      <p>Speaking of Jerry, where did he say he was going? He'd mentioned something about Jews, but she couldn't remember. He'd said it when he shouldn't have: just as she had stopped for breath during the build up to the mother of all tantrums. He really was <span class="dc" id="dec-gay-roommate"><button class="dc-btn pink" onclick="tog('dec-gay-roommate',this)">the worst gay roommate. Queer as a three dollar bill, but hates shopping, chatting and pretty much everything feminine</button><span class="dc-panel pink"><span class="d-tag pink">◈ The Trope</span><span class="d-head">The Gay Best Friend</span>Jerry is the "gay best friend" — a stock figure in romcoms from the mid-1990s through 2000s, present to provide emotional support, fashion advice, and comic relief. The story immediately complicates this: Jerry hates shopping, chatting, and "everything feminine." His "gayness" is signalled only by the Yorkie and the boys he brings home on Sundays. The author is aware of the trope and is partially subverting it — but Jerry still functions as the friend whose absence drives Mel into the rain where the plot can happen.<a class="d-link pink" href="https://en.wikipedia.org/wiki/Gay_best_friend" target="_blank">→ Gay Best Friend</a></span></span>. "What's up with that?" She suddenly realised that she'd been talking the whole time. Not even Kibble was listening, but that wasn't anything new. Kibble could not be considered a support structure at the best of times, even if you stuffed bacon in your pockets. That said, the little Yorkie was the only thing "gay" about Jerry, aside from the boys he brought home on any given Sunday.</p>
+
+      <p>"Screw this!"</p>
+
+      <p>Snacks were needed, even if it meant running down to Giorgio's in the rain. She would not sit around feeling sorry for herself without guilt food. She'd go now, right now, even in her stay-home-pants and to hell with her hair, no one would notice, or care.</p>
+
+      <p>Keys, keys, keys, where were her keys? Sideboard. No. Bedroom. No. Cupboard. No. Handbag. No. God damn it. Bathroom. No. Jerry's room. No. Sofa. No. Fridge. How did they get there? Snacks! Yes. Go time! And then the phone. Jerry's phone. Typical.</p>
+
+      <p>"Jerry's phone. What do you want?"</p>
+
+      <p>"Mel? Oh thank God. I was going mad with worry."</p>
+
+      <p>"About what?"</p>
+
+      <p>"My phone honey! I was going to call Kevin to find out where the fuck he is and then I was like ehrmagerd! Mer fern! So I called to see if someone picked it up. Are you here?"</p>
+
+      <p>This was way too camp for Jerry. Drunk or stoned. Or both.</p>
+
+      <p>"No Jerry I'm not there."</p>
+
+      <p>"Oh… You should come."</p>
+
+      <p>"You should take it easy on the tequila."</p>
+
+      <p>"Touche, how can you tell?"</p>
+
+      <p>"You could be shitting rainbows right now."</p>
+
+      <p>"Really? It must be the wings."</p>
+
+      <p>"Wings?"</p>
+
+      <p>"Someone gave me wings. So are you coming?"</p>
+
+      <p>"I'm kind of in the middle of something."</p>
+
+      <p>"Oh God, is Nicky there? Did I catch you in the middle of make-up-oh-god-oh-god-it-has-been-too-damn-long sex?"</p>
+
+      <p>"Have a good night Jez. Your phone is safe."</p>
+
+      <p>Beep.</p>
+
+      <p>She stood for a while, trying not to break. She was fine. She was fine. No worries, no cares, no attachments. Alone. The knot in her chest manifested as a sigh. A long one. It was all her fault. If she'd just… Just what? Paid more attention? Loved him more? Treated him better? No. She'd still have ended up here. Taking all her faults into consideration, all this pain was his doing. And she hated that. Which was why, right now, she needed snacks.</p>
+
+      <p>The rain was cold. Freeze-your-tits-off cold. And <span class="dc" id="dec-no-bra"><button class="dc-btn pink" onclick="tog('dec-no-bra',this)">she had no bra. Too late now.</button><span class="dc-panel pink"><span class="d-tag pink">◈ The Author Looking</span><span class="d-head">Who Noticed First</span>"No bra. Too late now." appears in the narrator's voice — the close-third narration that is supposed to be inside Mel's head. Mel may well notice she has no bra. But the phrase "Too late now" reads as a shrug rather than Mel's thought — it is the author noting the absence for the reader's benefit before Mel would have occasion to think of it. The Luigi scene confirms this register: the narrator observes what Luigi sees, then lets Luigi's gaze pass without Mel registering discomfort. This is where the male author's proximity to his protagonist becomes visible.</span></span> It had taken twelve steps from the front gate to soak her all the way through. She'd just have to deal with it. She needed those snacks, or else her heart would implode. She walked through the deluge, fists and teeth clenched, with her shoulders so tense they grazed her earrings. Nick had bought them for her. She stopped on the muddy sidewalk, frozen by everything but the cold.</p>
+
+      <p>Suddenly the earrings were in her hands, how they got there she didn't know. Then they were on the floor and she was jumping on them; screaming, crying and stomping with everything that she still couldn't say bursting forth through whatever channel it could find. She picked them up and threw them with all her fury into the black.</p>
+
+      <p>And just like that, it stopped. The rain carried on. She was herself. Or was she new? No, she was old – her old self, her before-Nicholas self. It sucked. She sucked it up. She'd think about all this once she had snacks, her couch, dry clothes and Kibble. Priorities are important when one is in the rain.</p>
+
+      <p>"Ey! <button class="lb-t amber" onclick="lb('lb-setting')">Bella Melanie</button>! How you- Why you so wet? You crazy?"</p>
+
+      <p>Luigi had seen her as she walked in. Didn't even give her a chance to hide.</p>
+
+      <p>"Where's Giorgio?"</p>
+
+      <p>"He don't work Fridays."</p>
+
+      <p>"Oh, yeah, I forgot."</p>
+
+      <p>"So how come you're dripping on my floor?"</p>
+
+      <p>For some reason, she felt the urge to fold her arms, which she did. And just as well, <span class="dc" id="dec-ggw"><button class="dc-btn pink" onclick="tog('dec-ggw',this)">Luigi had just had a whole five seconds of Girls-Gone-Wild standing in his store and he looked like he'd enjoyed it enough to start getting ideas</button><span class="dc-panel pink"><span class="d-tag pink">◈ The Author Looking</span><span class="d-head">Luigi's Gaze</span>"Girls Gone Wild" was a notorious American video series from the late 1990s–2000s built on filming intoxicated young women without meaningful consent and distributing it commercially. Luigi's enjoyment of Mel's wet-shirt moment is framed as comic and harmless — June has "taught Luigi a thing or two about pestering a crazed woman," so he lets her be. The scene treats his gaze as unremarkable. Mel's discomfort is registered through the arm-folding and throat-clearing, but the narrative doesn't stay with it. The joke lands at Luigi's expense without examining what it is a joke about.<a class="d-link pink" href="https://en.wikipedia.org/wiki/Girls_Gone_Wild_(franchise)" target="_blank">→ Girls Gone Wild</a></span></span>. But June had obviously taught Luigi a thing or two about pestering a crazed woman with rain-soaked hair, because he let her be. She ambled a bit, shivering, along the aisles. This and that turned out to be <span class="dc" id="dec-flings"><button class="dc-btn amber" onclick="tog('dec-flings',this)">two monster size packets of Flings</button><span class="dc-panel amber"><span class="d-tag amber">◈ Setting</span><span class="d-head">South African Anchor</span>Flings are a South African cheese puff snack — a specific, distinctly local product, similar to Wotsits or Cheetos but with their own texture and cultural context. The brand places the story in South Africa without stating it. Other anchors: Giorgio's deli, Luigi, the name Suede for the club, "shabbas." The story is set in a recognisable Johannesburg northern-suburbs milieu — affluent, socially tight-knit, with a strong Jewish community presence.<a class="d-link amber" href="https://en.wikipedia.org/wiki/Flings_(snack)" target="_blank">→ Flings (snack)</a></span></span>, some chocolate bars, a small tub of Häagen-Dasz and a half jack of whiskey (Nick hated the stuff, but it reminded her of Dad and right now, miracle of miracles, Dad was the better man.)</p>
+
+      <p>"84.65"</p>
+
+      <p>Her purse, where was her goddam purse? Here, at the brink of a (sort of) successful snack trip to the store, she'd been left high, dry and in the rain, by the absence of her ever-present purse.</p>
+
+      <p>"Damn it."</p>
+
+      <p>"Sorry?"</p>
+
+      <p>"I've – I've gone and left my purse in my apartment. Can you… Watch this while I get it?"</p>
+
+      <p>"For you bella, anything. Go ahead. I'm not going anywhere."</p>
+
+      <p>She ran home. Well… Tried to. It was more a sloppy trot than a run, but it did the job. She traced the location of her purse in her mind. Straight in and straight out, that was her plan. On the kitchen counter, the corner closest to the side board, front pouch next to her phone and spare charger. Got it. Wait, she'd left her phone too? Weird. Well at least it wasn't getting wet now.</p>
+
+      <p>She reached the door and knew she was screwed. Deadbolts don't need keys to lock, and the absence of key-shaped lumps clinging to her sodden, freezing cold body told her that she was shit-out-of-luck and locked out of her apartment. Kibble was yapping and scratching at the door.</p>
+
+      <p>"Shut up, you little shit!"</p>
+
+      <p>"But I haven't said anything."</p>
+
+      <p>She would have screamed, if she hadn't recognized the voice. Her arms however, immediately folded themselves across her chest.</p>
+
+      <p>"Not you, the dog."</p>
+
+      <p>"Aaah. Agreed. Shut up you little shit."</p>
+
+      <p>"What are you doing here Kevin?"</p>
+
+      <p>"I live three doors down?"</p>
+
+      <p>Kevin had a talent for catching her off guard. He wasn't stupid or anything, just utterly self-absorbed. In all the time she'd known him, (which was a long time, since he was the closest thing Jerry had to a "bestie") he'd barely ever said more than hello and goodbye, making this the longest conversation they had ever had. That hadn't stopped him from managing to always catch her at her weirdest, most awkward and most vulnerable. This time it was all three.</p>
+
+      <p>"No, sorry, I mean, Jerry called earlier looking for you."</p>
+
+      <p>"Yeah, he told me. He and the twins headed to Suede after <span class="dc" id="dec-shabbas"><button class="dc-btn amber" onclick="tog('dec-shabbas',this)">shabbas with Mickey's family</button><span class="dc-panel amber"><span class="d-tag amber">◈ Setting</span><span class="d-head">The Social World</span>"Shabbas with Mickey's family" — Shabbat (the Jewish Sabbath, observed Friday evening to Saturday night) is a family occasion in observant and traditional households. Jerry and the twins going to "shabbas with Mickey's family" places them in the Johannesburg Jewish community, a large and culturally distinct community centred historically in the northern suburbs. This social world — where everyone knows everyone, where Friday nights have a particular rhythm — is the story's unspoken container.<a class="d-link amber" href="https://en.wikipedia.org/wiki/Shabbat" target="_blank">→ Shabbat</a></span></span>."</p>
+
+      <p>"Oh…"</p>
+
+      <p>"Are you okay? Do you want a towel or something?"</p>
+
+      <p>"Wha-? No, no, I'm fine…"</p>
+
+      <p>She regretted saying that. She knew that he knew that she was anything but fine. She was expecting him to ask her if she was sure that she was fine. But no, instead:</p>
+
+      <p>"Do you want to get some coffee? Or a drink? I mean, not now, but sometime… In the future you know, when you're not all… wet. Although maybe lat- No, no, sorry bad joke."</p>
+
+      <p>"What?"</p>
+
+      <p>"Well I just thought, that… Well…</p>
+
+      <p>"What?!"</p>
+
+      <p>"Um… Give me a sec… I didn't see this part in my head when I was rehearsing… What I mean is that now that you've been single for a while… We could –"</p>
+
+      <p>"Now that I'm single?"</p>
+
+      <p>" – Hang out, and stuff… And…"</p>
+
+      <p>"Now that I'm single!?"</p>
+
+      <p>"…Y'know, get to know each other… Because, well…"</p>
+
+      <p>"NOW THAT I'M SINGLE?!"</p>
+
+      <p>"I'd really like to get to know y – Sorry what?"</p>
+
+      <p>"In case you hadn't noticed, THIS IS NOT A GOOD TIME TO ASK ME ON A DATE! What are you hoping for? Some rebound action? Does it matter that six years of my life went out the window three weeks ago? SIX YEARS! Do you know what six years does to someone? It makes them plan for a future. Plan a wedding, a marriage, a career. Kids even. Not now, but someday, with that person. And it's all gone in the blink of an eye, over <span class="dc" id="dec-discovery"><button class="dc-btn amber" onclick="tog('dec-discovery',this)">something as stupid as a text to the wrong person and some random girl's status updates and photo's</button><span class="dc-panel amber"><span class="d-tag amber">◈ The Wound</span><span class="d-head">The Inciting Incident</span>This is the inciting incident of the story, delivered in a single sentence during Mel's explosion at Kevin — twenty-two paragraphs in. We have been with Mel for the whole story without knowing what happened. "A text to the wrong person and some random girl's status updates and photo's" is Nick's infidelity, assembled in fragments the way the betrayed person actually experiences it: not as a clean narrative but as accumulating evidence that cannot be unfound. The original text spells "photos" with an apostrophe — this is an error in the source and is reproduced faithfully here.</span></span>. THERE WERE PHOTO'S OF HIM!!! And then it's over, no plans, no hopes, and you're stuck trying to figure out what to do next and some idiot who never speaks to you suddenly develops an interest because you're single now."</p>
+
+      <p>Kevin hadn't moved the whole time. She was shaking now, not from cold, but from the sheer madness all that slowly boiling rage had released. Again, she regretted saying what she had just said, but this time because it wasn't all smoke and mirrors and "I'm fine" all the time. She was sure she had hurt him. Not Nick, Kevin. She didn't give a shit about Nick right now, but Kevin was just unfortunate enough to be the straw that broke the back of a very angry camel.</p>
+
+      <p>She was trying to discern from his eyes the extent of the damage she had done when she realized just how blue his eyes were. All of a sudden she was <span class="dc" id="dec-blue-eyes"><button class="dc-btn pink" onclick="tog('dec-blue-eyes',this)">staring into a soul that was deep and guarded and fractured and selfless</button><span class="dc-panel pink"><span class="d-tag pink">◈ The Author's Imagination</span><span class="d-head">The Shift</span>Mel has just screamed at Kevin. Her rage has broken. She is now looking at him carefully for the first time and the narration shifts registers entirely: "a soul that was deep and guarded and fractured and selfless." This is not Mel's observation of Kevin's eyes — it is the narrator's description of what Mel sees in them, which is a portrait of exactly the man the author has designed Kevin to be. The shift from rage to attraction happens in under a second ("In truth it was just over a second") and is driven entirely by appearance and projected interiority. The author rewards the reader — and Mel — with a man who is beautiful on the inside exactly when she needs him to be.</span></span>. He was thinking, and it was… beautiful. She suddenly felt nauseous.</p>
+
+      <p>This had to be the longest awkward silence she'd ever experienced. In truth it was just over a second. But for her it was ages and ages of trying to understand what this guy could be thinking about so intensely, so… And now she needed to pee. And then he gave her a simple, melancholy smile and said:</p>
+
+      <p><span class="dc" id="dec-boys-stupid"><button class="dc-btn cyan" onclick="tog('dec-boys-stupid',this)">"Boys are stupid. Me in particular… I'll leave you alone now."</button><span class="dc-panel cyan"><span class="d-tag cyan">◈ The Formula</span><span class="d-head">The Hero's Deflation</span>The romcom formula at this moment expects one of two things from Kevin: a grand gesture (the speech, the pursuit, the declaration) or a witty comeback that reframes the fight as foreplay. "Boys are stupid. Me in particular" does neither. It accepts her anger, applies it to himself without making it about him, and withdraws. The line is the story's most carefully written moment. It is also, notably, the moment a male author gives his male character the most appealing quality in the story.</span></span></p>
+
+      <p>And he did just that. She watched him go, wondering why on God's green Earth, he was walking so slowly, hands in his pockets, all Rebel-Without-a-Cause. It was too much, she had to sit down. And then:</p>
+
+      <p>"I'm locked out…"</p>
+
+      <p>Great, so she wasn't even in control of her mouth anymore. Perfect.</p>
+
+      <p>He stopped at his door and turned to her.</p>
+
+      <p>"Well… I have towels… And blankets. And some dry clothes. You could chill here 'til Jerry gets back."</p>
+
+      <p>She gave up. She was stuck between pride and a blanket. There was only one thing that could decide it for her. And she wasn't going to move until it was decided.</p>
+
+      <p><span class="dc" id="dec-snacks-end"><button class="dc-btn cyan" onclick="tog('dec-snacks-end',this)">"Oh, and if you're hungry, I've got snacks."</button><span class="dc-panel cyan"><span class="d-tag cyan">◈ The Closing Word</span><span class="d-head">Displacement → Opening</span>The story opens with snacks as displacement — something to want so that the real want can be deferred. It closes with Kevin offering snacks as a reason to stay. The word is the same; its function has inverted. This is the story's formal achievement: the object that stands for avoidance becomes the object that makes engagement possible. Mel accepts not because Kevin is right, but because she has nothing left to protect herself with — and because he has snacks.</span></span></p>
+
+    </div>
+  </div>
+
+  <!-- ==============================
+       TAB: PROTAGONIST
+  =============================== -->
+  <div class="tab" id="tab-protagonist">
+    <h2 class="tab-heading pink">Who Is Mel?</h2>
+    <p class="tab-sub">A male author writes a woman in grief. What does he earn, and what does he project?</p>
+
+    <div class="bias pink">
+      <strong>A note:</strong> I find Kevin well-written and respond to his grace, which means I am inclined to be generous about the male author's construction of him — but Kevin's appeal is designed to serve Mel's arc, and that design is worth examining without softening it.
+    </div>
+
+    <div class="acc">
+      <button class="acc-btn" onclick="acc(this)">
+        <span>What the story genuinely understands about grief</span>
+        <span class="acc-arrow pink">▾</span>
+      </button>
+      <div class="acc-panel">
+        <p>The displacement mechanics are accurate. Mel does not sit down and cry — she fixates on snacks, on keys, on the location of her purse, on anything with a clear objective. The internal monologue is scattered and self-interrupting in the way that emotional avoidance actually works. "She was fine. She was fine. No worries, no cares, no attachments." The repetition is not reassurance — it is containment. The story understands that grief in the early weeks is not weeping in the rain (though that happens) but the exhausting effort of managing the next five minutes.</p>
+        <p>The explosion at Kevin is also well-observed. He did not cause any of it. He is simply the first person to say something that removes the last excuse not to feel it. The shift from contained fury to full release reads as psychologically credible — not because Kevin provoked it, but because he arrived at the exact moment her defences ran out.</p>
+      </div>
+    </div>
+
+    <div class="acc">
+      <button class="acc-btn" onclick="acc(this)">
+        <span>Where the male author's distance shows</span>
+        <span class="acc-arrow pink">▾</span>
+      </button>
+      <div class="acc-panel">
+        <p>Three moments where the male-author perspective breaks the close-third narration.</p>
+        <p><strong>"She had no bra. Too late now."</strong> — This is the narrator noting Mel's state for the reader before Mel would have occasion to notice it herself. A woman running out in the rain would be aware of this before she reached the front gate. The phrasing "Too late now" belongs to the author's shrug, not Mel's thought.</p>
+        <p><strong>The Luigi scene</strong> — Luigi gets "five seconds of Girls-Gone-Wild" and "looks like he'd enjoyed it enough to start getting ideas." Mel folds her arms and clears her throat. The scene is framed as comedy — Luigi is harmless, June has trained him. But the narration treats his gaze as an amusing inconvenience rather than as something Mel experiences with any real texture. Her discomfort is noted and immediately dissolved into charm.</p>
+        <p><strong>"Staring into a soul that was deep and guarded and fractured and selfless"</strong> — This is the story's most revealing line. The narrator describes what Mel sees in Kevin's eyes — but what she sees is a precise portrait of the man the author has designed him to be. The attribution is Mel's; the content is the author's.</p>
+      </div>
+    </div>
+
+    <div class="acc">
+      <button class="acc-btn" onclick="acc(this)">
+        <span>The earring stomping scene — catharsis or performance of catharsis?</span>
+        <span class="acc-arrow pink">▾</span>
+      </button>
+      <div class="acc-panel">
+        <p>Mel stops on the sidewalk, removes the earrings Nick gave her, and stomps on them in the rain, screaming and crying. Then: "And just like that, it stopped."</p>
+        <p>The scene is written as genuine release — the before-Nicholas self returning, the grief discharged through the body. It is also the most cinematic moment in the story: the rain, the earrings, the scream, the stopping. These are the visual grammar of the romcom catharsis scene, the moment before the protagonist can be available for what comes next.</p>
+        <p>Whether it reads as authentic female grief or as what a young male writer imagines female grief looks like depends on what the reader brings. The scene is not wrong — people do destroy objects in grief, earrings get thrown — but it arrives very cleanly and resolves very neatly, and the neatness is the author's hand showing. Real grief doesn't go quiet after one good stomp. The story needs it to, so Kevin can arrive.</p>
+      </div>
+    </div>
+
+    <div class="acc">
+      <button class="acc-btn" onclick="acc(this)">
+        <span>Nick — the unseen man</span>
+        <span class="acc-arrow pink">▾</span>
+      </button>
+      <div class="acc-panel">
+        <p>Nick never appears. He is assembled through fragments across the story: earrings (he bought them), the phone call (Jerry asks if Nick is there), the explosion (six years, a text, photos, status updates), the whiskey (he hated it, her father liked it — her father is "the better man" right now). He has structural mass — everything in the story gravitates around what he did — without ever being present.</p>
+        <p>This is a legitimate narrative choice and it works. Nick's absence keeps the focus on Mel's interiority rather than on a confrontation or an explanation. But it also means the story never has to engage with Nick as a person. He is the wound, not a character. The mechanics of the betrayal ("a text to the wrong person") are ordinary and believable. The story doesn't need to understand him. It needs to let Mel leave him.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==============================
+       TAB: ROMCOM
+  =============================== -->
+  <div class="tab" id="tab-romcom">
+    <h2 class="tab-heading cyan">The Formula</h2>
+    <p class="tab-sub">How the story uses and subverts romcom conventions.</p>
+
+    <div class="bias cyan">
+      <strong>A note:</strong> I do not have strong investment in the romcom as a genre, which means I may underread the pleasure of the formula and give disproportionate weight to the moments where the story departs from it.
+    </div>
+
+    <div class="lb-intro">
+      <em>New to the genre?</em> <button class="lb-t cyan" onclick="lb('lb-romcom')">The Romantic Comedy Formula</button> — a brief overview of the conventions these readings are working with.
+    </div>
+
+    <div class="acc">
+      <button class="acc-btn" onclick="acc(this)">
+        <span>"It was a dark and stormy night" — the genre contract</span>
+        <span class="acc-arrow cyan">▾</span>
+      </button>
+      <div class="acc-panel">
+        <p>Using this specific phrase as an opening announces: I know what this is. The reader is being told that the story is self-aware about genre. What follows takes the announcement seriously — the story is genuinely a romcom, not a parody of one. The opening is a wink that becomes a straight face by the second paragraph.</p>
+        <p>This move has a specific mid-2000s register. It's the tone of Bridget Jones (self-deprecating genre awareness played earnestly), not the tone of later, more deconstructive romcoms. The story enjoys the formula. The self-awareness is affectionate, not sardonic.</p>
+      </div>
+    </div>
+
+    <div class="acc">
+      <button class="acc-btn" onclick="acc(this)">
+        <span>Jerry and the complications of the GBF</span>
+        <span class="acc-arrow cyan">▾</span>
+      </button>
+      <div class="acc-panel">
+        <p>Jerry fulfils the gay best friend's plot function exactly: his absence is why Mel is alone, his phone call is the emotional check-in, his social world (shabbas, Suede, Kevin) is the story's container. The author is clearly aware of the trope — "He really was the worst gay roommate" frames Jerry through the cliché and then immediately lists what he lacks of it.</p>
+        <p>What this achieves is partial. Jerry has texture — he's a specific person with specific contradictions — but the story doesn't need him to be present, so he isn't. The GBF's structural role in the romcom is to be available for emotional support and then to step aside so the romantic plot can proceed. Jerry does exactly this, even while the story acknowledges the archetype.</p>
+      </div>
+    </div>
+
+    <div class="acc">
+      <button class="acc-btn" onclick="acc(this)">
+        <span>The meet-awful — what the Kevin scene does differently</span>
+        <span class="acc-arrow cyan">▾</span>
+      </button>
+      <div class="acc-panel">
+        <p>The "meet-cute" is the romcom's foundational encounter: boy meets girl under circumstances that are inconvenient or absurd but allow both parties to present interestingly. The "meet-awful" is its more contemporary variant: the circumstances are not charming but genuinely bad.</p>
+        <p>Mel meets Kevin while: wet through, braless, locked out, mid-emotional-breakdown. His opening move is to say he lives three doors down, which is about as unsexy as it gets. He then attempts to ask her out and bungles it badly enough that she screams six years of accumulated grief at him in a Johannesburg driveway.</p>
+        <p>What the story does with this that is not standard formula: Kevin does not respond with wit, a declaration, or a counter-move. He says "Boys are stupid. Me in particular." He accepts the damage without deflecting it onto her, and he leaves. The romcom formula normally rewards the male character who makes the grand gesture. Kevin's gesture is the absence of a gesture — and it is more effective than any speech would have been.</p>
+      </div>
+    </div>
+
+    <div class="acc">
+      <button class="acc-btn" onclick="acc(this)">
+        <span>Why the ending works</span>
+        <span class="acc-arrow cyan">▾</span>
+      </button>
+      <div class="acc-panel">
+        <p>"I've got snacks." — The story ends on the object that opened it. This is the formal payoff: the thing Mel went out to get — the displacement object, the substitute for grief — is now the reason to go inside, to accept care, to stop being alone. The word hasn't changed. Its function has inverted entirely.</p>
+        <p>The story does not end with a kiss, a declaration, or a resolution. Mel accepts Kevin's offer because she has nothing left to protect herself with, and because she is hungry and wet and cold. This is the romcom ending executed at the smallest possible scale — one person saying come in from the rain, another person deciding to. The genre's promise is not that love solves grief. It is that you can come in from the rain. That's enough.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==============================
+       TAB: FURTHER READING
+  =============================== -->
+  <div class="tab" id="tab-further">
+    <h2 class="tab-heading white">Further Reading</h2>
+    <p class="tab-sub">Curated external links, grouped by lens.</p>
+
+    <hr class="tab-divider">
+
+    <div class="fr-group">
+      <div class="fr-group-title pink">The Male Author's Female Protagonist</div>
+      <a class="fr-item" href="https://en.wikipedia.org/wiki/Male_gaze" target="_blank">
+        <span class="fr-title">Male Gaze — Wikipedia</span>
+        <span class="fr-desc">Laura Mulvey's concept applied to narrative fiction as well as film</span>
+      </a>
+      <a class="fr-item" href="https://en.wikipedia.org/wiki/Jonathan_Franzen" target="_blank">
+        <span class="fr-title">Writing Women — Jonathan Franzen controversy</span>
+        <span class="fr-desc">A high-profile case study in male authors writing female characters and the critical debate around it</span>
+      </a>
+      <a class="fr-item" href="https://en.wikipedia.org/wiki/Feminist_literary_criticism" target="_blank">
+        <span class="fr-title">Feminist Literary Criticism — Wikipedia</span>
+        <span class="fr-desc">Overview of the tradition this analysis draws on</span>
+      </a>
+    </div>
+
+    <div class="fr-group">
+      <div class="fr-group-title cyan">The Romcom Formula</div>
+      <a class="fr-item" href="https://en.wikipedia.org/wiki/Romantic_comedy_film" target="_blank">
+        <span class="fr-title">Romantic Comedy Film — Wikipedia</span>
+        <span class="fr-desc">Genre history, conventions, and critical reception</span>
+      </a>
+      <a class="fr-item" href="https://en.wikipedia.org/wiki/Gay_best_friend" target="_blank">
+        <span class="fr-title">Gay Best Friend — Wikipedia</span>
+        <span class="fr-desc">The GBF trope: origins, prevalence, and critique</span>
+      </a>
+      <a class="fr-item" href="https://en.wikipedia.org/wiki/Bulwer-Lytton_Fiction_Contest" target="_blank">
+        <span class="fr-title">Bulwer-Lytton Fiction Contest</span>
+        <span class="fr-desc">The origin of 'It was a dark and stormy night' as a cultural joke</span>
+      </a>
+    </div>
+
+    <div class="fr-group">
+      <div class="fr-group-title amber">Setting</div>
+      <a class="fr-item" href="https://en.wikipedia.org/wiki/Johannesburg" target="_blank">
+        <span class="fr-title">Johannesburg — Wikipedia</span>
+        <span class="fr-desc">The city whose northern suburbs this story inhabits without naming</span>
+      </a>
+      <a class="fr-item" href="https://en.wikipedia.org/wiki/History_of_the_Jews_in_South_Africa" target="_blank">
+        <span class="fr-title">South African Jewish Community</span>
+        <span class="fr-desc">Context for the shabbas detail and the social world it implies</span>
+      </a>
+    </div>
+  </div>
+
+</main>
+
+<!-- ==============================
+     LIGHTBOXES
+=============================== -->
+<div class="lb-overlay" id="lb-setting" onclick="closeLbOv(event,'lb-setting')">
+  <div class="lb-box amber">
+    <div class="lb-head amber">
+      <div>
+        <span class="lb-eyebrow amber">◈ Setting</span>
+        <span class="lb-title">Johannesburg, Mid-2000s</span>
+      </div>
+      <button class="lb-close" onclick="closeLb('lb-setting')">✕</button>
+    </div>
+    <div class="lb-body">
+      <h3>Reading the clues</h3>
+      <p>The story never names its location. The evidence accumulates: Flings (a South African snack brand), an Italian deli owner called Luigi standing in for the absent Giorgio, "shabbas with Mickey's family" (the Johannesburg Jewish community), a nightclub called Suede, and the social geometry of a world where everyone's friend-group overlaps — Jerry and Kevin live three doors apart and share a social circle that includes twins, a Mickey, and a club night on Friday. This is identifiably the northern suburbs of Johannesburg: Sandton, Parkhurst, Greenside, or similar.</p>
+      <h3>Why it matters</h3>
+      <p>The setting is not incidental decoration. The tight social world means Mel cannot be anonymous in her grief — Luigi knows her name, Kevin is three doors down, Jerry's phone call comes through hers. The community is the container that makes the rain feel more exposed, not less. The romcom formula typically uses a large city (New York, London) as backdrop for anonymity-with-density. This story is working in a smaller, more connected space, which raises the emotional stakes of every encounter.</p>
+      <a class="lb-src amber" href="https://en.wikipedia.org/wiki/Johannesburg" target="_blank">→ Wikipedia: Johannesburg</a>
+    </div>
+  </div>
+</div>
+
+<div class="lb-overlay" id="lb-romcom" onclick="closeLbOv(event,'lb-romcom')">
+  <div class="lb-box cyan">
+    <div class="lb-head cyan">
+      <div>
+        <span class="lb-eyebrow cyan">◈ The Genre</span>
+        <span class="lb-title">The Romantic Comedy Formula</span>
+      </div>
+      <button class="lb-close" onclick="closeLb('lb-romcom')">✕</button>
+    </div>
+    <div class="lb-body">
+      <h3>What it is</h3>
+      <p>The romantic comedy is a film and fiction genre built on a predictable architecture: a protagonist in a state of emotional unavailability meets a potential partner under inauspicious circumstances (the meet-cute or meet-awful), misunderstandings and obstacles accumulate, a crisis of connection occurs, and resolution comes through an act of emotional honesty — usually a declaration, a gesture, or a sacrifice. The pleasure of the genre is not surprise but the satisfaction of watching familiar moves executed well.</p>
+      <h3>The genre's peak and drift</h3>
+      <p>The romantic comedy's golden period was roughly 1989–2007: When Harry Met Sally, Sleepless in Seattle, Notting Hill, Bridget Jones, Hitch, The Holiday. By the late 2000s the formula had calcified into self-parody, and the genre went quiet before returning in modified forms (often streaming, often with more self-awareness about race and gender) in the 2010s. Snacks was written in this late-formula period, which is part of why the opening line is a knowing announcement.</p>
+      <h3>The gay best friend</h3>
+      <p>The "GBF" (gay best friend) became a romcom staple in the 1990s — present to provide emotional support, read men, and supply the female protagonist with a safe relationship outside the romantic plot. The figure has been extensively critiqued for presenting gay men primarily as accessories to straight women's storylines, stripped of their own desires and arcs. Jerry complicates this only partially — he has a personality, he has his own social life, but he is structurally absent at the moment he is needed, which is how the plot begins.</p>
+      <a class="lb-src cyan" href="https://en.wikipedia.org/wiki/Romantic_comedy_film" target="_blank">→ Wikipedia: Romantic Comedy Film</a>
+    </div>
+  </div>
+</div>
+
+<script>
+  // ── Decoder ──────────────────────────────────────────────
+  function tog(id, btn) {
+    const w = document.getElementById(id);
+    const p = w.querySelector('.dc-panel');
+    const open = p.classList.contains('open');
+    document.querySelectorAll('.dc-panel.open').forEach(x => x.classList.remove('open'));
+    document.querySelectorAll('.dc-btn.open').forEach(x => x.classList.remove('open'));
+    if (!open) {
+      p.classList.add('open'); btn.classList.add('open');
+      const r = p.getBoundingClientRect();
+      p.classList.toggle('flip', r.right > window.innerWidth - 16);
+    }
+  }
+
+  document.addEventListener('click', e => {
+    if (!e.target.closest('.dc')) {
+      document.querySelectorAll('.dc-panel.open').forEach(x => x.classList.remove('open'));
+      document.querySelectorAll('.dc-btn.open').forEach(x => x.classList.remove('open'));
+    }
+  });
+
+  // ── Lightbox ─────────────────────────────────────────────
+  function lb(id)       { document.getElementById(id).classList.add('open'); document.body.style.overflow = 'hidden'; }
+  function closeLb(id)  { document.getElementById(id).classList.remove('open'); document.body.style.overflow = ''; }
+  function closeLbOv(e, id) { if (e.target === document.getElementById(id)) closeLb(id); }
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') {
+      document.querySelectorAll('.lb-overlay.open').forEach(x => x.classList.remove('open'));
+      document.body.style.overflow = '';
+    }
+  });
+
+  // ── Accordion ────────────────────────────────────────────
+  function acc(btn) {
+    const p = btn.nextElementSibling;
+    const open = btn.classList.contains('open');
+    document.querySelectorAll('.acc-btn.open').forEach(b => {
+      b.classList.remove('open'); b.nextElementSibling.classList.remove('open');
+    });
+    if (!open) { btn.classList.add('open'); p.classList.add('open'); }
+  }
+
+  // ── Tabs ─────────────────────────────────────────────────
+  function go(id, btn, col) {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('nav button').forEach(b => {
+      b.classList.remove('active', 'white', 'pink', 'cyan');
+    });
+    document.getElementById('tab-' + id).classList.add('active');
+    btn.classList.add('active', col || 'white');
+    window.scrollTo(0, 0);
+  }
+</script>
+
+</body>
+</html>

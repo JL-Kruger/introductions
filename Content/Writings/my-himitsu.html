@@ -1,0 +1,779 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My Himitsu — Annotated</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+:root{
+  --bg:#f5ede0;
+  --surf:#ede3d2;
+  --pan:#f0e7d5;
+  --pan2:#e8ddc8;
+  --bd:#d0bfa0;
+  --bd1:#b8a888;
+  --txt:#2a1a0c;
+  --txtd:#8a7050;
+  --txb:#1a0e06;
+  --pink:#c04060;
+  --pinkd:#90283a;
+  --gold:#9a6820;
+  --goldd:#70480e;
+  --slate:#486070;
+  --slated:#304858;
+  --amber:#b87820;
+  --burnt:#9a4018;
+
+  /* seasonal */
+  --spring:#c04060;
+  --summer:#b07820;
+  --autumn:#9a4018;
+  --winter:#486070;
+
+  --body:'Cormorant Garamond',Georgia,serif;
+  --ui:'Jost','Segoe UI',sans-serif;
+}
+
+html{
+  background:var(--bg);color:var(--txt);
+  font-family:var(--body);font-size:18px;line-height:1.85;
+  scroll-behavior:smooth;
+}
+body{min-height:100vh;overflow-x:hidden}
+
+/* paper grain overlay */
+body::before{
+  content:'';position:fixed;inset:0;pointer-events:none;z-index:9998;opacity:.025;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E");
+  background-size:256px 256px;
+}
+
+/* ── HEADER ── */
+.hdr{
+  background:var(--surf);
+  border-bottom:1px solid var(--bd);
+  padding:36px 40px 28px;
+}
+.hdr-series{font-family:var(--ui);font-size:10px;font-weight:500;color:var(--txtd);letter-spacing:4px;text-transform:uppercase;margin-bottom:10px}
+.hdr-title{font-family:var(--body);font-size:38px;font-weight:500;color:var(--txt);line-height:1.15;margin-bottom:6px;font-style:italic}
+.hdr-sub{font-family:var(--ui);font-size:11px;font-weight:300;color:var(--txtd);letter-spacing:3px;text-transform:uppercase;margin-bottom:16px}
+.hdr-meta{font-family:var(--body);font-size:15px;color:var(--txtd);line-height:1.7;font-style:italic}
+
+/* ── TAB NAV ── */
+.tnav{
+  background:var(--surf);border-bottom:1px solid var(--bd1);
+  display:flex;overflow-x:auto;
+  position:sticky;top:0;z-index:100;
+}
+.tnav button{
+  font-family:var(--ui);font-size:10px;font-weight:500;letter-spacing:3px;text-transform:uppercase;
+  color:var(--txtd);background:transparent;border:none;
+  border-bottom:2px solid transparent;
+  padding:14px 22px 12px;cursor:pointer;white-space:nowrap;
+  transition:color 120ms,border-color 120ms;
+}
+.tnav button:hover{color:var(--pink)}
+.tnav button.act{color:var(--pink);border-bottom-color:var(--pink)}
+
+/* ── WRAP + TABS ── */
+.wrap{max-width:760px;margin:0 auto;padding:50px 36px 100px}
+.tab{display:none}.tab.act{display:block}
+
+/* ── TEXT BLOCKS ── */
+.prose p{
+  font-size:19px;color:var(--txt);
+  margin-bottom:22px;line-height:1.9;
+}
+.prose p:last-child{margin-bottom:0}
+
+/* plain prose block */
+.p-block{padding:6px 0 6px 28px;border-left:2px solid var(--bd);margin:28px 0}
+
+/* verse block — preserves linebreaks */
+.verse-block{
+  padding:28px 36px;margin:32px 0;
+  background:var(--pan);
+  border-left:3px solid var(--pink);
+}
+.verse-line{
+  display:block;font-size:20px;color:var(--txt);
+  line-height:2;font-style:italic;
+}
+.verse-line.indent{padding-left:2em}
+
+/* teaching list block */
+.teach-block{
+  padding:28px 36px;margin:32px 0;
+  background:var(--pan);
+  border-left:2px solid var(--gold);
+}
+.teach-line{
+  display:block;font-size:19px;color:var(--txt);line-height:2.1;
+}
+.teach-line.resp{color:var(--gold);padding-left:1em}
+
+/* pivot line — the turn */
+.pivot{
+  text-align:center;margin:50px auto;
+  font-size:24px;font-style:italic;color:var(--txt);
+  max-width:520px;
+}
+
+/* naming moment */
+.naming{
+  text-align:center;margin:36px auto 44px;
+  font-size:26px;font-style:italic;font-weight:500;color:var(--pink);
+  letter-spacing:.02em;
+}
+
+/* seasonal sections */
+.season-block{
+  padding:26px 32px;margin:32px 0;
+  background:var(--pan);border:1px solid var(--bd);
+}
+.season-label{
+  font-family:var(--ui);font-size:9px;font-weight:500;letter-spacing:4px;text-transform:uppercase;
+  display:block;margin-bottom:16px;
+}
+.season-refrain{
+  display:block;font-size:18px;font-style:italic;color:var(--txtd);
+  margin-top:18px;padding-top:14px;border-top:1px solid var(--bd);
+  letter-spacing:.02em;
+}
+
+.season-spring{border-left:4px solid var(--spring);}
+.season-spring .season-label{color:var(--spring)}
+.season-spring .season-refrain{color:var(--spring)}
+
+.season-winter{border-left:4px solid var(--winter)}
+.season-winter .season-label{color:var(--winter)}
+.season-winter .season-refrain{color:var(--winter)}
+
+.season-autumn{border-left:4px solid var(--autumn)}
+.season-autumn .season-label{color:var(--autumn)}
+.season-autumn .season-refrain{color:var(--autumn)}
+
+.season-summer{border-left:4px solid var(--summer)}
+.season-summer .season-label{color:var(--summer)}
+.season-summer .season-refrain{color:var(--summer)}
+
+/* loss line — maximum isolation */
+.loss-line{
+  text-align:center;
+  margin:60px auto;
+  padding:0;
+  font-size:21px;color:var(--txt);
+  max-width:440px;
+  line-height:1.6;
+}
+
+/* closing verse */
+.close-verse{
+  text-align:center;margin:44px auto;
+  max-width:540px;
+}
+.close-verse .verse-line{display:block;text-align:center;font-size:20px}
+
+/* final line */
+.final-line{
+  text-align:center;margin:50px auto 0;
+  font-size:24px;font-style:italic;font-weight:500;color:var(--pink);
+}
+
+/* divider */
+.pdiv{border:none;height:1px;background:linear-gradient(90deg,transparent,var(--bd),transparent);margin:40px 0}
+
+/* ── DECODER ── */
+.decoder{position:relative;display:inline}
+.decoder-trigger{
+  background:none;border:none;padding:0 1px;cursor:pointer;
+  font-family:var(--body);font-size:inherit;font-style:inherit;
+  color:var(--txt);
+  text-decoration:underline;text-decoration-color:rgba(154,104,32,.5);
+  text-decoration-style:dotted;text-underline-offset:4px;
+  line-height:inherit;transition:color 100ms,text-decoration-color 100ms;
+}
+.decoder-trigger:hover,.decoder-trigger.open{
+  color:var(--gold);text-decoration-color:var(--gold);text-decoration-style:solid;
+}
+.decoder-trigger::after{content:' ↓';font-size:.65em;opacity:.6;font-style:normal}
+.decoder-trigger.open::after{content:' ↑'}
+.decoder-panel{
+  display:none;position:absolute;top:calc(100% + 8px);left:0;z-index:300;
+  width:300px;
+  background:var(--surf);
+  border:1px solid var(--bd1);border-left:3px solid var(--gold);
+  box-shadow:0 4px 20px rgba(42,26,12,.08);
+  padding:14px 18px;
+}
+.decoder-panel.open{display:block}
+.decoder-panel.flip-left{left:auto;right:0}
+.dec-label{display:block;font-family:var(--ui);font-size:8px;font-weight:500;letter-spacing:3px;text-transform:uppercase;color:var(--txtd);margin-bottom:5px}
+.dec-term{display:block;font-family:var(--body);font-size:16px;font-weight:600;color:var(--gold);margin-bottom:9px;line-height:1.3}
+.decoder-panel .dp{display:block;font-family:var(--body);font-size:15px;color:var(--txt);line-height:1.7}
+.dec-link{display:block;margin-top:8px;font-family:var(--ui);font-size:11px;font-weight:400;color:var(--pink);text-decoration:none;letter-spacing:1px}
+.dec-link:hover{text-decoration:underline}
+
+/* ── MARGIN NOTE ── */
+.mn{position:relative;display:inline}
+.mn-trig{
+  background:none;border:none;padding:0 2px;cursor:pointer;
+  font-family:var(--ui);font-size:9px;font-weight:500;
+  color:var(--txtd);vertical-align:super;line-height:0;
+  transition:color 100ms;
+}
+.mn-trig:hover,.mn-trig.open{color:var(--pink)}
+.mn-panel{
+  display:none;position:absolute;
+  top:calc(100% + 6px);left:-10px;z-index:300;
+  width:280px;
+  background:var(--surf);
+  border:1px solid var(--bd1);border-left:3px solid var(--pink);
+  box-shadow:0 4px 20px rgba(42,26,12,.08);
+  padding:14px 16px;
+}
+.mn-panel.open{display:block}
+.mn-panel.flip-left{left:auto;right:-10px}
+.mn-label{display:block;font-family:var(--ui);font-size:8px;font-weight:500;letter-spacing:3px;text-transform:uppercase;color:var(--pink);margin-bottom:8px}
+.mn-panel .dp{display:block;font-family:var(--body);font-size:15px;color:var(--txt);line-height:1.7}
+
+/* ── LIGHTBOX TRIGGER ── */
+.lbt{
+  background:none;border:none;padding:0 1px;cursor:pointer;
+  font-family:var(--body);font-size:inherit;font-style:inherit;color:var(--txt);
+  text-decoration:underline;text-decoration-color:rgba(192,64,96,.45);
+  text-decoration-style:solid;text-underline-offset:4px;line-height:inherit;
+  transition:color 100ms,text-decoration-color 100ms;
+}
+.lbt:hover{color:var(--pink);text-decoration-color:var(--pink)}
+
+/* ── LIGHTBOX ── */
+.lb-ov{display:none;position:fixed;inset:0;background:rgba(42,26,12,.7);z-index:1000;align-items:center;justify-content:center;padding:20px}
+.lb-ov.open{display:flex}
+.lb-box{background:var(--bg);border:1px solid var(--bd1);border-top:3px solid var(--pink);box-shadow:0 12px 60px rgba(42,26,12,.18);max-width:680px;width:100%;max-height:90vh;overflow-y:auto}
+.lb-hd{display:flex;align-items:center;justify-content:space-between;padding:16px 28px;border-bottom:1px solid var(--bd);position:sticky;top:0;background:var(--bg)}
+.lb-title{font-family:var(--ui);font-size:10px;font-weight:500;letter-spacing:3px;text-transform:uppercase;color:var(--pink)}
+.lb-close{background:none;border:1px solid var(--bd);color:var(--txtd);font-size:14px;padding:4px 12px;cursor:pointer;font-family:var(--ui);transition:color 120ms,border-color 120ms}
+.lb-close:hover{color:var(--pink);border-color:var(--pink)}
+.lb-body{padding:28px 32px}
+.lb-body h3{font-family:var(--body);font-size:17px;font-weight:600;color:var(--txt);margin-bottom:10px;margin-top:24px;letter-spacing:.02em}
+.lb-body h3:first-child{margin-top:0}
+.lb-body p{font-family:var(--body);font-size:16px;color:var(--txt);line-height:1.85;margin-bottom:14px}
+.lb-body p:last-child{margin-bottom:0}
+.lb-body strong{color:var(--pink)}
+.lb-body em{color:var(--txtd)}
+
+/* ── ACCORDION ── */
+.acc-item{border:1px solid var(--bd);border-left:3px solid var(--gold);margin-bottom:8px;background:var(--pan)}
+.acc-trig{width:100%;background:none;border:none;padding:16px 20px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:14px;text-align:left}
+.acc-text{font-family:var(--body);font-size:17px;font-style:italic;color:var(--txt);line-height:1.5}
+.acc-trig:hover .acc-text{color:var(--gold)}
+.acc-trig.open .acc-text{color:var(--gold)}
+.acc-arr{font-family:var(--ui);font-size:14px;color:var(--txtd);flex-shrink:0;transition:transform 150ms}
+.acc-trig.open .acc-arr{transform:rotate(180deg);color:var(--gold)}
+.acc-pan{display:none;padding:0 24px 22px;border-top:1px solid var(--bd)}
+.acc-pan.open{display:block}
+.acc-pan p{font-family:var(--body);font-size:17px;color:var(--txt);line-height:1.85;margin-top:16px}
+.acc-pan p:first-child{margin-top:16px}
+.acc-pan strong{color:var(--pink)}
+.acc-pan em{color:var(--txtd)}
+
+/* ── EDU SECTIONS ── */
+.edu-sec{margin-bottom:40px}
+.edu-title{font-family:var(--body);font-size:22px;font-style:italic;font-weight:500;color:var(--txt);margin-bottom:8px}
+.edu-intro{font-family:var(--body);font-size:17px;color:var(--txt);line-height:1.85;margin-bottom:24px}
+.edu-intro em{color:var(--txtd)}
+
+/* ── FURTHER READING ── */
+.rg{margin-bottom:32px}
+.rg-title{font-family:var(--ui);font-size:9px;font-weight:500;letter-spacing:4px;text-transform:uppercase;color:var(--txtd);margin-bottom:14px;padding-bottom:8px;border-bottom:1px solid var(--bd)}
+.ri{display:block;border:1px solid var(--bd);border-left:3px solid var(--gold);background:var(--pan);padding:14px 18px;margin-bottom:8px;text-decoration:none;transition:border-color 120ms,background 120ms}
+.ri:hover{border-left-color:var(--pink);background:var(--pan2)}
+.ri-title{font-family:var(--body);font-size:17px;font-style:italic;color:var(--txt);display:block;margin-bottom:4px}
+.ri-desc{font-family:var(--body);font-size:14px;color:var(--txtd);display:block}
+
+/* ── PUB INFO ── */
+.pub-info{font-family:var(--body);font-size:15px;font-style:italic;color:var(--txtd);text-align:center;margin-bottom:40px;line-height:1.8}
+
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar{width:5px}
+::-webkit-scrollbar-track{background:var(--surf)}
+::-webkit-scrollbar-thumb{background:var(--bd1)}
+::-webkit-scrollbar-thumb:hover{background:var(--pink)}
+
+@media(max-width:640px){
+  .hdr{padding:24px 20px}
+  .hdr-title{font-size:28px}
+  .wrap{padding:32px 18px 60px}
+  .verse-block,.teach-block,.season-block{padding:18px 20px}
+  .decoder-panel,.mn-panel{width:250px}
+  .tnav button{font-size:9px;padding:12px 12px 10px;letter-spacing:2px}
+}
+</style>
+</head>
+<body>
+
+<header class="hdr">
+  <div class="hdr-series">Annotated Fiction · Renegade Storyteller</div>
+  <div class="hdr-title">My Himitsu</div>
+  <div class="hdr-sub">By JL · Radio Ragnarock Edit · Originally 2013–2014</div>
+  <div class="hdr-meta">An immortal. A child washed ashore. The length of one human life measured against the end of all things.</div>
+</header>
+
+<nav class="tnav">
+  <button class="act" onclick="switchTab('t-story',this)">The Poem</button>
+  <button onclick="switchTab('t-world',this)">The Immortals</button>
+  <button onclick="switchTab('t-craft',this)">The Craft</button>
+  <button onclick="switchTab('t-read',this)">Further Reading</button>
+</nav>
+
+<main class="wrap">
+
+<!-- ═══════════════════════════ TAB 1: THE POEM ═══════════════════════════ -->
+<div class="tab act" id="t-story">
+
+  <div class="pub-info">
+    <span class="decoder" id="dec-ragnarock"><button class="decoder-trigger" onclick="togglePanel('dec-ragnarock',this)">Radio Ragnarock</button><span class="decoder-panel"><span class="dec-label">Publication</span><span class="dec-term">Radio Ragnarock / Ragnarök</span><span class="dp">Radio Ragnarock is the publication for which this version was edited. "Ragnarök" is the Norse apocalypse — the death of the gods and the end of the world, followed by a new one rising from the sea. For a story told by an immortal watching the last star burn out, the banner it was published under is quietly perfect.</span></span></span> Edit
+    &ensp;·&ensp; Originally written for the Renegade Storyteller
+  </div>
+
+  <!-- OPENING VERSE -->
+  <div class="verse-block">
+    <span class="mn" id="mn-genesis"><button class="mn-trig" onclick="togglePanel('mn-genesis',this)">✦</button><span class="mn-panel"><span class="mn-label">Craft Note</span><span class="dp">The story's first three lines invert the Book of Genesis without naming it. "We were not born. We were not created. We simply came to be." Genesis begins with divine act; this begins with absence of act — and absence of purpose. The immortals have no creator, no mandate, no reason. That absence is what the whole story is trying to fill.</span></span></span>
+    <span class="verse-line">We were not born.</span>
+    <span class="verse-line">We were not created.</span>
+    <span class="verse-line">We simply came to be.</span>
+    <span class="verse-line indent">All of a sudden, out of nothing,</span>
+    <span class="verse-line indent">we felt the sun upon our skin for the first time —</span>
+    <span class="verse-line indent">the day that our time began.</span>
+  </div>
+
+  <div class="p-block prose">
+    <p>We were scattered, spread out across the Earth and each of us thought we were alone. We were not told our purpose; there was no sign or divine mandate. Life had been given to us, and we soon realised that it was life that could not be taken away.</p>
+    <p>Humanity was thrust upon us, it was unavoidable.</p>
+    <p>We lived among them and soon learned to love them at their best and hate them at their worst. It was not long before each of us discovered how easily they could be guided. Their short lives with strong bonds proved eminently malleable to the ends of those of us who could pass a century in a single breath if we so chose.</p>
+    <p>We, the immortal, became legends and myths, and for some of us, embedded in and surrounded by humanity, we could believe that <button class="lbt" onclick="openLightbox('lb-gods')">we had become gods</button>.</p>
+    <p>I was named
+    <span class="decoder" id="dec-chogath"><button class="decoder-trigger" onclick="togglePanel('dec-chogath',this)">Cho Gath, the sentinel</button><span class="decoder-panel"><span class="dec-label">Name / Reference</span><span class="dec-term">Cho'Gath — League of Legends</span><span class="dp">Cho'Gath is a champion in <em>League of Legends</em> — a vast, consuming void-creature described as ancient, ravenous, and nearly unkillable. JL uses names from the LoL universe across their work. "The sentinel" is the narrator's role in that era: a guardian of a people. The name carries the mythology without inventing new vocabulary.</span></span></span>.
+    I was kind to my people and fearsome to my enemies. I built an empire of fire and stone that spanned an entire continent. And I watched it fall to the ones they would eventually call
+    <span class="decoder" id="dec-baal"><button class="decoder-trigger" onclick="togglePanel('dec-baal',this)">Ba'al, Ishtar and El</button><span class="decoder-panel"><span class="dec-label">Decoded</span><span class="dec-term">Ancient Near Eastern Deities</span><span class="dp"><strong>Ba'al</strong> was the Canaanite storm and fertility god — one of the most widely worshipped deities of the ancient Near East. <strong>Ishtar</strong> was the Babylonian goddess of love, beauty, and war. <strong>El</strong> was the chief deity of the Canaanite pantheon — the "father of gods and men." The story positions them as immortals like the narrator, who were given these names by the peoples they lived among.</span><a class="dec-link" href="https://en.wikipedia.org/wiki/Ba%27al" target="_blank">→ Ba'al on Wikipedia</a></span></span>.
+    They were like me and for a time became my enemies. We fought back and forth around
+    <span class="decoder" id="dec-ararat"><button class="decoder-trigger" onclick="togglePanel('dec-ararat',this)">Ararat</button><span class="decoder-panel"><span class="dec-label">Decoded</span><span class="dec-term">Mount Ararat</span><span class="dp">Mount Ararat is a dormant volcanic massif in what is now eastern Turkey, near the borders of Armenia, Iran, and Azerbaijan. It is traditionally identified as the resting place of Noah's Ark in the Hebrew Bible. The narrator's wars here place the immortals at the exact location where the oldest mythologies of human survival were born.</span><a class="dec-link" href="https://en.wikipedia.org/wiki/Mount_Ararat" target="_blank">→ Mount Ararat on Wikipedia</a></span></span>
+    for centuries before calling one another kin. While we fought ourselves, the world moved on.</p>
+
+    <p>For a time, I was known as
+    <span class="decoder" id="dec-horus"><button class="decoder-trigger" onclick="togglePanel('dec-horus',this)">Horus</button><span class="decoder-panel"><span class="dec-label">Decoded</span><span class="dec-term">Horus — Egyptian God</span><span class="dp">Horus was the falcon-headed Egyptian god of the sky, kingship, and protection — one of the oldest and most significant deities in the Egyptian pantheon. He was associated with the living pharaoh; every king was Horus in life and Osiris in death. The narrator "borrowed the name for a few dynasties" — the implication being that the Horus mythology may be an immortal's cultural footprint.</span><a class="dec-link" href="https://en.wikipedia.org/wiki/Horus" target="_blank">→ Horus on Wikipedia</a></span></span>.
+    I borrowed the name for a few dynasties. I ruled in secret, speaking only to a select few, who became known as priests and priestesses.</p>
+
+    <p>A nation was born around me and my conspirators. It lived on long after I grew tired and slipped away in the shadows. I watched as my brothers and sisters transformed it and eventually destroyed it, just for sport.</p>
+    <p>There was a time when I simply walked the wilderness for millennia, searching ceaselessly for a reason to care.</p>
+    <p>Humanity served the others well.</p>
+    <p>The one they called
+    <span class="decoder" id="dec-zeus"><button class="decoder-trigger" onclick="togglePanel('dec-zeus',this)">Zeus</button><span class="decoder-panel"><span class="dec-label">Decoded</span><span class="dec-term">Zeus — Greek God</span><span class="dp">Chief of the Olympian gods in Greek mythology — god of the sky, thunder, and kingship. Zeus's mythology is notable for his numerous relationships with mortals of both sexes, which produced many of the heroes of Greek legend. The story renders this as an immortal who genuinely enjoyed human company and devoted entire civilisations to pursuing it.</span></span></span>
+    enjoyed the company of mortal women and men alike. He devoted three empires to the pursuit of carnal pleasure. The one they called
+    <span class="decoder" id="dec-athena"><button class="decoder-trigger" onclick="togglePanel('dec-athena',this)">Athena</button><span class="decoder-panel"><span class="dec-label">Decoded</span><span class="dec-term">Athena — Greek Goddess</span><span class="dp">Goddess of wisdom, craft, and strategic warfare — Zeus's daughter, born fully armed from his forehead. In the story she is an immortal who tempered Zeus's excesses and channelled human energy into civilisation-building rather than purely pleasure. The relationship between the two immortals here closely mirrors their mythological dynamic.</span></span></span>
+    tempered him, and in turn he allowed her to teach his people to dream beyond sleep. And yet, it would take outright rebellion for them to realise that humanity has never needed us.</p>
+
+    <p>Most of us disappeared and gave up the power we once had over the hearts and minds of mortals, seeking instead to live our endless lives in secret. We went our separate ways and soon discovered the pleasures of mortality.</p>
+    <p>The joys of love, and the pain of grief. We observed, at a distance, the beauty of that time between birth and death. In secret, we began to understand the nature of humanity, the constant flux of progress and destruction.</p>
+    <p>We watched as the world burned, and was reborn. Yet we remained the same.</p>
+    <p>Some of us would find purpose for a while — as teachers, saviours, heroes and villains. There was a time I had a taste for war. I would stalk the battlefields, ending the misery of young men caught in a meat grinder that had no salve for their screams. On every battlefield, I brought what peace I could to those that needed it. In every battle, with every blade, bullet, and blast, I hoped to be granted that eternal slumber, where I would no longer wake to find myself in a world to which I have never belonged.</p>
+    <p>It is so easy for humans to die, and it is the very reason they love to live. They live though; to love, and love is the only reason to care. Since that first day, I confess I had not discovered love. I understood pleasure. I had known joy. But never love.</p>
+  </div>
+
+  <div class="pivot"><span class="mn" id="mn-pivot"><button class="mn-trig" onclick="togglePanel('mn-pivot',this)">✦</button><span class="mn-panel"><span class="mn-label">Craft Note</span><span class="dp">The story pivots here from "we" to "you" — and from cosmic history to a single shore. The previous section spans millennia and continents in summary form. This one sentence stops everything. Five words, and the entire register shifts. It is the structural centre of the piece.</span></span></span>And then you washed up on that shore.</div>
+
+  <div class="p-block prose">
+    <p>You had been cast into the sea, in a plywood box that should have been your coffin. I found you on a beach, washed up on the shore of a
+    <span class="decoder" id="dec-island"><button class="decoder-trigger" onclick="togglePanel('dec-island',this)">little island with big ambitions</button><span class="decoder-panel"><span class="dec-label">Decoded</span><span class="dec-term">Japan</span><span class="dp">Japan — never named in the text. The cherry blossoms, the Japanese word "Himitsu," and the story's end confirm it. "A little island with big ambitions" describes Japan's imperial expansion of the early 20th century with precision: a geographically small nation that had built one of the world's largest empires by the time the story reaches its catastrophe.</span></span></span>.
+    You were barely a month old when I found you, barely able to scream any longer, barely clothed and barely alive.<span class="mn" id="mn-barely"><button class="mn-trig" onclick="togglePanel('mn-barely',this)">✦</button><span class="mn-panel"><span class="mn-label">Craft Note</span><span class="dp">Four uses of "barely" in one sentence. The repetition enacts what it describes — something flickering on the edge of ceasing. It's also the most viscerally physical moment in the text before "Their Fat Man." The infant's nearness to death earns everything that follows.</span></span></span></p>
+
+    <p>I picked you up and held you, willing your cold, fragile little body to cling to life a little longer. In that moment, for reasons I am still unable to understand, I became your guardian and you became my secret whisper of home.</p>
+  </div>
+
+  <div class="naming">
+    <span class="decoder" id="dec-himitsu"><button class="decoder-trigger" onclick="togglePanel('dec-himitsu',this)">My Himitsu.</button><span class="decoder-panel"><span class="dec-label">Decoded</span><span class="dec-term">秘密 — Himitsu</span><span class="dp">"Himitsu" (秘密) is Japanese for "secret." The narrator's name for the child — "my secret whisper of home" — is both a term of endearment and a statement of concealment: the immortal has a secret; the child is the secret; the love they feel for the child is the secret. All three meanings operate simultaneously.</span></span></span>
+  </div>
+
+  <div class="p-block prose">
+    <p>In the light of ages, your life was only a moment — the most precious, beautiful moment I have ever been a part of. An eternal, unrepeatable moment that lasted a lifetime.</p>
+  </div>
+
+  <div class="teach-block">
+    <span class="mn" id="mn-teach"><button class="mn-trig" onclick="togglePanel('mn-teach',this)">✦</button><span class="mn-panel"><span class="mn-label">Craft Note — The Reversal</span><span class="dp">The three "I taught you / you taught me" pairs form a chiasmus — a reversal of expected order. The immortal, who has watched civilisations rise and fall, is taught to smile, to laugh, and to stop arguing by an infant. Each exchange gives the child agency equal to the guardian's. The series ends on a gentle joke — "you taught me not to argue with you" — which is the only moment of lightness in the whole passage, and works because it's true to how a stubborn, beloved child actually exists in a life.</span></span></span>
+    <span class="teach-line">I raised you.</span>
+    <span class="teach-line">I made home for you.</span>
+    <span class="teach-line">I taught you to speak
+    <span class="teach-line resp">and you taught me to smile.</span></span>
+    <span class="teach-line">I taught you to dance
+    <span class="teach-line resp">and you taught me to laugh.</span></span>
+    <span class="teach-line">I taught you to read
+    <span class="teach-line resp">and you taught me not to argue with you.</span></span>
+    <br>
+    <span class="teach-line">I was there when you learned to walk, and there the first time you fell down.</span>
+    <span class="teach-line resp">I wiped your tears and you wiped mine.</span>
+  </div>
+
+  <div class="p-block prose">
+    <p>You were only seven when you noticed my immortality. You asked me if you were the same. Even then, young as you were, you understood that you would eventually cease to be. It broke my heart when you began to cry. When I asked you why your tears were being shed, you said it was because you knew that I would have to miss you eventually.</p>
+    <p>My beautiful Himitsu: you were always wise beyond your years.</p>
+  </div>
+
+  <hr class="pdiv">
+
+  <!-- SEASONAL SECTIONS -->
+  <div class="season-block season-spring">
+    <span class="season-label">Spring</span>
+    <div class="prose">
+      <p>Every spring you would pick
+      <button class="lbt" onclick="openLightbox('lb-blossoms')">cherry blossoms</button>,
+      pinning them onto every one of your dresses. You didn't seem to mind that they withered away.</p>
+      <p>You always said that the prettiest things are never allowed to stay long, because if they were, we would stop seeing them. Only an immortal would understand that, after watching mountains rise and fall, human life is still the most beautiful thing in the universe.</p>
+    </div>
+    <span class="season-refrain">Every spring, you grew older.</span>
+  </div>
+
+  <div class="season-block season-winter">
+    <span class="season-label">Winter</span>
+    <div class="prose">
+      <p>Winter saw us hiding inside around the fire. I would tell you ancient stories and you would always listen. You would run around the house shouting with glee when the snow began to fall, and you would beg me to let you go outside.</p>
+      <p>I watched your wide-eyed wonder as the world around you transformed from grey to white. It was nothing new, but you still marvelled at it
+      <span class="mn" id="mn-wonder"><button class="mn-trig" onclick="togglePanel('mn-wonder',this)">✦</button><span class="mn-panel"><span class="mn-label">Craft Note</span><span class="dp">"It was nothing new, but you still marvelled at it and in turn, I did too." This is the story's quiet thesis: the immortal cannot die, but the child grants them something death-adjacent — the experience of seeing the ordinary world as if for the first time. Each seasonal section is a variation on this: the child's mortal freshness restores the immortal's capacity for wonder.</span></span></span>
+      and in turn, I did too.</p>
+    </div>
+    <span class="season-refrain">Every winter, you grew older.</span>
+  </div>
+
+  <div class="season-block season-autumn">
+    <span class="season-label">Autumn</span>
+    <div class="prose">
+      <p>In autumn you would paint. You always said that the colours were just right at that time of year. I watched your creations evolve from vivid, carefree splashes to delicate, nuanced masterpieces. You told the stories of fleeting moments in time, captured the light of ages and made it shine.</p>
+    </div>
+    <span class="season-refrain"><span class="mn" id="mn-seasons"><button class="mn-trig" onclick="togglePanel('mn-seasons',this)">✦</button><span class="mn-panel"><span class="mn-label">Craft Note — The Refrain</span><span class="dp">Each seasonal section ends with "Every [season], you grew older." Four times. The structure is a clock: the seasons are the increments, the aging is the mechanism, and the reader knows from the moment the refrain first appears that it is counting toward something. The sequence is spring, winter, autumn, summer — not the conventional order. This is JL's order; it puts winter before autumn, which puts the cold before the colour, and saves summer — wandering together — as the last before the loss.</span></span></span>Every autumn, you grew older.</span>
+  </div>
+
+  <div class="season-block season-summer">
+    <span class="season-label">Summer</span>
+    <div class="prose">
+      <p>Summer made us wander. We would travel to wherever your heart desired. I was your guardian, you were my guide. You showed me the wonder that my wanderings never had. To you, it was all so new.</p>
+    </div>
+    <span class="season-refrain">Every summer, you grew older.</span>
+  </div>
+
+  <hr class="pdiv">
+
+  <div class="p-block prose">
+    <p>In time, the little creature I had pulled from the sea grew into a beautiful, graceful young woman. You had a head full of dreams and a heart full of passion and a force of will to rival the immortals themselves.</p>
+    <p>Around you the world was at war, engulfed in chaos and fury, and you in your determined way, walked a path of peace. And then you were gone — snatched away by the fire and light and rage of a device designed only to destroy.</p>
+  </div>
+
+  <div class="loss-line">
+    <span class="mn" id="mn-fatman"><button class="mn-trig" onclick="togglePanel('mn-fatman',this)">✦</button><span class="mn-panel"><span class="mn-label">Craft Note — The Compression</span><span class="dp">Four seasonal sections, a childhood, a teaching list, decades of care — and then a single sentence. "Their Fat Man" is the industrial weapon; "my little girl" is the person. The possessives do the work: "their" places the bomb in a world of other people's war; "my" places Himitsu in a world of private love. The collision of those two possessives is the whole of the loss.</span></span></span>
+    <button class="lbt" onclick="openLightbox('lb-fatman')">Their Fat Man had taken my little girl.</button>
+  </div>
+
+  <hr class="pdiv">
+
+  <!-- POST-LOSS VERSE -->
+  <div class="verse-block">
+    <span class="verse-line">We were not born, and we cannot die.</span>
+    <span class="verse-line">We have watched humanity rise and fall and rise again.</span>
+    <span class="verse-line">We have always been among them, but not part of them.</span>
+  </div>
+
+  <div class="p-block prose">
+    <p>Some of the others have known what it is to love a human. It is always, in the light of ages, short lived.</p>
+    <p>And yet… It lingers and lives on.</p>
+    <p>My Himitsu was so much more than a period of happiness in my life. I spent centuries mourning her in a cave, until humanity took the cave from me. I wandered the ever-mechanical wastes until the sun grew dim, watching as humanity never stopped living. I hitched a ride off-world, hoping to find a home among the stars. I existed in a cargo hold as generations lived and died around me, hoping to reach a habitable planet before the resources ran out.</p>
+    <p>I watched a new world born and I watched it die. In the light of ages, each world is but a moment.</p>
+    <p>The sky will soon go black, and at last, humanity will fade away. Existence itself will cease as the last of the stars burn out, and finally, I will die.</p>
+  </div>
+
+  <!-- CLOSING VERSE -->
+  <div class="close-verse">
+    <span class="mn" id="mn-closing"><button class="mn-trig" onclick="togglePanel('mn-closing',this)">✦</button><span class="mn-panel"><span class="mn-label">Craft Note — The Structural Mirror</span><span class="dp">The story closes in the same verse-like lineation as it opened. "We were not born… We simply came to be… the day that our time began." The closing returns: "In the light of ages it has been but a moment / And she was a moment within a moment." The immortal's life, which began as infinite, is reduced to one measurement: her. The structure mirrors; the scale collapses inward.</span></span></span>
+    <span class="verse-line">In the light of ages it has been but a moment</span>
+    <span class="verse-line">And she was
+    <span class="decoder" id="dec-moment"><button class="decoder-trigger" onclick="togglePanel('dec-moment',this)">a moment within a moment</button><span class="decoder-panel"><span class="dec-label">Craft Note</span><span class="dec-term">Nested Time</span><span class="dp">The phrase does mathematical and emotional work simultaneously. The immortal's whole existence is "a moment" relative to eternity. Himitsu's life is a moment within that moment — a fraction of a fraction. And yet she is "the most precious, beautiful moment I have ever been a part of." Smallness, in this story, is not diminishment. It is the whole point.</span></span></span>.</span>
+    <br>
+    <span class="verse-line" style="margin-top:18px">And yet,</span>
+    <span class="verse-line indent">even now,</span>
+    <span class="verse-line indent">she was the most precious, beautiful moment I have ever been a part of.</span>
+  </div>
+
+  <div class="final-line">My Himitsu, my secret whisper of home.</div>
+
+</div><!-- end t-story -->
+
+
+<!-- ═══════════════════════════ TAB 2: THE IMMORTALS ═══════════════════════════ -->
+<div class="tab" id="t-world">
+
+  <div class="edu-sec">
+    <div class="edu-title">The Immortals — What the Story Has Built</div>
+    <p class="edu-intro">The story never names what the immortals are. No origin, no species, no creator. They precede humanity; they will outlast it; they feel everything humans feel and cannot escape anything. The world JL builds is defined by absence: no divine mandate, no purpose given, no death available as exit. What the story constructs is less a mythology than an <em>emotional logic</em> — the question of what it would mean to live forever in a world built entirely by and for people who don't.</p>
+  </div>
+
+  <div class="acc-item">
+    <button class="acc-trig" onclick="toggleAcc(this)"><span class="acc-text">What are the immortals — and what is the internal logic of their existence?</span><span class="acc-arr">▾</span></button>
+    <div class="acc-pan">
+      <p>The text provides almost nothing: they "simply came to be," scattered, without purpose, without creator. They cannot die. They can pass a century "in a single breath if we so chose" — implying some control over their experience of time. They feel pleasure, joy, and — as the story argues — eventually love.</p>
+      <p>What's notable is what the story does <em>not</em> give them: power over death itself, the ability to protect those they love, any form of transcendence. The narrator spent centuries trying to die on battlefields and couldn't. The one thing humanity does effortlessly — cease to be — is the one thing the immortals cannot access.</p>
+      <p>This is the story's central irony, stated directly: "It is so easy for humans to die, and it is the very reason they love to live." The immortals cannot die and so, for most of the story, cannot fully love. Himitsu is the exception — and she is taken anyway.</p>
+    </div>
+  </div>
+
+  <div class="acc-item">
+    <button class="acc-trig" onclick="toggleAcc(this)"><span class="acc-text">How does the mythological history work — are the gods the immortals?</span><span class="acc-arr">▾</span></button>
+    <div class="acc-pan">
+      <p>The story implies rather than states: the immortals took the names Ba'al, Ishtar, El, Horus, Zeus, and Athena from the peoples who named them. The mythologies of the ancient world are, in this telling, the cultural residue of immortal beings living among humans who needed to make sense of them.</p>
+      <p>"I borrowed the name for a few dynasties" — Horus is casual, a temporary alias. The immortal used the mythology as cover, not identity. They grew tired and left; the mythology outlived them, was "transformed and eventually destroyed, just for sport" by other immortals.</p>
+      <p><strong>What this does not mean:</strong> the story is not saying that all gods are false. It is saying that some of what humanity called "divine" was something else — beings with power but not omniscience, with longevity but not infinite wisdom, who got bored and wandered away while the civilisations they touched kept going without them.</p>
+    </div>
+  </div>
+
+  <div class="acc-item">
+    <button class="acc-trig" onclick="toggleAcc(this)"><span class="acc-text">What is the setting of Himitsu's life — and why does the text never name it?</span><span class="acc-arr">▾</span></button>
+    <div class="acc-pan">
+      <p>The setting is Japan, in the early-to-mid 20th century. The text signals this through: a Japanese word ("Himitsu"), cherry blossoms as the recurring seasonal symbol, and the "Fat Man" bomb dropped on Nagasaki, August 9, 1945. The "little island with big ambitions" is Japan at the height of its imperial expansion.</p>
+      <p>The text never names Japan. This is a significant craft decision: naming the setting would locate the story historically and geographically in a way that might crowd out the intimate scale. The story is about one child, not a nation. Keeping the location unnamed keeps Himitsu at the centre rather than the war that kills her.</p>
+      <p>The word "Himitsu" itself performs this double function: it names the child in the language of her culture without making her a symbol of that culture. She is a secret — private, specific, belonging to the narrator alone.</p>
+    </div>
+  </div>
+
+  <div class="acc-item">
+    <button class="acc-trig" onclick="toggleAcc(this)"><span class="acc-text">What happens after Himitsu's death — and what does the ending mean?</span><span class="acc-arr">▾</span></button>
+    <div class="acc-pan">
+      <p>The narrator grieves for centuries in a cave. Then wanders "ever-mechanical wastes" as civilisation industrialises the wilderness. Leaves Earth entirely. Travels in a cargo hold through generations, reaches another planet, watches it born and die. Eventually arrives at the heat death of the universe — the final state where all stars have burned out and existence itself ceases.</p>
+      <p>And at that point: "finally, I will die." The narrator's immortality ends not because they are killed but because there is simply nothing left to exist in. The universe itself is their coffin.</p>
+      <p>The movement is from cave to stars to void — a journey of increasing desolation that matches the increasing distance from the loss. And through all of it: "it lingers and lives on." The grief does not diminish. The love does not diminish. The final lines return to "the most precious, beautiful moment I have ever been a part of" — present tense, even at the end of existence. She is still present tense when everything else has become past.</p>
+    </div>
+  </div>
+</div><!-- end t-world -->
+
+
+<!-- ═══════════════════════════ TAB 3: THE CRAFT ═══════════════════════════ -->
+<div class="tab" id="t-craft">
+
+  <div class="edu-sec">
+    <div class="edu-title">The Craft — How This Story Is Built</div>
+    <p class="edu-intro"><em>My Himitsu</em> is a short text that spans from before human history to the heat death of the universe, but its emotional weight rests on a single childhood. The craft question is: how do you justify that scale without making the intimate moment feel small, or the cosmic scale feel inflated? JL's answer is structure — the way the text moves, the way it measures, the way it returns.</p>
+  </div>
+
+  <div class="acc-item">
+    <button class="acc-trig" onclick="toggleAcc(this)"><span class="acc-text">What tradition is this text working within?</span><span class="acc-arr">▾</span></button>
+    <div class="acc-pan">
+      <p>The piece belongs to the lyric essay tradition — prose that organises itself around emotional logic rather than narrative logic. It is not a story in the conventional sense (no plot arc, no resolution, no transformation); it is an act of elegy, moving from before love to the end of everything, with love as the fixed point.</p>
+      <p>The immortal narrator is a familiar figure in literary fantasy — Jorge Luis Borges's "The Immortal," Anne Rice's vampire chronicles, and the long tradition of the undying observer who watches history accumulate. What distinguishes JL's version is scale: most immortal narrators have a human lifespan to reflect on. This one has the lifespan of the universe, and it is still measured against one month-old child on a beach.</p>
+      <p>The seasonal structure connects the piece to an older tradition: the Japanese poetic form of <em>shiki</em> (the four seasons), in which each season carries a distinct emotional register. Spring is transience and renewal; summer is abundance and wandering; autumn is beauty-in-decay; winter is contemplative stillness. JL uses all four without naming the tradition, which lets the structure do its work invisibly.</p>
+    </div>
+  </div>
+
+  <div class="acc-item">
+    <button class="acc-trig" onclick="toggleAcc(this)"><span class="acc-text">How does the pivot sentence function structurally?</span><span class="acc-arr">▾</span></button>
+    <div class="acc-pan">
+      <p>"And then you washed up on that shore." The story's single most precise sentence. It performs several functions at once.</p>
+      <p>First, it shifts pronoun: from "we" (the immortals as a group) and "I" (the narrator in history) to "you" — direct address to Himitsu, which is maintained for the rest of the text. The narrator begins speaking to her, not about her. The reader becomes a witness to a private address.</p>
+      <p>Second, it shifts scale: from centuries and empires to a single shore, a single child. The syntax mirrors this — five short words after paragraphs of accumulation.</p>
+      <p>Third, it shifts tense in feeling: the preceding section is summary (things that happened); this sentence is arrival (this is where the story actually is). Everything before it is prologue. The shore is where the piece begins.</p>
+    </div>
+  </div>
+
+  <div class="acc-item">
+    <button class="acc-trig" onclick="toggleAcc(this)"><span class="acc-text">What does the seasonal structure do — and why is the sequence out of conventional order?</span><span class="acc-arr">▾</span></button>
+    <div class="acc-pan">
+      <p>The four seasonal sections each end with the same refrain: "Every [season], you grew older." Four repetitions of the same formal observation. The refrain is a clock — each season is a tick, and the reader counts from the first tick toward the silence that follows the fourth.</p>
+      <p>The sequence is spring, winter, autumn, summer — not the conventional order. This has structural consequences. Spring opens with cherry blossoms and the child's philosophy of transience ("the prettiest things are never allowed to stay long"). Winter follows: the ancient immortal told ancient stories to someone young enough to hear them fresh. Autumn comes third: the girl's paintings progress from "carefree splashes to delicate masterpieces" — she is older here. Summer is last: wandering together, "I was your guardian, you were my guide." The sequence moves from the child's early wisdom through her growth to the fullness of her agency — and then immediately into her death.</p>
+      <p>Ending on summer — the season of movement, of her guiding him — makes the loss feel like it happens in the middle of something rather than at the end. She is taken at the height of her life, not at its close.</p>
+    </div>
+  </div>
+
+  <div class="acc-item">
+    <button class="acc-trig" onclick="toggleAcc(this)"><span class="acc-text">How does "Their Fat Man had taken my little girl" work as a sentence?</span><span class="acc-arr">▾</span></button>
+    <div class="acc-pan">
+      <p>It stands alone. No preceding sentence. No following sentence. The isolation is the technique: after everything that has been built, the sentence refuses to share space with anything else.</p>
+      <p><strong>The possessives:</strong> "Their" — belonging to a world the narrator was never part of, a war fought by and for other people's ambitions. "My" — belonging to the private world the narrator and Himitsu made together over decades. These two possessives are the whole of the collision: a geopolitical weapon hitting a personal love.</p>
+      <p><strong>The naming:</strong> "Fat Man" is the bomb's actual code name — the plutonium implosion device dropped on Nagasaki on August 9, 1945. The narrator uses the human name for the weapon, not a description. "My little girl" is not her name — the name, Himitsu, comes before and after. In the moment of loss she is not named; she is only what she is to the narrator.</p>
+      <p><strong>The scale:</strong> "Fat Man" is a bomb designed to destroy a city. "Little girl" is one person. The sentence does not resolve this disproportion. It simply places them side by side and stops.</p>
+    </div>
+  </div>
+
+  <div class="acc-item">
+    <button class="acc-trig" onclick="toggleAcc(this)"><span class="acc-text">What does the story refuse to resolve — and is the refusal meaningful?</span><span class="acc-arr">▾</span></button>
+    <div class="acc-pan">
+      <p>The story never explains why Himitsu was cast into the sea as an infant. We know she was found; we do not know why she was put there. This is not an oversight — the narrator says "for reasons I am still unable to understand." The mystery of the guardian bond is as deliberate as the mystery of the immortals' origin.</p>
+      <p>The story also never describes the mourning as having an end. "I spent centuries mourning her in a cave" — and then the cave was taken, and the mourning continued in a different form through the rest of existence. The grief does not conclude. Even the final lines maintain it as present, not past: "she was the most precious, beautiful moment I have ever been a part of." <em>Was</em> — past tense — but the love is still present tense in the voice.</p>
+      <p>The unresolved question the story asks: <em>what is the value of a moment that ends?</em> Himitsu says the answer in the spring section: "the prettiest things are never allowed to stay long, because if they were, we would stop seeing them." The story's refusal to resolve the grief is the same logic: if the mourning ended, we would stop seeing her.</p>
+    </div>
+  </div>
+</div><!-- end t-craft -->
+
+
+<!-- ═══════════════════════════ TAB 4: FURTHER READING ═══════════════════════════ -->
+<div class="tab" id="t-read">
+
+  <div class="edu-sec">
+    <div class="edu-title">Further Reading</div>
+    <p class="edu-intro">The texts below trace the traditions <em>My Himitsu</em> is in conversation with — the immortal observer, the elegy, mono no aware, and the specific literature of Hiroshima and Nagasaki.</p>
+  </div>
+
+  <div class="rg">
+    <div class="rg-title">The Immortal Observer</div>
+    <a class="ri" href="https://en.wikipedia.org/wiki/The_Immortal_(short_story)" target="_blank">
+      <span class="ri-title">"The Immortal" — Jorge Luis Borges (1949)</span>
+      <span class="ri-desc">A soldier discovers a city of immortals and realises that eternal life makes all experience meaningless. The closest prose antecedent to JL's immortal — and the most direct argument for the counter-position Himitsu represents.</span>
+    </a>
+    <a class="ri" href="https://en.wikipedia.org/wiki/The_Years_of_Rice_and_Salt" target="_blank">
+      <span class="ri-title">The Years of Rice and Salt — Kim Stanley Robinson (2002)</span>
+      <span class="ri-desc">A novel spanning 700 years of alternate history through recurring souls. Like My Himitsu, it uses the long view of reincarnated consciousness to ask what persists across the length of historical time.</span>
+    </a>
+    <a class="ri" href="https://en.wikipedia.org/wiki/The_Buried_Giant" target="_blank">
+      <span class="ri-title">The Buried Giant — Kazuo Ishiguro (2015)</span>
+      <span class="ri-desc">An aged couple in post-Arthurian Britain discover that their memories of their lives together are obscured by a collective amnesia. The novel's central question — whether forgetting grief is mercy or erasure — resonates with the narrator's centuries of mourning.</span>
+    </a>
+  </div>
+
+  <div class="rg">
+    <div class="rg-title">Mono no Aware — The Pathos of Transience</div>
+    <a class="ri" href="https://en.wikipedia.org/wiki/Mono_no_aware" target="_blank">
+      <span class="ri-title">Mono no Aware — Wikipedia entry</span>
+      <span class="ri-desc">The Japanese aesthetic concept at the heart of My Himitsu — the bittersweet awareness that beautiful things do not last, and that this impermanence is precisely what makes them beautiful. The cherry blossom is the canonical symbol.</span>
+    </a>
+    <a class="ri" href="https://en.wikipedia.org/wiki/The_Tale_of_Genji" target="_blank">
+      <span class="ri-title">The Tale of Genji — Murasaki Shikibu (c. 1008)</span>
+      <span class="ri-desc">The world's first novel, and the foundational literary expression of mono no aware — an aristocratic world of exquisite beauty and constant loss, in which the emotional register of impermanence is the primary subject.</span>
+    </a>
+  </div>
+
+  <div class="rg">
+    <div class="rg-title">Hiroshima and Nagasaki</div>
+    <a class="ri" href="https://en.wikipedia.org/wiki/Hiroshima_(book)" target="_blank">
+      <span class="ri-title">Hiroshima — John Hersey (1946)</span>
+      <span class="ri-desc">The definitive account of the atomic bombing of Hiroshima, told through the experiences of six survivors. First published in The New Yorker in August 1946, it remains the essential document of the human cost of the bomb.</span>
+    </a>
+    <a class="ri" href="https://en.wikipedia.org/wiki/Barefoot_Gen" target="_blank">
+      <span class="ri-title">Barefoot Gen — Keiji Nakazawa (1973)</span>
+      <span class="ri-desc">A manga autobiography of Nakazawa's childhood survival of the Hiroshima bombing. One of the most visceral and sustained creative accounts of what the bombs meant at the level of a single child's life.</span>
+    </a>
+    <a class="ri" href="https://en.wikipedia.org/wiki/Sadako_and_the_Thousand_Paper_Cranes" target="_blank">
+      <span class="ri-title">Sadako and the Thousand Paper Cranes — Eleanor Coerr (1977)</span>
+      <span class="ri-desc">The story of Sadako Sasaki, who died of leukemia caused by radiation from the Hiroshima bombing. A child's life measured against an act of industrial destruction — the same proportions as My Himitsu.</span>
+    </a>
+  </div>
+
+  <div class="rg">
+    <div class="rg-title">Elegy and Scale</div>
+    <a class="ri" href="https://en.wikipedia.org/wiki/Duino_Elegies" target="_blank">
+      <span class="ri-title">Duino Elegies — Rainer Maria Rilke (1923)</span>
+      <span class="ri-desc">A ten-poem sequence meditating on human existence, angels, beauty, and transience. Like My Himitsu, the elegies work by holding the human scale against something vast and indifferent, and insisting on the value of the small.</span>
+    </a>
+    <a class="ri" href="https://en.wikipedia.org/wiki/On_Grief_and_Grieving" target="_blank">
+      <span class="ri-title">On Grief and Grieving — Elisabeth Kübler-Ross &amp; David Kessler (2005)</span>
+      <span class="ri-desc">For readers drawn to the story's exploration of grief that does not end — centuries in a cave, wandering "mechanical wastes." Kübler-Ross's final book deals with prolonged, non-resolving mourning and the question of whether grief must end to have meaning.</span>
+    </a>
+  </div>
+
+</div><!-- end t-read -->
+</main>
+
+<!-- ═══════════════════════════ LIGHTBOXES ═══════════════════════════ -->
+
+<div class="lb-ov" id="lb-gods" onclick="closeLbOv(event,'lb-gods')">
+  <div class="lb-box">
+    <div class="lb-hd"><span class="lb-title">We Could Believe We Had Become Gods</span><button class="lb-close" onclick="closeLb('lb-gods')">✕</button></div>
+    <div class="lb-body">
+      <h3>The immortal cosmology</h3>
+      <p>The story's immortals are not gods — they merely became the raw material from which human beings constructed their gods. The distinction is important: they have no power over death, no omniscience, no divine plan. What they have is time, resilience, and a face that doesn't change.</p>
+      <h3>What "becoming a god" actually meant</h3>
+      <p>Living among humans who age and die, being the one who stays — that alone was enough to generate myth. The narrator built empires, ruled through proxies, walked battlefields. Enough centuries of that, in enough different civilisations, and the pattern of "the one who does not die and cannot be killed" becomes theology.</p>
+      <h3>The key qualification</h3>
+      <p>The text says "for some of us, <strong>we could believe</strong> that we had become gods." The belief is the immortals' own — a seduction, not a fact. And the story's emotional arc is the reversal of that seduction: the narrator who once commanded empires is undone not by battle but by a month-old child they couldn't keep alive. The gods were always more vulnerable than they appeared.</p>
+    </div>
+  </div>
+</div>
+
+<div class="lb-ov" id="lb-blossoms" onclick="closeLbOv(event,'lb-blossoms')">
+  <div class="lb-box">
+    <div class="lb-hd"><span class="lb-title">Cherry Blossoms — Mono no Aware</span><button class="lb-close" onclick="closeLb('lb-blossoms')">✕</button></div>
+    <div class="lb-body">
+      <h3>The symbol</h3>
+      <p>The cherry blossom — <em>sakura</em> — is Japan's most potent symbol of transience. The blossoms bloom for only about two weeks each spring, and their fall is considered as beautiful as their flowering. The short, brilliant life of the blossom is held up as an ideal of how to exist: fully, briefly, without clinging.</p>
+      <h3>Mono no aware</h3>
+      <p><em>Mono no aware</em> (物の哀れ) translates roughly as "the pathos of things" or "a gentle sadness at the passing of things." It is the emotional state of perceiving beauty and simultaneously perceiving that it will not last — and finding those two perceptions inseparable. The bittersweet is the point, not an unfortunate qualifier.</p>
+      <h3>Himitsu's philosophy</h3>
+      <p>"The prettiest things are never allowed to stay long, because if they were, we would stop seeing them." Himitsu — a child — has arrived independently at the classical articulation of mono no aware. She pins withering blossoms to her dresses and doesn't mind that they die. She is already living as if she knows what she is.</p>
+      <h3>What the immortal learns</h3>
+      <p>The narrator notes: "Only an immortal would understand that, after watching mountains rise and fall, human life is still the most beautiful thing in the universe." The immortal has the perspective to verify Himitsu's philosophy — and she is the proof of it. Her beauty is inseparable from her brevity. The story is the longest possible meditation on why that is true.</p>
+    </div>
+  </div>
+</div>
+
+<div class="lb-ov" id="lb-fatman" onclick="closeLbOv(event,'lb-fatman')">
+  <div class="lb-box">
+    <div class="lb-hd"><span class="lb-title">The Fat Man — Nagasaki, August 9, 1945</span><button class="lb-close" onclick="closeLb('lb-fatman')">✕</button></div>
+    <div class="lb-body">
+      <h3>The weapon</h3>
+      <p>"Fat Man" was the code name for the plutonium implosion atomic bomb dropped on Nagasaki, Japan on August 9, 1945 — three days after the bombing of Hiroshima. The bomb exploded at approximately 11:02 AM local time, about 500 metres above the city's Urakami district.</p>
+      <h3>The scale of the loss</h3>
+      <p>Estimates of immediate deaths range from 40,000 to 80,000 people. By the end of 1945, accounting for those who died from injuries and radiation, the death toll had reached between 60,000 and 80,000. The city's infrastructure was destroyed across roughly three square kilometres of the explosion's centre.</p>
+      <h3>The people</h3>
+      <p>Among those in Nagasaki that morning were civilians, workers, schoolchildren, and — in the story — Himitsu. She had "a head full of dreams and a heart full of passion and a force of will to rival the immortals themselves." She "walked a path of peace" while "the world was at war." Her death is not a consequence of anything she was or did. It is the collision of the personal and the industrial — her particular life meeting a device "designed only to destroy."</p>
+      <h3>Why the story names it as it does</h3>
+      <p>The bomb had a code name. The narrator uses that name — "Their Fat Man" — rather than describing what happened. The code name is deliberately impersonal and slightly absurd; placing it beside "my little girl" makes visible how completely the language of war fails to account for the people it kills.</p>
+    </div>
+  </div>
+</div>
+
+<script>
+function switchTab(id, btn) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('act'));
+  document.querySelectorAll('.tnav button').forEach(b => b.classList.remove('act'));
+  document.getElementById(id).classList.add('act');
+  btn.classList.add('act');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function togglePanel(id, btn) {
+  const el = document.getElementById(id);
+  const panel = el.querySelector('.decoder-panel, .mn-panel');
+  const isOpen = panel.classList.contains('open');
+  document.querySelectorAll('.decoder-panel.open,.mn-panel.open').forEach(p => p.classList.remove('open'));
+  document.querySelectorAll('.decoder-trigger.open,.mn-trig.open').forEach(b => b.classList.remove('open'));
+  if (!isOpen) {
+    panel.classList.add('open');
+    btn.classList.add('open');
+    const r = panel.getBoundingClientRect();
+    panel.classList.toggle('flip-left', r.right > window.innerWidth - 16);
+  }
+}
+
+function toggleAcc(btn) {
+  const panel = btn.nextElementSibling;
+  const isOpen = btn.classList.contains('open');
+  document.querySelectorAll('.acc-trig.open').forEach(b => { b.classList.remove('open'); b.nextElementSibling.classList.remove('open'); });
+  if (!isOpen) { btn.classList.add('open'); panel.classList.add('open'); }
+}
+
+function openLightbox(id) { document.getElementById(id).classList.add('open'); document.body.style.overflow='hidden'; }
+function closeLb(id) { document.getElementById(id).classList.remove('open'); document.body.style.overflow=''; }
+function closeLbOv(e, id) { if (e.target === document.getElementById(id)) closeLb(id); }
+
+document.addEventListener('click', function(e) {
+  if (!e.target.closest('.decoder') && !e.target.closest('.mn')) {
+    document.querySelectorAll('.decoder-panel.open,.mn-panel.open').forEach(p => p.classList.remove('open'));
+    document.querySelectorAll('.decoder-trigger.open,.mn-trig.open').forEach(b => b.classList.remove('open'));
+  }
+});
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') {
+    document.querySelectorAll('.lb-ov.open').forEach(l => l.classList.remove('open'));
+    document.querySelectorAll('.decoder-panel.open,.mn-panel.open').forEach(p => p.classList.remove('open'));
+    document.body.style.overflow = '';
+  }
+});
+</script>
+</body>
+</html>

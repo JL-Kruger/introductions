@@ -1,0 +1,645 @@
+/* content-page.css — JL Kruger Content Page Layout
+   Specific to sidebar + pretext-driven focal scroll area.
+   Dependencies: /css/tokens.css (palette + layout custom properties, generated
+   from Toolbox/Python/variables.yaml) and content.css (shared styles).
+   tags: content-page layout sidebar pretext scroll tokens */
+/* Layout tokens (--sidebar-w, --logo-h, --content-max-w, --content-pad-v, --lh)
+   now live in /css/tokens.css. Edit them in variables.yaml → layout. */
+
+/* ── Body background (content pages) ────────────────────────────────────── */
+body {
+  background:
+    url('/Media/SVG-Assets/jl-site-background-desktop.svg') no-repeat center center fixed,
+    linear-gradient(180deg, #010403 0%, #02130a 100%);
+  background-size: cover, auto;
+  background-attachment: fixed;
+}
+@media (max-width: 1023px) {
+  body {
+    background-image:
+      url('/Media/SVG-Assets/jl-site-background-mobile.svg'),
+      linear-gradient(180deg, #010403 0%, #02130a 100%);
+  }
+}
+
+
+
+/* ── Page shell ─────────────────────────────────────────────────────────── */
+.page-shell {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.page-body {
+  display: grid;
+  grid-template-columns: var(--sidebar-w) 28px 1fr;
+  flex: 1;
+  overflow: hidden;
+  position: relative;
+}
+
+/* ── Left column (holds logo/sidebar) ───────────────────────────────────── */
+.left-col {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  border-right: 1px solid rgba(232, 226, 218, 0.06);
+  width: var(--sidebar-w);
+  min-width: 0;
+  overflow: hidden;
+  position: relative;
+}
+
+#sidebar-logo {
+  height: var(--logo-h);
+  padding: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+#sidebar-logo svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+  cursor: pointer;
+}
+/* logo wrapped in a shimmer-nav link — fill the sidebar slot */
+#sidebar-logo .logo-link {
+  display: block;
+  width: 100%;
+  height: 100%;
+  line-height: 0;
+}
+
+/* ── Sidebar nav (absolute overlay, clips within left-col) ───────────────── */
+.sidebar-nav {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 20;
+  background: rgba(1, 4, 3, 0.97);
+  display: flex;
+  flex-direction: column;
+  padding: 1.2rem 1rem 1.2rem 3.6rem;
+  overflow-y: auto;
+  scrollbar-width: none;
+  transition: transform 0.25s ease;
+}
+
+.sidebar-nav::-webkit-scrollbar { display: none; }
+.sidebar-nav.hidden { transform: translateX(100%); }
+
+.page-title {
+  font-family: "Walter Turncoat", cursive;
+  font-size: 1rem;
+  color: var(--rust);
+  opacity: 0.7;
+  margin-bottom: 1.2rem;
+  line-height: 1.3;
+}
+
+.section-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5em;
+  font-family: "Walter Turncoat", cursive;
+  font-size: 0.95rem;
+}
+
+.section-nav a {
+  color: var(--light);
+  text-decoration: none;
+  opacity: 0.7;
+  padding: 0.15em 0;
+  border-bottom: 1px solid rgba(232, 226, 218, 0.06);
+  transition: color 0.2s, opacity 0.2s;
+}
+
+.section-nav a:hover,
+.section-nav a.active {
+  color: var(--fire);
+  opacity: 1;
+}
+
+/* ── Sidebar toggle (inside left-col, above nav overlay) ────────────────── */
+.sidebar-gap { width: 28px; }
+
+.sidebar-toggle {
+  position: absolute;
+  right: 4px;
+  top: 1rem;
+  transform: none;
+  background: rgba(1, 4, 3, 0.85);
+  border: 1px solid rgba(232, 226, 218, 0.15);
+  color: var(--light);
+  cursor: pointer;
+  font-size: 0.7rem;
+  padding: 0.3em 0.45em;
+  border-radius: 2px;
+  line-height: 1;
+  z-index: 30;
+}
+
+.sidebar-toggle:hover { border-color: rgba(232, 226, 218, 0.4); }
+
+/* ── Mobile/Tablet (≤ 1023px) ───────────────────────────────────────────── */
+.mobile-nav-bar      { display: none; }
+.mobile-nav-dropdown { display: none; }
+.section-nav-sheet   { display: none; }
+.section-nav-fab     { display: none; }
+
+@media (max-width: 1023px) {
+  /* Collapse sidebar columns */
+  .page-body { grid-template-columns: 0px 0px 1fr; }
+  .left-col, .sidebar-gap, .sidebar-toggle { display: none; }
+
+  /* Sticky nav → mobile bar */
+  .sticky-nav {
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: stretch;
+    padding: 0;
+  }
+  .nav-links { display: none; }
+
+  .mobile-nav-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.6rem 1rem;
+  }
+  .mobile-page-title {
+    font-family: "Walter Turncoat", cursive;
+    font-size: 1.1rem;
+    color: var(--rust);
+    opacity: 0.9;
+  }
+  .mobile-hamburger {
+    background:
+      linear-gradient(var(--light), var(--light)) padding-box,
+      linear-gradient(var(--shimmer-deg, 135deg),
+        rgba(7,55,32,0) 0%, rgba(14,77,14,.44) 20%, rgba(94,154,14,.88) 40%,
+        rgba(242,198,42,1) 50%, rgba(235,117,19,.88) 65%, rgba(105,25,13,.44) 85%,
+        rgba(7,55,32,0) 100%) border-box;
+    border: 1px solid transparent;
+    color: var(--pigment);
+    font-size: 1.1rem;
+    padding: 0.3em 0.5em;
+    border-radius: 2px;
+    cursor: pointer;
+    line-height: 1;
+    transition: opacity 0.2s;
+  }
+  .mobile-hamburger:hover { opacity: 0.8; }
+
+  .mobile-nav-dropdown {
+    flex-direction: column;
+    gap: 0.75rem;
+    padding: 0.75rem 1rem 1rem;
+    border-top: 1px solid rgba(232, 226, 218, 0.08);
+  }
+  .sticky-nav.nav-open .mobile-nav-dropdown { display: flex; }
+  .mobile-nav-dropdown a {
+    font-family: 'Walter Turncoat', cursive;
+    font-size: 1rem;
+    color: var(--light);
+    opacity: 0.85;
+    text-decoration: none;
+  }
+  .mobile-nav-dropdown a:hover { color: var(--fire); opacity: 1; }
+
+  /* Section nav sheet — full-width slide up from bottom */
+  .section-nav-sheet {
+    display: block;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: rgba(1, 4, 3, 0.97);
+    border-top: 1px solid rgba(232, 226, 218, 0.12);
+    max-height: 60vh;
+    overflow-y: auto;
+    scrollbar-width: none;
+    padding: 1.5rem 1.5rem 5rem;
+    transform: translateY(100%);
+    transition: transform 0.3s ease;
+    z-index: 200;
+  }
+  .section-nav-sheet::-webkit-scrollbar { display: none; }
+  .section-nav-sheet.open { transform: translateY(0); }
+  .section-nav-sheet .page-title { font-size: 1rem; margin-bottom: 1rem; }
+
+  .section-nav-mobile {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+  }
+  .section-nav-mobile a {
+    font-family: "Walter Turncoat", cursive;
+    font-size: 1rem;
+    color: var(--light);
+    text-decoration: none;
+    opacity: 0.8;
+    padding: 0.3em 0;
+    border-bottom: 1px solid rgba(232, 226, 218, 0.06);
+    transition: color 0.2s, opacity 0.2s;
+  }
+  .section-nav-mobile a:hover { color: var(--fire); opacity: 1; }
+
+  /* FAB button */
+  .section-nav-fab {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: fixed;
+    bottom: 1.5rem;
+    left: 1rem;
+    width: 2.5rem;
+    height: 2.5rem;
+    background:
+      linear-gradient(var(--light), var(--light)) padding-box,
+      linear-gradient(var(--shimmer-deg, 135deg),
+        rgba(7,55,32,0) 0%, rgba(14,77,14,.44) 20%, rgba(94,154,14,.88) 40%,
+        rgba(242,198,42,1) 50%, rgba(235,117,19,.88) 65%, rgba(105,25,13,.44) 85%,
+        rgba(7,55,32,0) 100%) border-box;
+    border: 1px solid transparent;
+    border-radius: 3px;
+    color: var(--pigment);
+    font-size: 1.1rem;
+    cursor: pointer;
+    z-index: 201;
+    transition: opacity 0.2s;
+  }
+  .section-nav-fab:hover { opacity: 0.8; }
+}
+
+/* ── Scroll / content ───────────────────────────────────────────────────── */
+#scroll-container {
+  height: 100%;
+  overflow-y: scroll;
+  scroll-behavior: auto;
+  scrollbar-width: none;
+}
+#scroll-container::-webkit-scrollbar { display: none; }
+
+#content-area {
+  width: 88%;
+  max-width: var(--content-max-w);
+  margin: 0 auto;
+  padding: var(--content-pad-v) 0 var(--content-pad-v);
+  overflow: visible;
+}
+
+/* ── Spool animation ────────────────────────────────────────────────────── */
+/* Percentages derived from FOCAL_RATIO:0.42 + EDGE:0.60 mapped to view()  */
+/* 28% = bottom of stable zone (72% from viewport top)                      */
+/* 88% = top of stable zone   (12% from viewport top)                       */
+
+/* --lc holds each line's native color; registered so keyframes interpolate */
+@property --lc {
+  syntax: '<color>';
+  inherits: false;
+  initial-value: #e8e2da;
+}
+
+@keyframes spool-text {
+  /* B ramp: entering from below — warm red → yellow → native color */
+  0%, 8% { transform: scale(0.72); opacity: 0.44; color: rgb(105, 25,  13); }
+  13%    { transform: scale(0.79); opacity: 0.66; color: rgb(165, 44,  22); }
+  18%    { transform: scale(0.86); opacity: 0.88; color: rgb(235,117,  19); }
+  23%    { transform: scale(0.93); opacity: 1;    color: rgb(242,198,  42); }
+  28%    { transform: scale(1);    opacity: 1;    color: var(--lc);         }
+  /* stable zone */
+  88%    { transform: scale(1);    opacity: 1;    color: var(--lc);         }
+  /* A ramp: exiting above — native color → yellow → green */
+  93%    { transform: scale(0.93); opacity: 1;    color: rgb(242,198,  42); }
+  98%    { transform: scale(0.86); opacity: 0.88; color: rgb( 94,154,  14); }
+  100%   { transform: scale(0.72); opacity: 0.44; color: rgb(  7, 55,  32); }
+}
+
+@keyframes spool-rich {
+  0%   { opacity: 0.3; }
+  28%  { opacity: 1;   }
+  88%  { opacity: 1;   }
+  100% { opacity: 0.3; }
+}
+
+/* ── Pretext text lines ─────────────────────────────────────────────────── */
+.line {
+  display: block;
+  line-height: 1.5;
+  white-space: nowrap;
+  color: var(--lc);
+  transform-origin: center center;
+  will-change: transform, opacity;
+  overflow: visible;
+  animation: spool-text linear both;
+  animation-timeline: view();
+}
+
+.line a:not(.media-btn-link) {
+  color: var(--meadow) !important;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.line a:not(.media-btn-link):hover   { color: var(--fire) !important; }
+.line a:not(.media-btn-link):visited { color: var(--rust) !important; }
+
+.attrib {
+  display: block;
+  font-size: 0.75em;
+  margin-top: 0.3em;
+  opacity: 0.7;
+  font-style: italic;
+}
+
+/* ── Rich element wrappers ──────────────────────────────────────────────── */
+.rich-line {
+  display: block;
+  will-change: opacity;
+  overflow: visible;
+  animation: spool-rich linear both;
+  animation-timeline: view();
+}
+
+.separator-line {
+  height: 3em;
+  max-height: 50vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.separator-line svg { width: 100%; height: 100%; display: block; }
+
+.critter-line {
+  height: 8em;
+  max-height: 50vh;
+  margin-bottom: 1em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.8em;
+  cursor: pointer;
+}
+.critter-line.critter-solo { justify-content: center; }
+.critter-line .critter-svg-wrap { height: 100%; flex-shrink: 0; display: flex; align-items: center; }
+.critter-line svg { height: 100%; width: auto; display: block; }
+
+.button-line { height: 3.5em; display: flex; align-items: center; justify-content: center; }
+
+.image-line {
+  white-space: normal !important;
+  display: flex !important;
+  justify-content: center;
+  align-items: center;
+  padding: 0.5em 0;
+  min-height: 2em;
+  height: auto !important;
+}
+.image-line img { max-width: 100%; height: auto; display: block; }
+
+/* ── Media buttons ──────────────────────────────────────────────────────── */
+.media-btn-wrap {
+  position: relative;
+  display: inline-flex;
+  height: 3.2rem;
+}
+
+.media-btn-border {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.media-btn-rect {
+  fill: transparent;
+  stroke: url(#shine-org-h);
+  stroke-width: 1.5;
+  rx: 3;
+  transition: fill 0.25s ease;
+}
+
+.media-btn-wrap:hover .media-btn-rect,
+.media-btn-wrap:focus-within .media-btn-rect {
+  stroke: url(#shimmer-org-h);
+  fill: var(--light);
+}
+.media-btn-wrap:hover .media-btn,
+.media-btn-wrap:hover .media-btn-link,
+.media-btn-wrap:focus-within .media-btn,
+.media-btn-wrap:focus-within .media-btn-link { color: var(--pigment); }
+
+.media-btn, .media-btn-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5em;
+  height: 100%;
+  padding: 0 1.4em;
+  background: transparent;
+  border: none;
+  border-radius: 3px;
+  color: var(--light);
+  font-family: 'Walter Turncoat', cursive;
+  font-size: clamp(0.9rem, 1.1vw, 1.1rem);
+  cursor: pointer;
+  transition: color 0.25s ease;
+  white-space: nowrap;
+  position: relative;
+  text-decoration: none;
+}
+
+.media-btn .play-icon,
+.media-btn-link .play-icon { width: 0.9em; height: 0.9em; fill: currentColor; }
+
+/* ── Lightbox ───────────────────────────────────────────────────────────── */
+#lightbox {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.92);
+  z-index: 1000;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+#lightbox.open { display: flex; }
+
+#lightbox-inner {
+  position: relative;
+  width: min(90vw, 160vh);
+  aspect-ratio: 16/9;
+  background: #000;
+}
+
+#lightbox iframe { width: 100%; height: 100%; border: none; display: block; }
+
+#lightbox-close {
+  position: absolute;
+  top: -2.5rem;
+  right: 0;
+  background: transparent;
+  border: none;
+  color: var(--light);
+  font-size: 1.5rem;
+  cursor: pointer;
+  line-height: 1;
+  opacity: 0.7;
+}
+#lightbox-close:hover { opacity: 1; }
+
+/* ── Terminal Table Styles ─────────────────────────────────────────────── */
+.table-terminal-sep {
+  display: block;
+  font-family: "Courier New", monospace;
+  font-size: 16px;
+  opacity: 0.25;
+  white-space: pre;
+}
+
+/* ── Frame Overlay (Fixed) ──────────────────────────────────────────────── */
+.frame-overlay {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 100; /* above all content but below lightbox maybe? */
+}
+.frame-desktop { display: block; }
+.frame-mobile  { display: none; }
+
+@media (max-width: 1023px) {
+  .frame-desktop { display: none; }
+  .frame-mobile  { display: block; }
+}
+
+/* ── Accordion (replaces card-group on content pages) ───────────────────── */
+/* The 28px indent below is mirrored in pretext-engine.js buildAccordion()
+   (ACC_INDENT): the chevron column width and the panel's left padding must
+   equal the width the engine lays text out against, so the expanded body's
+   pre-measured (nowrap) Pretext lines never clip. The summary itself is plain
+   HTML and wraps natively. interpolate-size lets the panel animate to height
+   auto on open (progressive: snaps open where unsupported). */
+:root { interpolate-size: allow-keywords; }
+
+.accordion-item {
+  position: relative;
+  border-bottom: 1px solid transparent;
+  border-image: linear-gradient(to right,
+    rgba(94,154,14,0) 0%, rgba(94,154,14,.45) 18%,
+    rgba(242,198,42,.7) 50%, rgba(235,117,19,.45) 82%,
+    rgba(105,25,13,0) 100%) 1;
+  transition: background 0.4s ease;
+}
+/* warm wash behind the open item */
+.accordion-item[open] {
+  background: linear-gradient(90deg, rgba(235,117,19,0.07), rgba(235,117,19,0) 72%);
+}
+/* hand-drawn left accent bar unfurls when open */
+.accordion-item::before {
+  content: '';
+  position: absolute; left: 0; top: 0.5em; bottom: 0.5em;
+  width: 2px;
+  background: linear-gradient(var(--fire), var(--sun));
+  transform: scaleY(0);
+  transform-origin: top;
+  transition: transform 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.accordion-item[open]::before { transform: scaleY(1); }
+
+.accordion-summary {
+  display: flex;
+  align-items: baseline;
+  gap: 0.55rem;
+  list-style: none;
+  cursor: pointer;
+  padding: 0.75em 0;
+  outline: none;
+  -webkit-tap-highlight-color: transparent;
+}
+.accordion-summary::-webkit-details-marker { display: none; }
+
+/* chevron drawn from borders — a crisp triangle that springs to point down */
+.accordion-chevron {
+  flex: 0 0 22px;
+  margin-left: 6px;
+  align-self: flex-start;
+  margin-top: 0.45em;
+  width: 0; height: 0;
+  border-left: 8px solid var(--fire);
+  border-top: 6px solid transparent;
+  border-bottom: 6px solid transparent;
+  transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1),
+              border-left-color 0.25s ease;
+}
+.accordion-item[open] > .accordion-summary .accordion-chevron {
+  transform: rotate(90deg);
+  border-left-color: var(--sun);
+}
+.accordion-summary:hover .accordion-chevron { border-left-color: var(--sun); }
+
+.accordion-summary-text {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.12em;
+}
+
+.accordion-title {
+  font-family: 'Walter Turncoat', cursive;
+  color: var(--rust);
+  font-size: clamp(1.15rem, 1.6vw, 1.45rem);
+  line-height: 1.2;
+  letter-spacing: 0.01em;
+  transition: color 0.25s ease;
+}
+.accordion-summary:hover .accordion-title,
+.accordion-item[open] .accordion-title { color: var(--fire); }
+
+.accordion-teaser {
+  font-family: 'Overlock', serif;
+  font-style: italic;
+  color: var(--meadow);
+  opacity: 0.85;
+  font-size: clamp(0.92rem, 1.1vw, 1.05rem);
+  line-height: 1.4;
+}
+
+.accordion-panel { padding-left: 28px; }
+
+/* smooth height + fade expand (Chromium ::details-content; snaps elsewhere) */
+.accordion-item::details-content {
+  block-size: 0;
+  opacity: 0;
+  overflow: clip;
+  transition: content-visibility 0.45s allow-discrete,
+              block-size 0.45s ease,
+              opacity 0.4s ease;
+}
+.accordion-item[open]::details-content {
+  block-size: auto;
+  opacity: 1;
+}
+
+.accordion-summary:focus-visible {
+  outline: 2px solid var(--sun);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .accordion-chevron,
+  .accordion-item,
+  .accordion-item::before,
+  .accordion-item::details-content { transition: none !important; }
+}

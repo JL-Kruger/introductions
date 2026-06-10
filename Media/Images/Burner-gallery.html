@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Burner Gallery</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Overlock:ital,wght@0,400;0,700;1,400&family=Walter+Turncoat&display=swap" rel="stylesheet">
+  <style>
+    /* ── Tokens ── */
+    :root {
+      --soil:   #442204; --pigment: #69190d; --rust: #a52c16;
+      --fire:   #eb7513; --sun: #f2c62a; --light: #e8e2da;
+      --meadow: #5e9a0e; --forest: #0e4d0e; --jungle: #073720;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      height: 100%;
+    }
+    body {
+      background:
+        url('../../SVG-Assets/jl-site-background-desktop.svg') no-repeat center center fixed,
+        linear-gradient(180deg, #010403 0%, #02130a 100%);
+      background-size: cover, auto;
+      background-attachment: fixed;
+      color: var(--light);
+      font-family: 'Overlock', serif;
+      font-size: 16px;
+      line-height: 1.45;
+      display: flex;
+      flex-direction: column;
+      min-height: 100%;
+    }
+
+    /* ── Nav ── */
+    .gallery-nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(1, 4, 3, 0.90);
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+      padding: 0.55rem 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1.5px solid transparent;
+      border-image: linear-gradient(to right,
+        rgba(7,55,32,0) 0%, rgba(14,77,14,.44) 16.7%, rgba(94,154,14,.88) 33.3%,
+        rgba(242,198,42,1) 50%, rgba(235,117,19,.88) 66.7%, rgba(105,25,13,.44) 83.3%,
+        rgba(7,55,32,0) 100%) 1;
+      flex-shrink: 0;
+    }
+    .gallery-nav-title {
+      font-family: 'Walter Turncoat', cursive;
+      font-size: clamp(0.85rem, 1.4vw, 1.1rem);
+      color: var(--sun);
+      letter-spacing: 0.04em;
+      flex: 1;
+      text-align: center;
+    }
+    .gallery-nav-links {
+      display: flex;
+      gap: 1.2em;
+      font-family: 'Walter Turncoat', cursive;
+      font-size: clamp(0.8rem, 1.2vw, 1rem);
+    }
+    .gallery-nav-links a {
+      color: var(--light);
+      text-decoration: none;
+      opacity: 0.85;
+      transition: color 0.15s, opacity 0.15s;
+    }
+    .gallery-nav-links a:hover { color: var(--fire); opacity: 1; }
+
+    /* ── Gallery grid ── */
+    .gallery-main {
+      flex: 1;
+      padding: 1.2rem 1rem 2rem;
+    }
+    .gallery-grid {
+      columns: 2;
+      column-gap: 0.6rem;
+    }
+    @media (min-width: 520px)  { .gallery-grid { columns: 3; } }
+    @media (min-width: 780px)  { .gallery-grid { columns: 4; } }
+    @media (min-width: 1100px) { .gallery-grid { columns: 5; } }
+
+    .gi {
+      break-inside: avoid;
+      margin-bottom: 0.6rem;
+      position: relative;
+      cursor: pointer;
+      overflow: hidden;
+      border-radius: 3px;
+      border: 1px solid rgba(232,226,218,0.08);
+      transition: border-color 0.2s;
+    }
+    .gi:hover { border-color: rgba(242,198,42,0.45); }
+    .gi img {
+      display: block;
+      width: 100%;
+      height: auto;
+      transition: opacity 0.2s;
+    }
+    .gi:hover img { opacity: 0.88; }
+
+    /* ── In-page lightbox ── */
+    #gl {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.94);
+      z-index: 500;
+      align-items: center;
+      justify-content: center;
+    }
+    #gl.open { display: flex; }
+    #gl-img {
+      max-width: 92vw;
+      max-height: 88vh;
+      object-fit: contain;
+      border-radius: 2px;
+      display: block;
+    }
+    .gl-btn {
+      position: absolute;
+      background: transparent;
+      border: none;
+      color: var(--light);
+      font-size: 2rem;
+      cursor: pointer;
+      opacity: 0.6;
+      transition: opacity 0.15s;
+      line-height: 1;
+      padding: 0.3em 0.5em;
+      user-select: none;
+    }
+    .gl-btn:hover { opacity: 1; }
+    #gl-close { top: 0.5rem; right: 0.75rem; font-size: 1.4rem; }
+    #gl-prev  { left: 0.25rem; top: 50%; transform: translateY(-50%); }
+    #gl-next  { right: 0.25rem; top: 50%; transform: translateY(-50%); }
+    #gl-count {
+      position: absolute;
+      bottom: 0.75rem;
+      left: 50%;
+      transform: translateX(-50%);
+      font-family: 'Walter Turncoat', cursive;
+      font-size: 0.85rem;
+      color: var(--light);
+      opacity: 0.5;
+    }
+  </style>
+</head>
+<body>
+
+<nav class="gallery-nav">
+  <div class="gallery-nav-links">
+    <a href="../../index.html" target="_top">Home</a>
+    <a href="../../content.html" target="_top">Library</a>
+  </div>
+  <span class="gallery-nav-title">Burner Gallery</span>
+  <div style="flex:1"></div><!-- balance spacer -->
+</nav>
+
+<main class="gallery-main">
+  <div class="gallery-grid" id="gallery-grid">
+      <figure class="gi" data-idx="0"><img src="Burner-gallery/jl-site-gallery-burner_1.webp" alt="" loading="lazy"></figure>
+      <figure class="gi" data-idx="1"><img src="Burner-gallery/jl-site-gallery-burner_2.webp" alt="" loading="lazy"></figure>
+      <figure class="gi" data-idx="2"><img src="Burner-gallery/jl-site-gallery-burner_3.webp" alt="" loading="lazy"></figure>
+      <figure class="gi" data-idx="3"><img src="Burner-gallery/jl-site-gallery-burner_4.webp" alt="" loading="lazy"></figure>
+      <figure class="gi" data-idx="4"><img src="Burner-gallery/jl-site-gallery-burner_5.webp" alt="" loading="lazy"></figure>
+      <figure class="gi" data-idx="5"><img src="Burner-gallery/jl-site-gallery-burner_6.webp" alt="" loading="lazy"></figure>
+      <figure class="gi" data-idx="6"><img src="Burner-gallery/jl-site-gallery-burner_7.webp" alt="" loading="lazy"></figure>
+      <figure class="gi" data-idx="7"><img src="Burner-gallery/jl-site-gallery-burner_8.webp" alt="" loading="lazy"></figure>
+      <figure class="gi" data-idx="8"><img src="Burner-gallery/jl-site-gallery-burner_9.webp" alt="" loading="lazy"></figure>
+      <figure class="gi" data-idx="9"><img src="Burner-gallery/jl-site-gallery-burner_10.webp" alt="" loading="lazy"></figure>
+      <figure class="gi" data-idx="10"><img src="Burner-gallery/jl-site-gallery-burner_11.webp" alt="" loading="lazy"></figure>
+      <figure class="gi" data-idx="11"><img src="Burner-gallery/jl-site-gallery-burner_12.webp" alt="" loading="lazy"></figure>
+      <figure class="gi" data-idx="12"><img src="Burner-gallery/jl-site-gallery-burner_13.webp" alt="" loading="lazy"></figure>
+      <figure class="gi" data-idx="13"><img src="Burner-gallery/jl-site-gallery-burner_14.webp" alt="" loading="lazy"></figure>
+      <figure class="gi" data-idx="14"><img src="Burner-gallery/jl-site-gallery-burner_15.webp" alt="" loading="lazy"></figure>
+      <figure class="gi" data-idx="15"><img src="Burner-gallery/jl-site-gallery-burner_16.webp" alt="" loading="lazy"></figure>
+      <figure class="gi" data-idx="16"><img src="Burner-gallery/jl-site-gallery-burner_17.webp" alt="" loading="lazy"></figure>
+  </div>
+</main>
+
+<!-- In-page lightbox -->
+<div id="gl" role="dialog" aria-modal="true" aria-label="Image viewer">
+  <button class="gl-btn" id="gl-close" aria-label="Close">&#x2715;</button>
+  <button class="gl-btn" id="gl-prev"  aria-label="Previous">&#8249;</button>
+  <img id="gl-img" src="" alt="">
+  <button class="gl-btn" id="gl-next"  aria-label="Next">&#8250;</button>
+  <span id="gl-count"></span>
+</div>
+
+<script>
+(function () {
+  const items = Array.from(document.querySelectorAll('.gi'));
+  const lb    = document.getElementById('gl');
+  const img   = document.getElementById('gl-img');
+  const cnt   = document.getElementById('gl-count');
+  let cur = 0;
+
+  function show(idx) {
+    cur = (idx + items.length) % items.length;
+    const src = items[cur].querySelector('img').src;
+    img.src = src;
+    cnt.textContent = (cur + 1) + ' / ' + items.length;
+  }
+
+  function open(idx) {
+    show(idx);
+    lb.classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function close() {
+    lb.classList.remove('open');
+    document.body.style.overflow = '';
+    setTimeout(() => { img.src = ''; }, 200);
+  }
+
+  items.forEach((el, i) => el.addEventListener('click', () => open(i)));
+
+  document.getElementById('gl-close').addEventListener('click', close);
+  document.getElementById('gl-prev').addEventListener('click', () => show(cur - 1));
+  document.getElementById('gl-next').addEventListener('click', () => show(cur + 1));
+
+  lb.addEventListener('click', e => { if (e.target === lb) close(); });
+
+  document.addEventListener('keydown', e => {
+    if (!lb.classList.contains('open')) return;
+    if (e.key === 'ArrowLeft')  show(cur - 1);
+    if (e.key === 'ArrowRight') show(cur + 1);
+    if (e.key === 'Escape')     close();
+  });
+})();
+</script>
+</body>
+</html>

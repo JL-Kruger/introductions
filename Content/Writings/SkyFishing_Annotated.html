@@ -1,0 +1,1106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sky Fishing — Annotated</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Estonia&family=Lora:ital,wght@0,400;0,500;1,400;1,500&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  /* Sky palette — pre-dawn to gold */
+  --sky-deep:    #0d1a2e;
+  --sky-mid:     #1a3050;
+  --sky-blue:    #2a5080;
+  --sky-pale:    #4a7aaa;
+  --horizon:     #8ab4d4;
+  --haze:        #c2d8ec;
+  --cloud:       #f0f4f8;
+
+  /* Warm dawn / document */
+  --dawn:        #faf6ee;
+  --dawn-mid:    #f2eadb;
+  --dawn-dark:   #e4d8c4;
+  --ink:         #1a160e;
+  --ink-mid:     #3e3428;
+  --ink-light:   #7a6a58;
+  --ink-muted:   #a09080;
+
+  /* Accents */
+  --gold:        #c49028;
+  --gold-light:  #e0b040;
+  --gold-dim:    rgba(196,144,40,0.15);
+  --violet:      #7048a8;
+  --violet-light:#9060d0;
+  --violet-dim:  rgba(112,72,168,0.14);
+  --sky-accent:  #3870b0;
+
+  --radius: 3px;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'Lora', Georgia, serif;
+  /* Dawn sky gradient */
+  background: linear-gradient(
+    170deg,
+    var(--sky-deep) 0%,
+    var(--sky-mid) 25%,
+    var(--sky-blue) 50%,
+    #6090b8 70%,
+    #a8c4dc 85%,
+    #d4e4f0 100%
+  );
+  background-attachment: fixed;
+  color: var(--ink);
+  font-size: 18px;
+  line-height: 1.82;
+  min-height: 100vh;
+}
+
+/* ── SITE HEADER ── */
+.site-header {
+  padding: 4.5rem 2rem 4rem;
+  text-align: center;
+  position: relative;
+}
+
+/* Cloud suggestion behind the title */
+.site-header::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse at 50% 60%, rgba(240,244,248,0.12) 0%, transparent 60%),
+    radial-gradient(ellipse at 30% 40%, rgba(196,144,40,0.06) 0%, transparent 45%);
+  pointer-events: none;
+}
+
+.header-eyebrow {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.6rem;
+  letter-spacing: 0.4em;
+  text-transform: uppercase;
+  color: var(--horizon);
+  margin-bottom: 1.2rem;
+  position: relative;
+  opacity: 0.85;
+}
+
+.site-title {
+  font-family: 'Estonia', serif;
+  font-size: clamp(2.4rem, 7vw, 5rem);
+  font-weight: 700;
+  font-style: italic;
+  color: var(--dawn);
+  letter-spacing: 0.02em;
+  line-height: 1;
+  position: relative;
+  text-shadow:
+    0 2px 24px rgba(196,144,40,0.25),
+    0 0 80px rgba(13,26,46,0.4);
+}
+
+.header-ornament {
+  color: var(--gold);
+  font-size: 1rem;
+  letter-spacing: 0.6em;
+  margin: 1rem 0 0.6rem;
+  opacity: 0.6;
+  position: relative;
+}
+
+.site-subtitle {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.62rem;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: var(--haze);
+  opacity: 0.65;
+  position: relative;
+}
+
+/* ── NAVIGATION ── */
+.nav-bar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: rgba(13,26,46,0.92);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid rgba(74,122,170,0.3);
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+.nav-btn {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.63rem;
+  font-weight: 500;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgba(194,216,236,0.5);
+  background: none;
+  border: none;
+  border-right: 1px solid rgba(74,122,170,0.2);
+  padding: 0.85rem 1.7rem;
+  cursor: pointer;
+  transition: color 0.15s, background 0.15s;
+  position: relative;
+  white-space: nowrap;
+}
+.nav-btn:last-child { border-right: none; }
+.nav-btn:hover { color: var(--haze); background: rgba(255,255,255,0.03); }
+.nav-btn.active { color: var(--dawn); }
+.nav-btn.active::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 2px;
+  background: var(--gold);
+}
+
+/* ── MAIN ── */
+.main-content {
+  max-width: 780px;
+  margin: 0 auto;
+  padding: 3rem 1.75rem 7rem;
+}
+.tab-content { display: none; }
+.tab-content.active { display: block; }
+
+/* ══════════════════════════════════════
+   THE DOCUMENT — cloud floating in sky
+══════════════════════════════════════ */
+.document-wrap {
+  background: var(--dawn);
+  color: var(--ink);
+  box-shadow:
+    0 0 0 1px rgba(196,144,40,0.1),
+    0 4px 12px rgba(13,26,46,0.15),
+    0 20px 60px rgba(13,26,46,0.25),
+    0 40px 120px rgba(13,26,46,0.15);
+}
+
+.document-inner {
+  padding: 3.5rem 3.5rem 4rem;
+}
+
+@media (max-width: 600px) {
+  .document-inner { padding: 2rem 1.5rem 2.5rem; }
+}
+
+/* Document header */
+.doc-title-area {
+  text-align: center;
+  margin-bottom: 3rem;
+  padding-bottom: 2rem;
+  border-bottom: 1px solid var(--dawn-dark);
+}
+.doc-overline {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.57rem;
+  letter-spacing: 0.38em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+  margin-bottom: 0.9rem;
+}
+.doc-title {
+  font-family: 'Estonia', serif;
+  font-size: clamp(1.7rem, 4.5vw, 2.6rem);
+  font-weight: 700;
+  font-style: italic;
+  color: var(--ink);
+  line-height: 1.1;
+  margin-bottom: 0.5rem;
+}
+.doc-note {
+  font-family: 'Lora', serif;
+  font-size: 0.88rem;
+  font-style: italic;
+  color: var(--ink-light);
+}
+
+/* Scene break */
+.scene-break {
+  text-align: center;
+  color: var(--gold);
+  font-size: 0.9rem;
+  letter-spacing: 0.5rem;
+  margin: 2rem 0;
+  opacity: 0.5;
+}
+
+/* Timeline labels — Past / Present */
+.timeline-label {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.58rem;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  display: inline-block;
+  padding: 0.18em 0.6em;
+  border-radius: 2px;
+  margin-bottom: 0.7rem;
+}
+.timeline-past {
+  background: var(--gold-dim);
+  color: var(--gold);
+  border: 1px solid rgba(196,144,40,0.25);
+}
+.timeline-present {
+  background: var(--violet-dim);
+  color: var(--violet);
+  border: 1px solid rgba(112,72,168,0.25);
+}
+
+/* Story prose */
+.story-body p {
+  margin-bottom: 1.25em;
+  text-align: justify;
+  hyphens: auto;
+  color: var(--ink);
+  font-size: 1rem;
+  line-height: 1.85;
+}
+
+/* First letter on opening paragraph only */
+.story-open::first-letter {
+  font-family: 'Estonia', serif;
+  font-size: 3.8em;
+  font-weight: 700;
+  float: left;
+  line-height: 0.76;
+  margin: 0.08em 0.1em 0 0;
+  color: var(--sky-accent);
+}
+
+/* Closing */
+.doc-closing {
+  margin-top: 2.5rem;
+  padding-top: 1.6rem;
+  border-top: 1px solid var(--dawn-dark);
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.72rem;
+  color: var(--ink-muted);
+  letter-spacing: 0.05em;
+}
+.doc-closing p { margin-bottom: 0.3em; }
+.doc-challenge-title {
+  font-size: 0.6rem;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: var(--sky-accent);
+  margin-bottom: 0.5rem;
+}
+.doc-closing a { color: var(--sky-accent); text-decoration: none; }
+.doc-closing a:hover { text-decoration: underline; }
+.author-note {
+  margin-top: 0.8rem;
+  font-style: italic;
+  font-family: 'Lora', serif;
+  font-size: 0.87rem;
+  color: var(--ink-light);
+  border-left: 2px solid var(--dawn-dark);
+  padding-left: 0.8rem;
+}
+
+/* ── DECODER ── */
+.decoder { display: inline; position: relative; }
+
+.decoder-trigger {
+  font-family: inherit; font-size: inherit;
+  font-style: inherit; font-weight: inherit;
+  background: none; border: none; padding: 0;
+  cursor: pointer;
+  color: var(--gold);
+  border-bottom: 1.5px dotted var(--gold);
+  display: inline;
+  transition: color 0.12s;
+}
+.decoder-trigger::after {
+  content: ' ▾';
+  font-size: 0.62em;
+  vertical-align: middle;
+  color: var(--gold-light);
+  font-style: normal;
+}
+.decoder-trigger.open::after { content: ' ▴'; }
+.decoder-trigger:hover { color: var(--ink-mid); }
+.decoder-trigger.open { border-bottom-style: solid; border-bottom-width: 2px; }
+
+.decoder-panel {
+  display: none;
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  z-index: 500;
+  width: 315px;
+  background: var(--sky-deep);
+  border: 1px solid rgba(74,122,170,0.4);
+  border-top: 3px solid var(--gold);
+  border-radius: var(--radius);
+  padding: 0.9rem 1rem;
+  box-shadow: 0 10px 40px rgba(13,26,46,0.55);
+  font-family: 'Lora', Georgia, serif;
+  font-size: 0.83rem;
+  line-height: 1.6;
+  color: var(--haze);
+  text-align: left;
+  font-style: normal;
+  font-weight: 400;
+}
+.decoder-panel.open { display: block; }
+.decoder-panel.flip-left { left: auto; right: 0; }
+
+.decode-label {
+  display: block;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.57rem;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--gold-light);
+  margin-bottom: 0.1rem;
+}
+.decode-term {
+  display: block;
+  font-family: 'Estonia', serif;
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--dawn);
+  margin-bottom: 0.35rem;
+  border-bottom: 1px solid rgba(74,122,170,0.3);
+  padding-bottom: 0.25rem;
+}
+.decode-link {
+  display: block;
+  margin-top: 0.42rem;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.6rem;
+  color: var(--horizon);
+  text-decoration: none;
+  letter-spacing: 0.04em;
+}
+.decode-link:hover { text-decoration: underline; color: var(--dawn); }
+
+/* ── LIGHTBOX TRIGGER ── */
+.lb-trigger {
+  font-family: inherit; font-size: inherit;
+  font-style: inherit; font-weight: inherit;
+  background: none; border: none; padding: 0;
+  cursor: pointer;
+  color: var(--ink-mid);
+  border-bottom: 1.5px dashed var(--violet);
+  display: inline;
+  transition: color 0.12s;
+}
+.lb-trigger::before {
+  content: '◈ ';
+  font-size: 0.6em;
+  vertical-align: middle;
+  color: var(--violet);
+  font-style: normal;
+}
+.lb-trigger:hover { color: var(--ink); }
+
+/* ── LIGHTBOX ── */
+.lightbox-overlay {
+  display: none; position: fixed; inset: 0;
+  background: rgba(8,14,24,0.88);
+  z-index: 1000;
+  align-items: center; justify-content: center;
+  padding: 1.5rem;
+  backdrop-filter: blur(6px);
+}
+.lightbox-overlay.open { display: flex; }
+
+.lightbox-box {
+  background: var(--sky-mid);
+  border: 1px solid rgba(74,122,170,0.4);
+  border-top: 3px solid var(--violet);
+  border-radius: var(--radius);
+  max-width: 645px; width: 100%;
+  max-height: 88vh; overflow-y: auto;
+  box-shadow: 0 24px 80px rgba(8,14,24,0.7);
+}
+.lightbox-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 1rem 1.3rem 0.8rem;
+  border-bottom: 1px solid rgba(74,122,170,0.3);
+}
+.lightbox-title {
+  font-family: 'Estonia', serif;
+  font-size: 1rem;
+  font-weight: 600;
+  font-style: italic;
+  color: var(--dawn);
+}
+.lightbox-close {
+  background: none;
+  border: 1px solid rgba(74,122,170,0.3);
+  border-radius: var(--radius);
+  width: 26px; height: 26px;
+  cursor: pointer;
+  color: var(--horizon);
+  font-size: 0.75rem;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+  transition: background 0.12s, color 0.12s;
+}
+.lightbox-close:hover { background: rgba(74,122,170,0.2); color: var(--dawn); }
+
+.lightbox-body {
+  padding: 1.3rem;
+  font-family: 'Lora', serif;
+  font-size: 0.91rem;
+  line-height: 1.73;
+  color: var(--haze);
+}
+.lightbox-body h3 {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.58rem;
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  color: var(--violet-light);
+  margin: 1.2rem 0 0.4rem;
+  padding-bottom: 0.25rem;
+  border-bottom: 1px solid rgba(74,122,170,0.25);
+}
+.lightbox-body h3:first-child { margin-top: 0; }
+.lightbox-body p { margin-bottom: 0.72em; }
+.lightbox-body p:last-child { margin-bottom: 0; }
+.lightbox-body a { color: var(--horizon); font-size: 0.85rem; }
+.lightbox-body a:hover { color: var(--dawn); }
+.lightbox-body em { font-style: italic; color: var(--cloud); }
+
+/* ══════════════════════════════════════
+   EDUCATIONAL TABS
+══════════════════════════════════════ */
+.section-header { margin-bottom: 2.2rem; }
+.section-eyebrow {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.58rem;
+  letter-spacing: 0.42em;
+  text-transform: uppercase;
+  color: var(--horizon);
+  margin-bottom: 0.5rem;
+  opacity: 0.8;
+}
+.section-title {
+  font-family: 'Estonia', serif;
+  font-size: clamp(1.7rem, 5vw, 2.8rem);
+  font-weight: 700;
+  font-style: italic;
+  color: var(--dawn);
+  line-height: 1.1;
+}
+.section-intro {
+  margin-top: 0.9rem;
+  color: var(--haze);
+  font-size: 0.93rem;
+  line-height: 1.67;
+  max-width: 540px;
+  border-left: 2px solid rgba(74,122,170,0.35);
+  padding-left: 1rem;
+  font-family: 'Lora', serif;
+}
+
+/* ── ACCORDION ── */
+.accordion-item {
+  border: 1px solid rgba(74,122,170,0.25);
+  border-radius: var(--radius);
+  margin-bottom: 0.4rem;
+  background: rgba(26,48,80,0.6);
+  backdrop-filter: blur(4px);
+  overflow: hidden;
+}
+.accordion-trigger {
+  width: 100%; background: none; border: none;
+  padding: 0.9rem 1.1rem;
+  text-align: left; cursor: pointer;
+  display: flex; justify-content: space-between; align-items: center; gap: 1rem;
+  font-family: 'Lora', serif;
+  font-size: 0.93rem;
+  font-style: italic;
+  color: var(--haze);
+  transition: background 0.12s, color 0.12s;
+  border-left: 3px solid transparent;
+  line-height: 1.4;
+}
+.accordion-trigger:hover { background: rgba(74,122,170,0.12); }
+.accordion-trigger.open {
+  background: rgba(74,122,170,0.15);
+  color: var(--cloud);
+  border-left-color: var(--gold);
+}
+.accordion-arrow {
+  transition: transform 0.2s; flex-shrink: 0;
+  color: rgba(194,216,236,0.4);
+  font-size: 0.72rem; font-style: normal;
+}
+.accordion-trigger.open .accordion-arrow { transform: rotate(180deg); color: var(--gold); }
+
+.accordion-panel {
+  display: none;
+  padding: 1rem 1.1rem 1.1rem 1.4rem;
+  font-family: 'Lora', serif;
+  font-size: 0.91rem;
+  line-height: 1.75;
+  border-top: 1px solid rgba(74,122,170,0.2);
+  color: var(--haze);
+}
+.accordion-panel.open { display: block; }
+.accordion-panel p { margin-bottom: 0.7em; }
+.accordion-panel p:last-child { margin-bottom: 0; }
+.accordion-panel a { color: var(--horizon); }
+.accordion-panel a:hover { color: var(--dawn); }
+.accordion-panel em { font-style: italic; color: var(--cloud); }
+.accordion-panel strong { color: var(--cloud); font-weight: 600; }
+
+/* ── FURTHER READING ── */
+.reading-group-title {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.57rem;
+  letter-spacing: 0.38em;
+  text-transform: uppercase;
+  color: rgba(194,216,236,0.45);
+  margin: 2.2rem 0 0.7rem;
+  padding-bottom: 0.3rem;
+  border-bottom: 1px solid rgba(74,122,170,0.25);
+}
+.reading-item {
+  padding: 0.65rem 0;
+  border-bottom: 1px solid rgba(74,122,170,0.15);
+  display: flex; align-items: baseline; gap: 0.6rem; flex-wrap: wrap;
+}
+.reading-item a { font-weight: 500; color: var(--horizon); text-decoration: none; font-size: 0.91rem; font-family: 'Lora', serif; }
+.reading-item a:hover { text-decoration: underline; color: var(--cloud); }
+.reading-desc { color: rgba(194,216,236,0.45); font-size: 0.84rem; font-style: italic; flex: 1 1 200px; font-family: 'Lora', serif; }
+.reading-tag {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.56rem; letter-spacing: 0.12em; text-transform: uppercase;
+  background: rgba(26,48,80,0.8); color: rgba(194,216,236,0.5);
+  border: 1px solid rgba(74,122,170,0.25);
+  padding: 0.1em 0.45em; border-radius: var(--radius); white-space: nowrap;
+}
+
+@media (max-width: 580px) {
+  .nav-btn { padding: 0.7rem 0.9rem; font-size: 0.58rem; }
+  .site-title { font-size: 2.2rem; }
+  .decoder-panel { width: 260px; }
+  .main-content { padding: 1.5rem 0.85rem 3rem; }
+  body { font-size: 16px; }
+}
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="header-eyebrow">★ &nbsp; above garen's peak, before harvest &nbsp; ★</div>
+  <h1 class="site-title">Sky Fishing</h1>
+  <div class="header-ornament">— ✦ —</div>
+  <div class="site-subtitle">An Annotated Reading &nbsp;·&nbsp; Two Mornings, Ten Years Apart</div>
+</header>
+
+<nav class="nav-bar">
+  <button class="nav-btn active" onclick="switchTab('tab-story', this)">The Story</button>
+  <button class="nav-btn" onclick="switchTab('tab-structure', this)">The Two Timelines</button>
+  <button class="nav-btn" onclick="switchTab('tab-craft', this)">The Craft</button>
+  <button class="nav-btn" onclick="switchTab('tab-reading', this)">Further Reading</button>
+</nav>
+
+<main class="main-content">
+
+<!-- ════════════════════════════════════════════════════════════
+     TAB 1 — THE STORY
+═════════════════════════════════════════════════════════════ -->
+<div id="tab-story" class="tab-content active">
+  <div class="document-wrap">
+    <div class="document-inner">
+
+      <div class="doc-title-area">
+        <div class="doc-overline">A story of self-discovery in two voices</div>
+        <div class="doc-title">Sky Fishing</div>
+        <div class="doc-note">Originally published on renegadestoryteller.tumblr.com</div>
+      </div>
+
+      <div class="story-body">
+
+        <div class="timeline-label timeline-past">Past — Ahri, age 8</div>
+        <p class="story-open"><span class="decoder" id="dec-patience"><button class="decoder-trigger" onclick="toggleDecoder('dec-patience', this)">"Patience, missy"</button><span class="decoder-panel"><span class="decode-label">The Refrain</span><span class="decode-term">Three Words, Two Speakers</span>This phrase opens both timelines. Gumpo says it to a bored eight-year-old. Ten years later, Ahri says it to herself, for an entirely different reason. The repetition is the story's central mechanism: the same words carry opposite emotional weight depending on who needs to hear them. The first time, patience is an instruction. The second time, it is self-counsel in the face of genuine danger.</span></span> the old man said. He was talking to the eight year old girl who was standing with her arms folded, staring at the thin line of red on the horizon that marked the coming sunrise. It was a brisk morning just before harvest time and the two were waiting on a cloud the old man had conjured. The girl had always liked playing in the clouds, but this time she wasn't allowed to. Every time she did anything, the old man would shush her and tell her to sit still, two things that eight year olds have a hard time doing. Several angry squeaks erupted from the bucket they had brought with them; it was probably just two <span class="decoder" id="dec-weebles"><button class="decoder-trigger" onclick="toggleDecoder('dec-weebles', this)">weebles</button><span class="decoder-panel"><span class="decode-label">Live Ammunition</span><span class="decode-term">Weebles — The Challenge Requirement, Elegantly Met</span>The writing challenge required "live ammunition (as in alive and living)." Weebles are the story's answer: small, green, imp-like creatures with a talent for latching on and a rich emotional life — they argue, take offence, develop loyalties, and choose their own exit words. They function as bait, as fishing line, as safety net, and eventually as companions. The challenge requirement is not merely fulfilled; it is built into the story's mechanics so naturally that a reader would never guess it was an external constraint.</span></span> getting into an argument. Nonetheless, the old man threw some homemade toffees into the bucket and it soon fell silent.</p>
+
+        <p>"Ahri, do us a favour and start hitching up them weebles," said the old man softly, "The mist'll start a-comin' soon."</p>
+
+        <p>The sound of her name pulled the little girl from her daydreams. The thought of wrestling with weebles didn't particularly appeal to her, but it was better than sitting still.</p>
+
+        <p>"Yes, <span class="decoder" id="dec-gumpo"><button class="decoder-trigger" onclick="toggleDecoder('dec-gumpo', this)">Gumpo</button><span class="decoder-panel"><span class="decode-label">The Wizard</span><span class="decode-term">Gumpo — The Challenge Requirement, Disguised</span>The challenge required a wizard. Gumpo is one — he conjures clouds, enchants cannons, and calls on the Eternals in a crisis. But the author presents him as a folksy, toffee-making grandfather whose magic is so embedded in his ordinary life that it barely registers as remarkable. "Gumpo" was Ahri's childhood mispronunciation of "grandpa," which he never corrected because he liked it too much. He is both the wizard of the piece and its most warmly human figure.</span></span>," she pipped, and hopped to it. The old man smiled; Gumpo had been her name for him since she first started talking – he had liked it so much that he had never bothered to teach her to say grandpa properly.</p>
+
+        <p>Ahri was glad when she opened up the bucket and found that the weebles still had their mouths busy with the toffee. At least the little green, imp-like creatures wouldn't bite her while she tied lengths of fishing line to their ankles. She had been bitten no less than eight times yesterday when she was catching them; weeble bites were harmless, but they still hurt. By the time she had finished hitching weebles, the sun had fully emerged and was sitting on the horizon casting a golden, radiant light over the mountains and forests that stretched out below them.</p>
+
+        <p>"There it is, see," whispered Gumpo as he pointed to the mist that had started rising out of the forest. Ahri walked over to her grandfather. She couldn't see why he was so excited, it was just mist.</p>
+
+        <p>"My, my, it's a big'un today," Gumpo said, almost awestruck, "You're gonna have a hell of a mornin' missy. Just keep an eye out for storm clouds."</p>
+
+        <div class="scene-break">✦</div>
+
+        <div class="timeline-label timeline-present">Present — Ahri, age 18</div>
+        <p>"Patience, missy." she said to herself in the same tone that Gumpo had used. Back then, he had said it because she was bored. Today though, she said it to calm her nerves and quell the waves of anxious anticipation that flooded through her. Ten years ago she had stood on a cloud, much like the one she was on now, irritated because she couldn't understand why they had to get up so early and then spend hours just sitting quietly. She realised now that the waiting was possibly the best part. The air was always completely still, and everything was at peace in the moments before a shoal passed through. It was a calm unlike any other, because once you knew what was coming, you couldn't help but get excited.</p>
+
+        <p>Today was different though. The calm that now surrounded the eighteen year old girl as she watched the sun rise was the calm that comes before a storm. She had spotted the dark clouds in the west and she knew instantly that it was the storm that she had feared for so long. She had instantly run inside to get her fishing bag and Gumpo's old staff and had rushed here to her favourite spot, above <span class="decoder" id="dec-garen"><button class="decoder-trigger" onclick="toggleDecoder('dec-garen', this)">Garen's Peak</button><span class="decoder-panel"><span class="decode-label">World-Building</span><span class="decode-term">Named Places — The World Behind the Story</span>Garen's Peak is one of several details — alongside the Magekin, the Eternals, the annual suntail migration — that suggest a fully realised world exists behind the story. These names are never explained or overloaded with backstory; they are offered the way a local would mention them, assuming familiarity. The effect is a world that feels inhabited rather than invented. The author's instinct here is exactly right: the names do their work by being specific and moving on.</span></span>. <span class="decoder" id="dec-gammet"><button class="decoder-trigger" onclick="toggleDecoder('dec-gammet', this)">Gammet</button><span class="decoder-panel"><span class="decode-label">The Household</span><span class="decode-term">Gammet — The Other Guardian</span>Gammet appears only in references: she will be proud, she will be angry about the undone chores, she makes Tuggemberry Tea. She is clearly Gumpo's partner and Ahri's other grandparent figure — the domestic anchor to Gumpo's adventurous magic. The story sketches her in absences and reactions rather than presence, which is precisely the right weight for a character who isn't in the scene but whose opinion matters to the protagonist.</span></span> would be angry that she had left her chores undone, but Ahri had decided that this was something she had to do. She had to face the oncoming storm today, lest she fear it for the rest of her life.</p>
+
+        <p>Thunder rumbled, deep and ominous, in the west. Ahri looked back and saw the towering mass of flashing, grumbling greyness that had once been her nightmare. It was headed east; it looked slow, but in truth it was blisteringly fast and nigh unstoppable.</p>
+
+        <p>Goldtooth was coming, and the only thing standing in his way was an eighteen year old girl with <span class="decoder" id="dec-violet"><button class="decoder-trigger" onclick="toggleDecoder('dec-violet', this)">violet eyes</button><span class="decoder-panel"><span class="decode-label">The Mark</span><span class="decode-term">Violet Eyes — The Magekin</span>Violet eyes are the mark of the Magekin — a lineage of people whose capacity for magic frightens those who don't share it. The village won't let Ahri attend school because of her eyes. Gumpo and Gammet have the same eyes; so did Ahri's mother. The amulet reflects those eyes back at Ahri twice: once at eight, once at eighteen. In the final scene, Goldtooth's eye is the same colour. The implication is quiet but clear: Ahri's "terrifying" quality is also the quality she shares with the most powerful creature in existence.</span></span> named Ahri.</p>
+
+        <div class="scene-break">✦</div>
+
+        <div class="timeline-label timeline-past">Past — Ahri, age 8</div>
+        <p>It had been almost an hour since Gumpo had pointed out the rising mist. Nothing had happened and so Ahri was once again bored and irritable. She sat now with her feet dangling over the edge of the cloud, staring at the large gold amulet that she held in her hands. According to <span class="decoder" id="dec-amulet"><button class="decoder-trigger" onclick="toggleDecoder('dec-amulet', this)">the amulet</button><span class="decoder-panel"><span class="decode-label">The Through-Line</span><span class="decode-term">The Amulet — Physical Object as Story Engine</span>The amulet is the story's only material through-line across both timelines. At eight: ugly, carried because it's the only thing recovered from the fire, a heirloom she doesn't value. At ten: lost in Goldtooth's teeth. At eighteen: the reason she climbs onto a living storm. The amulet's journey — from "a little ugly" to worth risking death for — mirrors Ahri's own. She doesn't retrieve it because it's precious. She retrieves it because facing Goldtooth is something she has to do. The amulet is the excuse; the confrontation is the point.</span></span>, Ahri's father had given it to her mother on their wedding day; apparently it was a tradition of sorts in the family. Ahri didn't really care about its history though, she thought it was a little ugly but she carried it around because it was the only other thing they could find when they pulled her from the ashes of her home. She didn't remember the fire, she was too young. She turned over the amulet and saw her violet eyes reflected in the shining gold. Gumpo and Gammet had violet eyes too, and so did their daughter, Ahri's mother. Gumpo said it was <span class="decoder" id="dec-magekin"><button class="decoder-trigger" onclick="toggleDecoder('dec-magekin', this)">the mark of the Magekin</button><span class="decoder-panel"><span class="decode-label">The Lineage</span><span class="decode-term">The Magekin — Magic as Inheritance</span>The Magekin appear to be a lineage or people for whom magic is natural and heritable — passed through blood, visible in the eyes. The village fears the violet eyes because they signal something they cannot understand or control. The story doesn't explain the Magekin further; it doesn't need to. What matters is that Ahri's "strangeness" is a family trait, a gift from parents she lost too young to remember, and the same quality she sees in Goldtooth's enormous eye at the story's end.</span></span>, but Ahri had no idea what that meant; she just knew the colour of her eyes used to scare the folk in the village so much that it meant she would never go to school.</p>
+
+        <p>"Put that away," came Gumpo's voice, "Hear that?"</p>
+
+        <p>"Hear what?" the little girl asked.</p>
+
+        <p>"Listen," her grandfather told her, "They're singing."</p>
+
+        <p>Little Ahri tilted her head toward the mist and held her breath in hopes of better hearing. It was soft, but growing louder; a kind of orchestra of crooning and cooing, punctuated with lazy sounding squawks. It was the chorus of several thousand <button class="lb-trigger" onclick="openLightbox('lb-suntails')">skyfish, suntails to be precise, rising up in unison to greet the new morning</button> after a night spent in the safety of the forest. It was an annual migration of north to south for the suntails, also known as sky fishing season.</p>
+
+        <p>"Get your cannon, missy, or you'll miss out all the fun," said Gumpo, who seemed years younger in all his excitement, "That shoal's mighty quick; they'll be gone in no time."</p>
+
+        <p>Ahri did as she was told and picked up one of the tube-like contraptions that lay beside the bucket of hitched weebles. Hers was the newer of the two; Gumpo had spent the whole week carving and enchanting it. She had then decorated it with lots of little drawings in bright colours. Gumpo's was more ornate and, according to Ahri, angry looking.</p>
+
+        <p>Gumpo was right. Ahri had only just squealed in delight as she spotted the first few suntails dipping in and out of the mist, the gold tufts at the ends of their long tails glittering in the morning light, when the entire shoal burst forth and began swarming onwards and upwards, straight for the little cloud on which she stood. When she saw the shoal in all its gleaming might, the little girl dropped her cannon and hid behind her Gumpo, clutching his cloak.</p>
+
+        <p>"It's alright child," he said to her over the chorus of suntails that was fast becoming deafening, "We're too small for them to notice. Now get your cannon and fetch us some weebles."</p>
+
+        <p>She ran to the bucket and stuck her hand in, too scared to worry about the three bites it received as she grabbed hold of two kicking and scratching little devils. She was shaking from head to toe when she handed a weeble to her Gumpo and stuffed the other down the barrel of her cannon. She watched as Gumpo wrapped the fishing line attached to his weeble's ankle twice around his hand, never taking his eyes off the approaching skyfish. She did the same and pointed the cannon straight at the suntails. She no longer knew the difference between scared and excited, but she didn't quite care about that at the moment; she couldn't even remember what it felt like to be bored.</p>
+
+        <p>"Steady there, Ahri," came Gumpo's voice, "Wait for 'em to break round us. They're still too far off."</p>
+
+        <div class="scene-break">✦</div>
+
+        <div class="timeline-label timeline-present">Present — Ahri, age 18</div>
+        <p>Ahri stood with her eyes closed, letting the howling wind rush over her. Strangely enough, all her nervousness and anxiety had disappeared. She was calm. She heard the roar and knew that it wasn't thunder.</p>
+
+        <p>"Steady there, Ahri," she said as tendrils of fear threatened to cripple her once again. The storm was so close now that she could smell the water in the air, but her eyes remained shut; until she was within the maelstrom, she did not want to give herself the chance to run from this. Droplets of rainwater started to form on her face and she remained still. Soon she was soaked to the bone, her usually wavy brown hair now sodden and bedraggled. She did not move.</p>
+
+        <p>Lightning struck her cloud. She felt the heat of the bolt as it violently ripped through the air with a crack that made her ears ring. Her violet eyes flashed open and she found herself in the midst of chaos, looking out at thick, black, rolling clouds, flashing and churning on all sides.</p>
+
+        <p>She heard the roar once more. It was not thunder.</p>
+
+        <div class="scene-break">✦</div>
+
+        <div class="timeline-label timeline-past">Past — Ahri, age 8</div>
+        <p>The shoal of suntails broke apart when it reached the little cloud, only to converge again on the other side and surround the old man and his granddaughter in a sea of gleaming skyfish. Ahri decided then and there that they were beautiful, and ridiculously quick. The sound of their multi-coloured wings drowned out everything else, even their song.</p>
+
+        <p>Gumpo tapped her on the shoulder and pointed his cannon upward, clearly telling her to watch what he did. He took aim and yelled "BANG!" The cannon jettisoned the weeble into the shoal, the fishing line trailing from its ankle. Ahri could have sworn she heard the creature go "Weeeeeeeeee!" as it soared into the thunderous stream of wings and tails. A second later the line pulled tight as the weeble latched on to the only thing that it thought would prevent it from plummeting back to earth. Gumpo pulled on the line and hauled the weeble back to the cloud while it still clutched the struggling suntail. Once back on the cloud, the weeble decided to take offence at the skyfish for some reason and refused to let it go. Gumpo laughed and turned to the little girl, signalling that it was her turn to try.</p>
+
+        <p>Ahri closed her eyes and shouted "BANG!" Her weeble definitely went "Woohoo!" and for a second she thought that she had missed when the line suddenly went tight and nearly pulled her off the cloud. Naturally, she screamed like any sensible eight year old would.</p>
+
+        <p>"It's alright, missy, I got you!" she heard her Gumpo shout as he caught her around the waist. Somehow, she hadn't let go of the line and Gumpo had to help her haul her catch in. It was huge, almost five times bigger than Gumpo's and it kept trying to get away so Gumpo tipped the whole bucket of weebles on the creature.</p>
+
+        <p>"That'll keep 'em occupied till the shoal passes," he said, "No need to catch any more."</p>
+
+        <p>He turned to the little girl who was staring at her catch with a terribly confusing mixture of shock, awe and fascination. He tapped her lightly on the shoulder and indicated that they should sit down. Their work was done.</p>
+
+        <p>"Gammet's gonna be so proud of you," he said as she stared out at the shoal with newfound appreciation, "You done good, missy. Mighty good."</p>
+
+        <p>Ahri lay down on her back and pulled out her amulet. She wondered if Mama and Papa would be proud of her too. She couldn't quite put a word to what she was feeling. The closest she could manage was <em>crazyfun</em>. For some reason, it felt colder now; a droplet of water formed on the tip of her nose.</p>
+
+        <p>Gumpo suddenly stood up and peered out towards the back end of the shoal.</p>
+
+        <p>"Storm clouds," he said. He looked over to his granddaughter, worried.</p>
+
+        <p>Ahri heard a roar. It wasn't thunder.</p>
+
+        <p><button class="lb-trigger" onclick="openLightbox('lb-goldtooth')">The suntails suddenly scattered as a gigantic beast broke through the cumulus and descended upon them.</button></p>
+
+        <div class="scene-break">✦</div>
+
+        <div class="timeline-label timeline-present">Present — Ahri, age 18</div>
+        <p>Ahri watched as the beast glided towards her. Gumpo's farmhouse would have sat comfortable on its back and each of its wings stretched out as long as its entire body, which, from horned snout to spiked tail, was roughly the same length as Gumpo's farm. Nonetheless, Ahri could not help but admire the grace with which it soared through the air.</p>
+
+        <p>These creatures were so big, and so terrifying, that no one had ever thought to give the species a name. This one was called Goldtooth. Legend had it that if you ever got close enough, you could see the armour of the knights it had devoured, still stuck in his teeth. Myths of that kind always followed these creatures, some people even said that they breathed fire. Ahri knew the truth of Goldtooth's legend though and it was the exactly the reason she was standing on a cloud, in the middle of a storm, waiting for him to fly by.</p>
+
+        <div class="scene-break">✦</div>
+
+        <div class="timeline-label timeline-past">Past — Ahri, age 8</div>
+        <p>The last thing the little girl had heard was her grandfather calling her name. The next thing she saw was a set of enormous, pointy teeth breaking through the bottom of their little cloud. She was suddenly and violently pulled into the sky as a tooth twice her size caught hold of her coat. She heard a thud and what sounded like screams as the beast's jaws clamped shut, sucking hundreds of suntails down its gullet. She was outside the beast's mouth, dangling over the abyss, terrified that her coat would rip. Her terrified cries for her Gumpo were lost to the rushing wind, but that didn't stop her from screaming.</p>
+
+        <p>She saw the fleeing shoal draw near and felt her stomach leap into her throat as the mammoth jaws opened again, sending her hurtling downwards, only to rise again, just as fast as the beast took in another mouthful of skyfish.</p>
+
+        <p>"Ahri!" came her Gumpo's voice, "Hang in there, child!"</p>
+
+        <p>She looked out and saw him racing alongside them, his one hand holding out his staff and the other clutching her brightly coloured cannon. She would have been happy to see him, if he didn't look so scared.</p>
+
+        <p>"Ahri honey!" he yelled over the rushing wind, "I ain't gonna let anything happen to you, okay? But I'm gonna need you to take off your coat!"</p>
+
+        <p>"But I'll fall!" was all the little girl could manage before the jaws opened again.</p>
+
+        <p>When she rose again she was crying.</p>
+
+        <p>"Gumpo, I can't!" she yelled through her tears.</p>
+
+        <p>"Yes you can, darlin'!" he replied, but his eyes said otherwise, "It's alright! I'll catch you! I promise!"</p>
+
+        <p>With shaking hands, and through petrified sobs, the little girl slowly undid the buttons of her coat. The last one popped open and she fell. She didn't even have time to scream.</p>
+
+        <p>The old man watched as his granddaughter hurtled towards the ground. He aimed the cannon carefully and <button class="lb-trigger" onclick="openLightbox('lb-bang')">cried "BANG!" sending the weeble racing after her.</button> He gripped hold of the line and prayed to the <span class="decoder" id="dec-eternals"><button class="decoder-trigger" onclick="toggleDecoder('dec-eternals', this)">Eternals</button><span class="decoder-panel"><span class="decode-label">The Divine</span><span class="decode-term">The Eternals — Prayer in a Crisis</span>"He prayed to the Eternals" is the only moment of explicit religious feeling in the story, and it arrives at the highest-stakes moment: Gumpo watching his granddaughter fall. The Eternals are not explained and need no explanation. Their function is to establish that this world has a spiritual dimension without specifying its theology. The casual use of the prayer — one clause, barely a sentence — is exactly how genuine belief surfaces in people: not ceremonially, but in emergencies.</span></span> that it would pull tight. It did.</p>
+
+        <p>Ahri felt the tiny claws dig into her ankle and before she knew it, she was swinging instead of falling. When she reached the cloud again she grabbed hold of her Gumpo and refused to let go until they were both back in the farmhouse and Gammet had made her a large mug of <span class="decoder" id="dec-tuggemberry"><button class="decoder-trigger" onclick="toggleDecoder('dec-tuggemberry', this)">Tuggemberry Tea</button><span class="decoder-panel"><span class="decode-label">The Detail That Does Everything</span><span class="decode-term">Tuggemberry Tea — Domestic Safety</span>After the most terrifying sequence in the story — dangling from a monster's tooth, falling, caught by a weeble — the first thing that happens is Gammet makes tea. The invented name does two things at once: it signals that this is not our world (no real berry called a tuggemberry), and it carries all the warmth of the ordinary domestic world that Ahri is fighting to hold onto. Safety, in this story, tastes like tea with an invented name.</span></span>. It wasn't until the next day that she realised Mama's amulet was gone.</p>
+
+        <div class="scene-break">✦</div>
+
+        <div class="timeline-label timeline-present">Present — Ahri, age 18</div>
+        <p>Ahri saw her mother's amulet for the first time in ten years, still stuck in the beast's teeth, as it passed over her head. She raised her grandfather's old staff and sent her cloud racing after it. She drew alongside Goldtooth's immense head and hurled a few fireballs at him; they achieved nothing. Ahri had expected that, but it was worth a try anyway, even if it was only to calm her nerves for what she was really planning on doing.</p>
+
+        <p>She pulled the old, brightly coloured cannon out of her fishing bag, along with a particularly stubborn weeble. Since he had gripped her ankle all those years ago, he had refused to let her out of his sight. He happily climbed into the cannon and chose "Geronimo!" as his exit word (she had taught him several). Ahri saw him latch onto a scale on Goldtooth's immense neck and felt the line pull tight in her hands. She jumped.</p>
+
+        <p>For a second she was falling, but then she was swinging, all the way round until she landed awkwardly on the beast's neck. She whistled and waited for her weeble to come back and sit on her shoulder. He tittered unintelligibly when she said something about extra toffee.</p>
+
+        <p>Rain pelted her as she slipped on several scales, making her way toward Goldtooth's snout. She had almost forgotten about the storm. She reached the crest of his head and climbed over it, jumping the last few feet until she finally looked into a gleaming violet eye that was as large as she was tall.</p>
+
+        <p>"Oy!" she yelled, "I want to have a word with you! Now stop!"</p>
+
+        <p>Goldtooth had noticed her at least. She saw his pupil constrict and felt him lurch upwards. They burst through the top of the clouds into the light and calm of dawn. Ahri assumed that Goldtooth wanted a better look at his breakfast.</p>
+
+        <p>"I said STOP!" She punctuated that last word with a blast of red light from Gumpo's staff; harmless really, but bright.</p>
+
+        <p>Surprisingly, the beast obeyed, stopping so suddenly that she flew off the front of his snout and had to cast a cloud to catch herself. At least she had his attention. He held himself up in mid-air, beating his powerful wings slowly and watching this miniscule little thing that had almost blinded him. Ahri looked up at the beast that had lived in her nightmares for so long and was no longer afraid. To her at least, it seemed as though Goldtooth was… Curious. The weeble on her shoulder grumbled; he was rubbing his tiny little eyes, trying to get the black spots to go away. Goldtooth tilted his head, as if to say, "Well then, I'm listening."</p>
+
+        <p>"Look, I'm not here to hurt you or hunt you, okay?" Ahri said, wondering how tiny her voice must sound to him, "You've got something of mine in your teeth, and I'd like to get it back, if you don't mind."</p>
+
+        <p>The gargantuan creature snorted; it almost knocked her off her cloud. Obviously, he thought he had better things to do than to bend to the will of little things.</p>
+
+        <p>"Hey!" she shouted, accompanied by another flash of light. Goldtooth was all ears once again.</p>
+
+        <p>"I just want you to say aaaaah!"</p>
+
+        <p>The beast took her advice a little too seriously, opening his mouth and bellowing with such force that, for the second time in one morning, Ahri's ears rang.</p>
+
+        <p>"Now, don't close your mouth until you see me again, alright?" she said, before lowering her cloud to the very same tooth that she had once fallen off of. The amulet glinted in the sunlight, the bizarre truth of Goldtooth's legend, lodged in the gap between gum and fang. It took a little effort to wiggle the heirloom free, but she managed. Goldtooth groaned; he sounded bored. Ahri decided it was best not to hang around inside his mouth any longer and rose up back into his line of sight. The beast closed his mouth and regarded her with that same ageless curiosity.</p>
+
+        <p>"Thanks," she said and <button class="lb-trigger" onclick="openLightbox('lb-ending')">extended her hand to touch his snout, suddenly realising that she was petting the most feared creature in existence.</button> She smiled at the thought. Gumpo would be proud.</p>
+
+        <p>Goldtooth snorted again, but gently this time, before descending back into his storm.</p>
+
+        <p>Ahri looked down at her mother's amulet. She turned it over and saw her reflection. The face that greeted her wasn't a little girl's. She was older, wiser and a lot more fun these days. Certainly a lot less scared. She noticed that her eyes were the same colour as Goldtooth's. The folks in the village were scared of violet eyes, said they were evil. They weren't. Of course, what would villagers know about anything they didn't understand? They were far too small to notice.</p>
+
+      </div><!-- .story-body -->
+
+      <div class="doc-closing">
+        <p class="doc-challenge-title">◈ &nbsp;The Challenge</p>
+        <p><strong>Challenger:</strong> Anonymous</p>
+        <p><strong>Tell Me a Story About:</strong> Self-discovery. | <strong>Genre:</strong> Fantasy | <strong>Style:</strong> Any style. | <strong>It Must Have:</strong> 1) Live ammunition (as in alive and living). 2) A wizard. 3) An alien world | <strong>Someone must say:</strong> "Did you think this was the only one?" | <strong>Anything Else?</strong> NO VAMPIRES!!!</p>
+        <div class="author-note"><strong>Author's note:</strong> So I finished the story and realised I had forgotten about what someone must say but I couldn't find a place to put it without hurting the story. Sorry Anonymous, but I still hope you like the story as much as I do. JL</div>
+      </div>
+
+    </div><!-- .document-inner -->
+  </div><!-- .document-wrap -->
+</div><!-- #tab-story -->
+
+
+<!-- ════════════════════════════════════════════════════════════
+     TAB 2 — THE TWO TIMELINES
+═════════════════════════════════════════════════════════════ -->
+<div id="tab-structure" class="tab-content">
+
+  <div class="section-header">
+    <div class="section-eyebrow">Structure</div>
+    <div class="section-title">Two Mornings,<br>Ten Years Apart</div>
+    <p class="section-intro">The story is built from seven interleaved sections — four in the past, three in the present — each past section illuminating the present one that follows it. The structure is the argument: who Ahri is now can only be understood by seeing who she was then.</p>
+  </div>
+
+  <div class="accordion-item">
+    <button class="accordion-trigger" onclick="toggleAccordion(this)">
+      <span class="accordion-trigger-text">How the interleaving works — each past section prepares its present echo</span>
+      <span class="accordion-arrow">▾</span>
+    </button>
+    <div class="accordion-panel">
+      <p>The story cuts between Ahri at eight and Ahri at eighteen across seven sections. The structure is not random alternation; each past section is placed to give the reader exactly what they need to understand the present section that follows.</p>
+      <p>The first past section establishes sky fishing — the weebles, the cannon, Gumpo's character, the ritual of the early morning wait — before the first present section reveals that Ahri now does this alone, and that today is not routine. The second past section introduces the amulet, the Magekin, and Ahri's lost parents — before the second present section delivers Goldtooth. The reader has been given the history of the amulet just before they learn it is still in the beast's teeth.</p>
+      <p>By the final parallel — young Ahri falling, Gumpo firing the weeble, the catch — the present-day sequence (Ahri jumping onto Goldtooth's neck, the weeble who still hasn't left her ankle) is not a mirror of the past so much as its answer. She is doing, alone and by choice, what ten years ago she survived only with Gumpo's help. The structure makes the achievement visible without a single word of explanation.</p>
+    </div>
+  </div>
+
+  <div class="accordion-item">
+    <button class="accordion-trigger" onclick="toggleAccordion(this)">
+      <span class="accordion-trigger-text">The refrain — "Patience, missy" and "Steady there, Ahri"</span>
+      <span class="accordion-arrow">▾</span>
+    </button>
+    <div class="accordion-panel">
+      <p>Two phrases cross the timeline divide, each carrying different weight on either side of the ten-year gap.</p>
+      <p><strong>"Patience, missy"</strong> opens both narratives. Gumpo says it to a bored child. Ahri says it to herself on a storm-battered cloud, alone. The phrase has transformed from instruction to self-counsel — Ahri has internalised Gumpo's voice and deploys it at the moment she most needs it.</p>
+      <p><strong>"Steady there, Ahri"</strong> operates the same way. Gumpo says it during the approach of the suntail shoal, when Ahri is struggling to tell fear from excitement. Ahri repeats it to herself as Goldtooth's storm closes in, when the same confusion of emotions threatens to break her nerve. The echo is precise: both moments are the threshold before something enormous and overwhelming arrives. Gumpo's instruction has become her own steadying voice.</p>
+      <p>Together, these refrains are the story's structural spine. They show, without stating, that Gumpo's teaching has been absorbed — that the girl who couldn't sit still has become the woman who stands still in a lightning storm.</p>
+    </div>
+  </div>
+
+  <div class="accordion-item">
+    <button class="accordion-trigger" onclick="toggleAccordion(this)">
+      <span class="accordion-trigger-text">What the past sections do that the present cannot</span>
+      <span class="accordion-arrow">▾</span>
+    </button>
+    <div class="accordion-panel">
+      <p>The present-day Ahri is eighteen, competent, and understands what she is doing. Her sections are relatively brisk — she has a plan, she executes it, she adapts. But stripped of the past sections, her confrontation with Goldtooth would have no emotional depth. We would know she was brave; we would not know what the bravery cost her.</p>
+      <p>The past sections carry the fear. The eight-year-old who drops her cannon and hides behind Gumpo, the child dangling from a tooth over empty sky, crying through the unbuttoning of her coat — these are the experiences that made Goldtooth a nightmare. The present-day Ahri's calm is only remarkable because the reader has seen what she is calm <em>about</em>.</p>
+      <p>The past sections also carry the love. Gumpo's warmth — the toffees, the pride, the cannon fired in terror toward his falling granddaughter — establishes exactly what Ahri is carrying with her onto the storm. She brings his staff, his cannon, his weeble, his phrases. She is facing her nightmare with the equipment and the voice of the person who first made her face it.</p>
+    </div>
+  </div>
+
+</div><!-- #tab-structure -->
+
+
+<!-- ════════════════════════════════════════════════════════════
+     TAB 3 — THE CRAFT
+═════════════════════════════════════════════════════════════ -->
+<div id="tab-craft" class="tab-content">
+
+  <div class="section-header">
+    <div class="section-eyebrow">Technique</div>
+    <div class="section-title">The World and<br>the Challenge</div>
+    <p class="section-intro">Three of four challenge requirements are embedded so naturally that they disappear into the story. One is honestly, apologetically absent. The gap between them is instructive.</p>
+  </div>
+
+  <div class="accordion-item">
+    <button class="accordion-trigger" onclick="toggleAccordion(this)">
+      <span class="accordion-trigger-text">The challenge requirements — three met, one missing, and why it matters</span>
+      <span class="accordion-arrow">▾</span>
+    </button>
+    <div class="accordion-panel">
+      <p>The challenge required four things beyond the central premise: live ammunition, a wizard, an alien world, and a required line — "Did you think this was the only one?"</p>
+      <p><strong>Live ammunition:</strong> Weebles. Met entirely. The weebles are not merely a gimmick; they are functional characters with personalities, loyalties, preferred exit words, and grudges against skyfish. The requirement is fulfilled so thoroughly that the reader never thinks of it as a constraint.</p>
+      <p><strong>A wizard:</strong> Gumpo. Met through understatement — he conjures clouds, enchants cannons, and prays to the Eternals. His magic is presented as an unremarkable feature of a life lived with it, not as a set of powers to catalogue. This is the right instinct.</p>
+      <p><strong>An alien world:</strong> Met by implication rather than exposition. The story never announces that this is not Earth; it simply populates its world with suntails, weebles, Tuggemberry Tea, the Magekin, and the Eternals, and trusts the reader to understand they are somewhere else. The alien world is the one whose details the story trusts itself not to explain.</p>
+      <p><strong>The required line:</strong> Absent. The author's note is direct about this: "I finished the story and realised I had forgotten." The line doesn't appear. The author tried to find a place for it and couldn't without damaging the story, so they left it out and apologised. This is the correct decision and the honest response. A required line that doesn't belong is worse than a missing one; the author's instinct to protect the story over fulfilling the constraint is, in retrospect, an early sign of exactly the kind of judgment the story itself is about.</p>
+    </div>
+  </div>
+
+  <div class="accordion-item">
+    <button class="accordion-trigger" onclick="toggleAccordion(this)">
+      <span class="accordion-trigger-text">World-building by texture — what isn't explained</span>
+      <span class="accordion-arrow">▾</span>
+    </button>
+    <div class="accordion-panel">
+      <p>The story introduces Garen's Peak, the Magekin, the Eternals, Tuggemberry Tea, the annual suntail migration, and a species so large it has no name — and explains none of them. This is not vagueness; it is a deliberate technique. The world feels real not because it is described but because its inhabitants treat it as given.</p>
+      <p>Gumpo does not explain the Magekin to Ahri as though she is a reader who needs context. He mentions it as an old, already-known fact: "Gumpo said it was the mark of the Magekin, but Ahri had no idea what that meant." Ahri's ignorance of the term is not a prompt for exposition. The story moves on. The reader feels the depth without being handed the lore.</p>
+      <p>Tuggemberry Tea is the smallest example and the most effective. It is a single invented word dropped into a sentence about aftermath and safety. It asks nothing of the reader except to understand that tea exists in this world, warm and restorative as anywhere. The invented name does the alien-world work; the warmth does the emotional work. Both happen in three syllables.</p>
+    </div>
+  </div>
+
+  <div class="accordion-item">
+    <button class="accordion-trigger" onclick="toggleAccordion(this)">
+      <span class="accordion-trigger-text">The self-discovery arc — what changes and what stays</span>
+      <span class="accordion-arrow">▾</span>
+    </button>
+    <div class="accordion-panel">
+      <p>The challenge prompt was "self-discovery," and the story delivers it structurally rather than thematically — no character announces what they have learned; the learning is enacted.</p>
+      <p>At eight, Ahri is defined by movement and noise: she can't sit still, she squeals, she screams, she yells, she cries, she shakes. At eighteen, she stands motionless in a lightning storm with her eyes closed, letting the rain soak her to the bone. The child has learned — through Gumpo's patient instruction and ten years of living with a nightmare — that stillness is not passivity. It is preparation.</p>
+      <p>What stays constant is the courage under the fear. At eight, Ahri puts her hand into the bucket despite three bites, fires the cannon despite shaking, and unbuttons her coat despite every instinct. At eighteen, she jumps onto a living storm. The bravery has not been manufactured; it has been present all along. What the story shows us is its development: from a child who is brave because she doesn't fully understand the danger, to a young woman who is brave because she understands it completely and goes anyway.</p>
+      <p>The final image — Ahri's reflection in the amulet, older and less scared, noting that her eyes are the same colour as Goldtooth's — is the self-discovery arriving as recognition rather than revelation. She has not become someone new. She has become more fully herself.</p>
+    </div>
+  </div>
+
+  <div class="accordion-item">
+    <button class="accordion-trigger" onclick="toggleAccordion(this)">
+      <span class="accordion-trigger-text">The weeble who stayed — loyalty as structural detail</span>
+      <span class="accordion-arrow">▾</span>
+    </button>
+    <div class="accordion-panel">
+      <p>When Ahri falls from Goldtooth's tooth at eight, a weeble grips her ankle and saves her life. In the present-day timeline, that same weeble is still with her: "Since he had gripped her ankle all those years ago, he had refused to let her out of his sight." He chooses "Geronimo!" as his exit word. He rubs his eyes after the blinding flash. He grumbles about toffee.</p>
+      <p>This detail does a great deal of quiet work. It establishes continuity — the ten-year gap is bridged not just by Ahri's memory but by a living creature who was there and stayed. It makes the world feel inhabited by genuine relationships rather than convenient props. And it gives the most chaotic and violent moment in the past timeline — Gumpo firing the weeble at a falling child — a retroactive warmth: that weeble chose to stay.</p>
+      <p>The weeble's name is never given. He tittered unintelligibly. He has his opinions about toffee. He is, somehow, one of the most fully realised characters in the piece — through two paragraphs of detail across ten years of story.</p>
+    </div>
+  </div>
+
+</div><!-- #tab-craft -->
+
+
+<!-- ════════════════════════════════════════════════════════════
+     TAB 4 — FURTHER READING
+═════════════════════════════════════════════════════════════ -->
+<div id="tab-reading" class="tab-content">
+
+  <div class="section-header">
+    <div class="section-eyebrow">Resources</div>
+    <div class="section-title">Further<br>Reading</div>
+    <p class="section-intro">The traditions this story moves within, and the questions it opens.</p>
+  </div>
+
+  <div class="reading-group-title">Coming of Age in Fantasy</div>
+  <div class="reading-item">
+    <a href="https://en.wikipedia.org/wiki/Bildungsroman" target="_blank">Bildungsroman (Wikipedia)</a>
+    <span class="reading-desc">The literary tradition of the coming-of-age story — the form Sky Fishing inhabits, compressed into a single morning and its echo ten years later.</span>
+    <span class="reading-tag">Literature</span>
+  </div>
+  <div class="reading-item">
+    <a href="https://en.wikipedia.org/wiki/A_Wizard_of_Earthsea" target="_blank">A Wizard of Earthsea — Ursula K. Le Guin</a>
+    <span class="reading-desc">The definitive coming-of-age fantasy, and the clearest literary ancestor of a story about a young magic-user discovering the shape of their own courage.</span>
+    <span class="reading-tag">Fiction</span>
+  </div>
+
+  <div class="reading-group-title">World-Building Technique</div>
+  <div class="reading-item">
+    <a href="https://en.wikipedia.org/wiki/Secondary_world" target="_blank">Secondary World (Wikipedia)</a>
+    <span class="reading-desc">Tolkien's term for a fully realised fictional world — and the technique of building it by implication rather than exposition.</span>
+    <span class="reading-tag">Craft</span>
+  </div>
+  <div class="reading-item">
+    <a href="https://en.wikipedia.org/wiki/Show,_don%27t_tell" target="_blank">Show, Don't Tell (Wikipedia)</a>
+    <span class="reading-desc">The principle Sky Fishing applies to world-building: Tuggemberry Tea, the Magekin, the Eternals — all shown in passing, none explained.</span>
+    <span class="reading-tag">Craft</span>
+  </div>
+
+  <div class="reading-group-title">Dual Timeline Narrative</div>
+  <div class="reading-item">
+    <a href="https://en.wikipedia.org/wiki/Anachrony" target="_blank">Anachrony / Non-linear narrative (Wikipedia)</a>
+    <span class="reading-desc">The technical term for the story's structural method — interleaving two time periods so that each illuminates the other.</span>
+    <span class="reading-tag">Craft</span>
+  </div>
+  <div class="reading-item">
+    <a href="https://en.wikipedia.org/wiki/The_God_of_Small_Things" target="_blank">The God of Small Things — Arundhati Roy</a>
+    <span class="reading-desc">A celebrated example of the dual-timeline structure — past and present in constant dialogue, the full meaning available only when both are held together.</span>
+    <span class="reading-tag">Fiction</span>
+  </div>
+
+  <div class="reading-group-title">The Challenge Form</div>
+  <div class="reading-item">
+    <a href="https://en.wikipedia.org/wiki/Constrained_writing" target="_blank">Constrained Writing (Wikipedia)</a>
+    <span class="reading-desc">The tradition of writing produced under externally imposed constraints — from the Oulipo to writing-challenge Tumblr communities, and what constraints do to creative problem-solving.</span>
+    <span class="reading-tag">Craft</span>
+  </div>
+
+</div><!-- #tab-reading -->
+
+</main>
+
+
+<!-- ════════════════════════════════════════════════════════════
+     LIGHTBOXES
+═════════════════════════════════════════════════════════════ -->
+
+<div class="lightbox-overlay" id="lb-suntails" onclick="closeLightboxOnOverlay(event, 'lb-suntails')">
+  <div class="lightbox-box">
+    <div class="lightbox-header">
+      <span class="lightbox-title">Suntails — The World's Most Important Detail</span>
+      <button class="lightbox-close" onclick="closeLightbox('lb-suntails')">✕</button>
+    </div>
+    <div class="lightbox-body">
+      <h3>What they are</h3>
+      <p>Suntails are skyfish: creatures that live in the air rather than water, migrate annually, travel in enormous shoals, and sing as they rise to greet the morning. Their gold-tufted tails glitter in sunlight. Their multi-coloured wings drown out everything else, including their own song, when the full shoal is in flight. They are beautiful, terrifyingly quick, and entirely uninterested in the small creatures on small clouds below them.</p>
+      <h3>What they do for the story</h3>
+      <p>The suntails are sky fishing's equivalent of the fish — the annual event that makes the skill worth having, the reason Gumpo wakes Ahri before dawn and teaches her patience. But they also set the scale of the world. A shoal of several thousand creatures that blocks the sky establishes, before Goldtooth ever appears, that this is a world where enormous things are possible. Goldtooth's arrival at the end of the shoal is the punchline of a scale joke that the suntails set up.</p>
+      <h3>The alien world requirement</h3>
+      <p>Skyfish travelling in annual shoals through the air, caught with enchanted cannons loaded with live bait: this single invention fulfils the challenge's "alien world" requirement more completely than any amount of landscape description. The world is alien because its ecology is alien — because fish swim through air, because a small green imp-creature is the appropriate tool for catching one, because a grandfather and an eight-year-old spend a morning above the clouds waiting for the migration. The suntails establish all of this in a single scene.</p>
+    </div>
+  </div>
+</div>
+
+<div class="lightbox-overlay" id="lb-goldtooth" onclick="closeLightboxOnOverlay(event, 'lb-goldtooth')">
+  <div class="lightbox-box">
+    <div class="lightbox-header">
+      <span class="lightbox-title">Goldtooth — The Nightmare That Has a Name</span>
+      <button class="lightbox-close" onclick="closeLightbox('lb-goldtooth')">✕</button>
+    </div>
+    <div class="lightbox-body">
+      <h3>The creature</h3>
+      <p>The species is so large and so terrifying that no one has ever given it a name. This individual is called Goldtooth — a name that implies someone got close enough to check his teeth and lived to name him. His farmhouse-on-his-back scale, his storm-generating presence, and the legend of devoured knights are all established in a single paragraph before eight-year-old Ahri encounters him.</p>
+      <h3>The legend versus the truth</h3>
+      <p>Goldtooth is surrounded by myth: armour in his teeth, possible fire-breathing, the general category of "so terrifying no one named the species." The truth of Goldtooth's legend, as Ahri knows it, is simpler and stranger: a small girl's mother's amulet, lost when a tooth caught a coat ten years ago, is still lodged in his teeth. The legend of the world's most terrifying creature contains, as its factual core, a piece of lost family jewellery. The story quietly deflates the myth without diminishing the creature — Goldtooth remains enormous and real and dangerous. He is simply also curious.</p>
+      <h3>The violet eye</h3>
+      <p>When Ahri finally looks Goldtooth in the eye, his eye is violet — the same colour as hers, and her mother's, and Gumpo's. The Magekin mark, which the villagers fear as a sign of evil, is the colour of the most powerful creature in existence. The story makes this observation and moves on. It does not press the point. It trusts the reader to understand that Ahri's "strangeness" places her in a particular category of being — and that the villagers, as she says, are "far too small to notice."</p>
+    </div>
+  </div>
+</div>
+
+<div class="lightbox-overlay" id="lb-bang" onclick="closeLightboxOnOverlay(event, 'lb-bang')">
+  <div class="lightbox-box">
+    <div class="lightbox-header">
+      <span class="lightbox-title">The Cannon — One Object, Three Moments</span>
+      <button class="lightbox-close" onclick="closeLightbox('lb-bang')">✕</button>
+    </div>
+    <div class="lightbox-body">
+      <h3>Gumpo demonstrates</h3>
+      <p>The first "BANG!" is Gumpo showing Ahri how it's done: confident, precise, experienced. The weeble may or may not have said "Weeeeeeee!" — Ahri thinks she heard it. This is sky fishing as craft, passed from teacher to student.</p>
+      <h3>Ahri's first shot</h3>
+      <p>The second "BANG!" is Ahri following the lesson: eyes closed, shouting the word, nearly pulled off the cloud by the result. Her catch is five times larger than Gumpo's. She screams. Gumpo catches her. The cannon works the first time she uses it, better than she expected. This is the moment that will define her relationship with the skill — she is, immediately and accidentally, exceptional at it.</p>
+      <h3>Gumpo fires at a falling child</h3>
+      <p>The third "BANG!" is the same cannon, fired by a terrified old man at his granddaughter plummeting toward the ground. The technique is identical: aim, fire, hold the line, pray. The weeble catches her. The same tool used for joy becomes the tool used for survival. This is why the cannon reappears in Ahri's fishing bag ten years later — it is both the instrument of the lesson and the instrument of her rescue. She brings it to face Goldtooth not just because it works, but because of everything it means.</p>
+    </div>
+  </div>
+</div>
+
+<div class="lightbox-overlay" id="lb-ending" onclick="closeLightboxOnOverlay(event, 'lb-ending')">
+  <div class="lightbox-box">
+    <div class="lightbox-header">
+      <span class="lightbox-title">Petting the Most Feared Creature in Existence</span>
+      <button class="lightbox-close" onclick="closeLightbox('lb-ending')">✕</button>
+    </div>
+    <div class="lightbox-body">
+      <h3>The image</h3>
+      <p>Ahri reaches out and touches Goldtooth's snout — and then notices what she is doing. "Suddenly realising that she was petting the most feared creature in existence." The realisation arrives <em>after</em> the gesture. She doesn't decide to pet the monster; she is already doing it when she notices.</p>
+      <h3>What it shows</h3>
+      <p>This is the story's final measurement of how far Ahri has come. At eight, she drops her cannon at the sight of a suntail shoal and hides behind Gumpo. At eighteen, she absentmindedly pats the most feared creature in existence and smiles at the thought. The fear is not gone — she chose to face it today precisely because it was still real — but it has been replaced, at the moment of contact, with something that reads as simple affection.</p>
+      <h3>Gumpo would be proud</h3>
+      <p>The thought that follows — "Gumpo would be proud" — is the story's emotional close, arriving before the final image of the amulet. It positions the whole morning not as a solo achievement but as the completion of something begun with a grandfather on a different cloud, ten years ago. She carried his staff, his cannon, his weeble, and his phrases. The bravery is hers. The scaffolding was his.</p>
+    </div>
+  </div>
+</div>
+
+
+<script>
+  function switchTab(tabId, btn) {
+    document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById(tabId).classList.add('active');
+    btn.classList.add('active');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function toggleDecoder(id, btn) {
+    const wrapper = document.getElementById(id);
+    const panel = wrapper.querySelector('.decoder-panel');
+    const isOpen = panel.classList.contains('open');
+    document.querySelectorAll('.decoder-panel.open').forEach(p => p.classList.remove('open'));
+    document.querySelectorAll('.decoder-trigger.open').forEach(b => b.classList.remove('open'));
+    if (!isOpen) {
+      panel.classList.add('open');
+      btn.classList.add('open');
+      const rect = panel.getBoundingClientRect();
+      if (rect.right > window.innerWidth - 16) panel.classList.add('flip-left');
+      else panel.classList.remove('flip-left');
+    }
+  }
+
+  document.addEventListener('click', function(e) {
+    if (!e.target.closest('.decoder')) {
+      document.querySelectorAll('.decoder-panel.open').forEach(p => p.classList.remove('open'));
+      document.querySelectorAll('.decoder-trigger.open').forEach(b => b.classList.remove('open'));
+    }
+  });
+
+  function openLightbox(id) { document.getElementById(id).classList.add('open'); document.body.style.overflow = 'hidden'; }
+  function closeLightbox(id) { document.getElementById(id).classList.remove('open'); document.body.style.overflow = ''; }
+  function closeLightboxOnOverlay(e, id) { if (e.target === document.getElementById(id)) closeLightbox(id); }
+
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+      document.querySelectorAll('.lightbox-overlay.open').forEach(el => el.classList.remove('open'));
+      document.body.style.overflow = '';
+    }
+  });
+
+  function toggleAccordion(btn) {
+    const panel = btn.nextElementSibling;
+    const isOpen = btn.classList.contains('open');
+    document.querySelectorAll('.accordion-trigger.open').forEach(b => {
+      b.classList.remove('open');
+      b.nextElementSibling.classList.remove('open');
+    });
+    if (!isOpen) { btn.classList.add('open'); panel.classList.add('open'); }
+  }
+</script>
+</body>
+</html>

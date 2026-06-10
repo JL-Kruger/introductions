@@ -1,0 +1,1032 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>What We Get Wrong About Politics</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredericka+the+Great&family=Courier+Prime:ital,wght@0,400;0,700;1,400;1,700&family=Special+Elite&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0b0907;
+  --surface: #161210;
+  --surface2: #201a15;
+  --red: #b81a0a;
+  --red-bright: #e02010;
+  --ochre: #c89a2a;
+  --parchment: #ede8d8;
+  --parchment-dim: #a8a090;
+  --green: #2a5c2a;
+  --border: #2e2620;
+  --border-hot: #b81a0a;
+  --ink: #ede8d8;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: 'Courier Prime', 'Courier New', monospace;
+  font-size: 16px;
+  line-height: 1.75;
+  min-height: 100vh;
+  /* grain overlay */
+  position: relative;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.08'/%3E%3C/svg%3E");
+  background-size: 200px 200px;
+  pointer-events: none;
+  z-index: 9999;
+  opacity: 0.45;
+}
+
+/* ─── MASTHEAD ─── */
+.masthead {
+  border-bottom: 3px solid var(--red);
+  padding: 28px 32px 20px;
+  position: relative;
+  overflow: hidden;
+}
+
+.masthead::after {
+  content: '✊';
+  position: absolute;
+  right: 32px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 56px;
+  opacity: 0.07;
+}
+
+.masthead-label {
+  font-family: 'Fredericka the Great', sans-serif;
+  font-size: 11px;
+  letter-spacing: 0.35em;
+  color: var(--red);
+  margin-bottom: 6px;
+  text-transform: uppercase;
+}
+
+.masthead-title {
+  font-family: 'Fredericka the Great', sans-serif;
+  font-size: clamp(28px, 5vw, 52px);
+  line-height: 1;
+  letter-spacing: 0.04em;
+  color: var(--parchment);
+  text-transform: uppercase;
+}
+
+.masthead-meta {
+  margin-top: 10px;
+  font-size: 12px;
+  color: var(--parchment-dim);
+  font-style: italic;
+}
+
+.masthead-meta a {
+  color: var(--ochre);
+  text-decoration: none;
+}
+
+.masthead-meta a:hover { text-decoration: underline; }
+
+/* ─── TAB NAV ─── */
+.tab-nav {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: var(--bg);
+  border-bottom: 2px solid var(--border);
+  display: flex;
+  gap: 0;
+  overflow-x: auto;
+}
+
+.tab-nav::-webkit-scrollbar { height: 3px; background: var(--surface); }
+.tab-nav::-webkit-scrollbar-thumb { background: var(--red); }
+
+.tab-btn {
+  font-family: 'Fredericka the Great', sans-serif;
+  font-size: 14px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  padding: 14px 24px;
+  background: none;
+  border: none;
+  border-right: 1px solid var(--border);
+  color: var(--parchment-dim);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: color 120ms, background 120ms;
+  position: relative;
+}
+
+.tab-btn:hover { color: var(--parchment); background: var(--surface); }
+
+.tab-btn.active {
+  color: var(--red-bright);
+  background: var(--surface);
+}
+
+.tab-btn.active::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: var(--red);
+}
+
+/* ─── LAYOUT ─── */
+.page-wrap {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 40px 24px 80px;
+}
+
+.tab-content { display: none; }
+.tab-content.active { display: block; }
+
+/* ─── PROSE ─── */
+.prose h2 {
+  font-family: 'Fredericka the Great', sans-serif;
+  font-size: 26px;
+  letter-spacing: 0.08em;
+  color: var(--red-bright);
+  text-transform: uppercase;
+  margin: 40px 0 14px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--border);
+}
+
+.prose p {
+  margin-bottom: 18px;
+  color: var(--parchment);
+}
+
+.prose em { font-style: italic; color: var(--ochre); }
+
+.prose strong {
+  font-weight: 700;
+  color: var(--parchment);
+}
+
+.prose hr {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 36px 0;
+}
+
+/* sign-off */
+.sign-off {
+  font-style: italic;
+  color: var(--parchment-dim);
+  border-top: 1px solid var(--border);
+  padding-top: 20px;
+  margin-top: 32px;
+}
+
+/* ─── INLINE DECODER ─── */
+.decoder {
+  display: inline;
+  position: relative;
+}
+
+.decoder-trigger {
+  font-family: inherit;
+  font-size: inherit;
+  font-style: inherit;
+  background: none;
+  border: none;
+  border-bottom: 2px solid var(--red);
+  color: var(--ochre);
+  cursor: pointer;
+  padding: 0 2px;
+  line-height: inherit;
+  transition: color 100ms, background 100ms;
+}
+
+.decoder-trigger:hover {
+  color: var(--parchment);
+  background: rgba(184, 26, 10, 0.15);
+}
+
+.decoder-trigger::after {
+  content: '▾';
+  font-size: 10px;
+  margin-left: 2px;
+  color: var(--red);
+}
+
+.decoder-trigger.open::after { content: '▴'; }
+
+.decoder-panel {
+  display: none;
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  z-index: 500;
+  width: 310px;
+  background: var(--surface2);
+  border: 1px solid var(--red);
+  border-left: 4px solid var(--red);
+  padding: 14px 16px;
+  font-size: 13px;
+  line-height: 1.55;
+  color: var(--parchment);
+  /* xerox-worn corners — sharp */
+  clip-path: polygon(0 0, calc(100% - 6px) 0, 100% 6px, 100% 100%, 0 100%);
+}
+
+.decoder-panel.open { display: block; }
+.decoder-panel.flip-left { left: auto; right: 0; }
+
+.decode-label {
+  display: block;
+  font-family: 'Fredericka the Great', sans-serif;
+  font-size: 9px;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--red);
+  margin-bottom: 2px;
+}
+
+.decode-term {
+  display: block;
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--ochre);
+  margin-bottom: 8px;
+  font-family: 'Fredericka the Great', sans-serif;
+  letter-spacing: 0.06em;
+}
+
+.decode-link {
+  display: block;
+  margin-top: 10px;
+  color: var(--red);
+  font-size: 12px;
+  text-decoration: none;
+  font-style: italic;
+}
+
+.decode-link:hover { text-decoration: underline; }
+
+/* ─── LIGHTBOX TRIGGER ─── */
+.lb-trigger {
+  font-family: inherit;
+  font-size: inherit;
+  background: none;
+  border: none;
+  border-bottom: 2px dashed var(--ochre);
+  color: var(--parchment);
+  cursor: pointer;
+  padding: 0 2px;
+  line-height: inherit;
+  transition: background 100ms;
+}
+
+.lb-trigger:hover {
+  background: rgba(200, 154, 42, 0.12);
+}
+
+/* ─── YOUTUBE BLOCK ─── */
+.yt-block {
+  border: 1px solid var(--border);
+  border-left: 4px solid var(--red);
+  padding: 14px 18px;
+  margin: 24px 0;
+  background: var(--surface);
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+}
+
+.yt-icon {
+  font-size: 24px;
+  line-height: 1;
+  color: var(--red);
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.yt-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--ochre);
+  text-decoration: none;
+  display: block;
+}
+
+.yt-title:hover { text-decoration: underline; }
+
+.yt-channel {
+  font-size: 12px;
+  color: var(--parchment-dim);
+  margin-top: 4px;
+  font-style: italic;
+}
+
+/* ─── LIGHTBOX ─── */
+.lightbox-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.82);
+  z-index: 1000;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+.lightbox-overlay.open { display: flex; }
+
+.lightbox-box {
+  background: var(--surface);
+  border: 1px solid var(--red);
+  border-top: 4px solid var(--red);
+  max-width: 620px;
+  width: 100%;
+  max-height: 88vh;
+  overflow-y: auto;
+}
+
+.lightbox-box::-webkit-scrollbar { width: 4px; }
+.lightbox-box::-webkit-scrollbar-thumb { background: var(--red); }
+
+.lightbox-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  background: var(--surface);
+}
+
+.lightbox-title {
+  font-family: 'Fredericka the Great', sans-serif;
+  font-size: 18px;
+  letter-spacing: 0.1em;
+  color: var(--parchment);
+  text-transform: uppercase;
+}
+
+.lightbox-close {
+  background: none;
+  border: 1px solid var(--border);
+  color: var(--parchment-dim);
+  cursor: pointer;
+  padding: 4px 10px;
+  font-size: 14px;
+  font-family: 'Courier Prime', monospace;
+  transition: border-color 100ms, color 100ms;
+}
+
+.lightbox-close:hover { border-color: var(--red); color: var(--red); }
+
+.lightbox-body {
+  padding: 24px 20px;
+  font-size: 14px;
+  line-height: 1.7;
+  color: var(--parchment);
+}
+
+.lightbox-body h3 {
+  font-family: 'Fredericka the Great', sans-serif;
+  font-size: 16px;
+  letter-spacing: 0.1em;
+  color: var(--red-bright);
+  text-transform: uppercase;
+  margin: 20px 0 8px;
+}
+
+.lightbox-body h3:first-child { margin-top: 0; }
+
+.lightbox-body p { margin-bottom: 14px; }
+
+.lightbox-body a {
+  color: var(--ochre);
+  text-decoration: none;
+  font-style: italic;
+}
+
+.lightbox-body a:hover { text-decoration: underline; }
+
+/* ─── ACCORDION ─── */
+.acc-section-title {
+  font-family: 'Fredericka the Great', sans-serif;
+  font-size: 22px;
+  letter-spacing: 0.08em;
+  color: var(--red-bright);
+  text-transform: uppercase;
+  margin: 40px 0 16px;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 6px;
+}
+
+.accordion-item {
+  border-bottom: 1px solid var(--border);
+}
+
+.accordion-trigger {
+  width: 100%;
+  background: none;
+  border: none;
+  text-align: left;
+  padding: 16px 0;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  color: var(--parchment);
+  transition: color 100ms;
+}
+
+.accordion-trigger:hover { color: var(--ochre); }
+.accordion-trigger.open { color: var(--ochre); }
+
+.accordion-trigger-text {
+  font-family: 'Courier Prime', monospace;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.4;
+}
+
+.accordion-arrow {
+  font-size: 14px;
+  color: var(--red);
+  flex-shrink: 0;
+  transition: transform 150ms;
+}
+
+.accordion-trigger.open .accordion-arrow { transform: rotate(180deg); }
+
+.accordion-panel {
+  display: none;
+  padding: 0 0 18px 16px;
+  border-left: 2px solid var(--red);
+  font-size: 14px;
+  line-height: 1.7;
+  color: var(--parchment);
+}
+
+.accordion-panel.open { display: block; }
+
+.accordion-panel p { margin-bottom: 12px; }
+.accordion-panel p:last-child { margin-bottom: 0; }
+
+.accordion-panel a {
+  color: var(--ochre);
+  text-decoration: none;
+  font-style: italic;
+}
+.accordion-panel a:hover { text-decoration: underline; }
+
+/* ─── FURTHER READING ─── */
+.reading-group-title {
+  font-family: 'Fredericka the Great', sans-serif;
+  font-size: 16px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--red);
+  margin: 32px 0 12px;
+  border-top: 1px solid var(--border);
+  padding-top: 20px;
+}
+
+.reading-group-title:first-of-type { margin-top: 16px; border-top: none; padding-top: 0; }
+
+.reading-item {
+  border-bottom: 1px solid var(--border);
+  padding: 14px 0;
+}
+
+.reading-item a {
+  font-weight: 700;
+  color: var(--ochre);
+  text-decoration: none;
+  font-size: 14px;
+}
+
+.reading-item a:hover { text-decoration: underline; }
+
+.reading-desc {
+  font-size: 13px;
+  color: var(--parchment-dim);
+  margin-top: 4px;
+  font-style: italic;
+}
+
+.reading-tag {
+  display: inline-block;
+  font-size: 10px;
+  font-family: 'Fredericka the Great', sans-serif;
+  letter-spacing: 0.15em;
+  color: var(--red);
+  border: 1px solid var(--red);
+  padding: 1px 6px;
+  margin-right: 6px;
+  vertical-align: middle;
+}
+
+/* ─── INTRO NOTE ─── */
+.intro-note {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-left: 4px solid var(--ochre);
+  padding: 14px 18px;
+  margin-bottom: 32px;
+  font-size: 13px;
+  color: var(--parchment-dim);
+  font-style: italic;
+}
+
+/* ─── CONTEXT CALLOUT ─── */
+.callout {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-left: 4px solid var(--ochre);
+  padding: 16px 18px;
+  margin: 24px 0;
+  font-size: 14px;
+}
+
+.callout-label {
+  font-family: 'Fredericka the Great', sans-serif;
+  font-size: 10px;
+  letter-spacing: 0.3em;
+  color: var(--ochre);
+  display: block;
+  margin-bottom: 6px;
+  text-transform: uppercase;
+}
+
+/* ─── STAMP ─── */
+.stamp {
+  display: inline-block;
+  font-family: 'Fredericka the Great', sans-serif;
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--red);
+  border: 2px solid var(--red);
+  padding: 3px 10px;
+  opacity: 0.7;
+  transform: rotate(-2deg);
+  margin-left: 12px;
+  vertical-align: middle;
+}
+
+/* scrollbar global */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--border); }
+::-webkit-scrollbar-thumb:hover { background: var(--red); }
+</style>
+</head>
+<body>
+
+<div class="masthead">
+  <div class="masthead-label">Annotated Essay — September 2018</div>
+  <div class="masthead-title">What We Get Wrong About Politics</div>
+  <div class="masthead-meta">
+    by <a href="https://steemit.com/@your-nomad-soul" target="_blank">your-nomad-soul</a>
+    &nbsp;·&nbsp;
+    posted to <a href="https://steemit.com/life/@your-nomad-soul/what-we-get-wrong-about-politics" target="_blank">Steemit</a>
+    &nbsp;·&nbsp; 7 September 2018
+    <span class="stamp">Annotated</span>
+  </div>
+</div>
+
+<nav class="tab-nav" role="tablist">
+  <button class="tab-btn active" onclick="switchTab('tab-essay', this)" role="tab">The Essay</button>
+  <button class="tab-btn" onclick="switchTab('tab-blindspot', this)" role="tab">The Blind Spot</button>
+  <button class="tab-btn" onclick="switchTab('tab-stakes', this)" role="tab">The Stakes</button>
+  <button class="tab-btn" onclick="switchTab('tab-reading', this)" role="tab">Further Reading</button>
+</nav>
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- TAB 1: THE ESSAY -->
+<!-- ═══════════════════════════════════════════ -->
+<div id="tab-essay" class="tab-content active">
+  <div class="page-wrap">
+    <div class="intro-note">
+      Underlined terms in <span style="color:var(--ochre);border-bottom:2px solid var(--red);">ochre</span> are decoders — click to expand. Dashed underlines open deeper explainers.
+    </div>
+
+    <div class="prose">
+
+      <p>Over the last year or so I've become a bit... overwhelmed (not quite the word I need, but a better one escapes me) by political content online. Mostly on <span class="decoder" id="dec-youtube"><button class="decoder-trigger" onclick="toggleDecoder('dec-youtube', this)">YouTube</button><span class="decoder-panel"><span class="decode-label">Platform</span><span class="decode-term">YouTube</span>The Google-owned video platform that by 2018 had become one of the most influential pipelines for political content globally. Its recommendation engine was implicated in accelerating political radicalisation by surfacing increasingly extreme content to keep users engaged.<a class="decode-link" href="https://en.wikipedia.org/wiki/YouTube" target="_blank">→ Wikipedia: YouTube</a></span></span>, and mostly American, which gives me pause to question whether or not <span class="decoder" id="dec-algorithm"><button class="decoder-trigger" onclick="toggleDecoder('dec-algorithm', this)">"The Algorithm"</button><span class="decoder-panel"><span class="decode-label">Concept</span><span class="decode-term">Recommendation Algorithm</span>YouTube's automated content recommendation system. It selects "up next" videos to maximise watch time. Researchers found it systematically pushed users toward more extreme content — a process critics called "radicalisation by recommendation."<a class="decode-link" href="https://en.wikipedia.org/wiki/YouTube_radicalization" target="_blank">→ Wikipedia: YouTube radicalisation</a></span></span> simply thinks that that is all that I want to see, but this is not a post about the <span class="decoder" id="dec-datapoc"><button class="decoder-trigger" onclick="toggleDecoder('dec-datapoc', this)">data-pocalypse</button><span class="decoder-panel"><span class="decode-label">Coinage</span><span class="decode-term">Data-pocalypse</span>The author's portmanteau for the era of algorithmic information overload — a world where what you see is determined not by editorial judgment but by engagement metrics. Written in the shadow of the Cambridge Analytica scandal (March 2018).<a class="decode-link" href="https://en.wikipedia.org/wiki/Facebook%E2%80%93Cambridge_Analytica_data_scandal" target="_blank">→ Cambridge Analytica scandal</a></span></span> that we're currently living through. This post, is about Blind Spots. I might do a post on that some other time. I might not. We'll see.</p>
+
+      <h2>So... Blind Spots.</h2>
+
+      <p>What is a <span class="decoder" id="dec-blindspot"><button class="decoder-trigger" onclick="toggleDecoder('dec-blindspot', this)">Blind Spot</button><span class="decoder-panel"><span class="decode-label">Term</span><span class="decode-term">Anatomical Blind Spot</span>The point where the optic nerve exits the retina, creating a small area with no photoreceptors. The brain fills in the gap automatically — you never notice it unless you test for it. The author uses this to mirror how our brains complete political concepts we assume we understand.<a class="decode-link" href="https://en.wikipedia.org/wiki/Blind_spot_(vision)" target="_blank">→ Wikipedia: Blind spot (vision)</a></span></span>? Anatomically speaking, it refers to a physical part of your eye that is literally blind. You can find your blind spot by drawing a dot on a blank page, holding the page in front of you and, while staring straight ahead, moving the page around your field of vision. There is a position where the dot disappears, usually somewhere in the periphery. That's your blind spot. Tadaah, you saw the space that you cannot see. Isn't that neat? (This will become relevant soon... I hope)</p>
+
+      <p>More generally, the term Blind Spot is what it says on the tin. Anyone who has gone through the process of getting a driver's licence will recall the term being used in reference to the space behind the car on either side that the mirrors in the middle and on the sides (rear-view and wings in common parlance) collectively miss. Checking your blind spot while driving involves craning your neck around to make sure that something isn't there and it only takes one instance of failure in such a check to have a nasty and/or embarrassing mishap.</p>
+
+      <p>Now I'll make this relevant to the post.</p>
+
+      <p>With the above in mind, what <em>I</em> mean when I say Blind Spot, specifically when I'm talking about politics, is this:</p>
+
+      <p><button class="lb-trigger" onclick="openLightbox('lb-political-cycles')">Politics is about issues. The creation, dissemination, discussion and resolution of issues. Issues typically involve things that affect groups. Groups, in turn create, disseminate, discuss and resolve issues. That affect groups. An issue, here, is usually a decision (or set of decisions) that one group enacts that affects, in some way, an other group</button>... This is a handy, if somewhat limited, overview of political cycles and political discourse.</p>
+
+      <p>So where is the blind spot. Have you spotted it? It's there in that last paragraph, and if you have noticed what is missing, then you are probably a good driver who knows how important it is to check before changing lanes.</p>
+
+      <p>The Blind Spot up there is something you need to look for, especially when you don't see it.</p>
+
+      <p>So, for those who are metaphorically scratching their heads because the thinking is making them itch, ask yourself this: What was missing in that paragraph about politics? Or, more to the point, what did I leave out of that paragraph, that should have been there, but you couldn't have noticed its absence, because your brain inferred its existence. What is the dot that should be there, that your brain knows <em>must</em> be there, but you can't see it? What is the Blind Spot?</p>
+
+      <p>Take a minute to consider all the implications before reading on.</p>
+
+      <p>For those ahead of the curve, here's a video to think about while the rest of my imaginary audience catches up.</p>
+
+      <div class="yt-block">
+        <div class="yt-icon">▶</div>
+        <div>
+          <a class="yt-title" href="https://www.youtube.com/watch?v=VwDCaEQNrqM" target="_blank">🇰🇵 Is North Korea's timeline to <span class="decoder" id="dec-denuclearise" style="display:inline;position:relative;"><button class="decoder-trigger" onclick="toggleDecoder('dec-denuclearise', this)">denuclearise</button><span class="decoder-panel"><span class="decode-label">Context</span><span class="decode-term">2018 US–North Korea Denuclearisation Talks</span>In June 2018, Donald Trump and Kim Jong-un held a historic summit in Singapore — the first between a sitting US president and a North Korean leader. Hopes of verifiable denuclearisation followed. The talks ultimately stalled; as of 2024 North Korea has expanded, not reduced, its nuclear arsenal.<a class="decode-link" href="https://en.wikipedia.org/wiki/2018_North_Korea%E2%80%93United_States_summit" target="_blank">→ Wikipedia: 2018 Singapore Summit</a></span></span> for real? | Inside Story</a>
+          <div class="yt-channel"><span class="decoder" id="dec-aljazeera" style="display:inline;position:relative;"><button class="decoder-trigger" onclick="toggleDecoder('dec-aljazeera', this)">Al Jazeera English</button><span class="decoder-panel"><span class="decode-label">Media</span><span class="decode-term">Al Jazeera English</span>Qatari-funded international news network launched in 2006. Often cited as offering a non-Western perspective on global affairs. The author choosing an Al Jazeera piece on US–North Korea relations — rather than a US outlet — is itself a gesture toward the essay's core point about perspective.<a class="decode-link" href="https://en.wikipedia.org/wiki/Al_Jazeera_English" target="_blank">→ Wikipedia: Al Jazeera English</a></span></span></div>
+        </div>
+      </div>
+
+      <p>So, back to the question... Where/what is the Blind Spot? Politically speaking.</p>
+
+      <h2>In a word: People.</h2>
+
+      <p>Obviously.</p>
+
+      <p>Now, if I've done this post well, you should be feeling that strange confusion, like when there's a thought hanging out in the corner of your mind that is sitting just out of reach and (although you can't see or hear it) that you <em>know</em> is laughing at you. This is usually where people start formulating things to type in the comment section in the hopes of making that feeling go away.</p>
+
+      <p>This is also the point (hopefully) that I start making sense.</p>
+
+      <p>So, when I say 'People' as the one-word answer to the question of Political Blind Spots, I'm being deliberately obtuse.</p>
+
+      <p>Politics is something people, and (as far as we know) only human people, engage in. Which is why, in that paragraph way up there, I could leave the word people out of it entirely, and know with 99 percent certainty, that folks reading that paragraph wouldn't notice that I made no mention of people whatsoever. Also, I was fairly confident that when I used the word 'groups', that folks would assume I was talking about 'groups of people'... And that, is why it is <em>the</em> Political Blind Spot. Think about that paragraph again, but this time, with as few assumptions as possible. Suddenly it makes both more, and less, sense. Politics <em>can</em> be reduced to such a cycle, but only if you expand every noun to its widest possible interpretation, which, when you think about it, is not much use to the actual business of living in the 21st century.</p>
+
+      <p>This is what we get wrong about politics... We assume that we know what's going on. We hear <span class="decoder" id="dec-pundits"><button class="decoder-trigger" onclick="toggleDecoder('dec-pundits', this)">pundits and analysts and shoutymen</button><span class="decoder-panel"><span class="decode-label">Archetype</span><span class="decode-term">The Political Commentariat</span>By 2018, a particular genus of YouTube personality — the political commentator — had exploded in number. Channels ranging from centrist explainers to far-right provocateurs competed for clicks. The author's "shoutymen" targets the performative outrage format that thrives on algorithmic amplification.<a class="decode-link" href="https://en.wikipedia.org/wiki/Political_commentator" target="_blank">→ Wikipedia: Political commentator</a></span></span> on YouTube talking about, "The US", "The Media", <span class="decoder" id="dec-altright"><button class="decoder-trigger" onclick="toggleDecoder('dec-altright', this)">"The Alt-Right"</button><span class="decoder-panel"><span class="decode-label">Political Movement</span><span class="decode-term">The Alt-Right</span>A loosely affiliated far-right political movement that rose to mainstream visibility during the 2016 US election cycle. By 2018 it was fracturing but remained a fixture of YouTube political discourse. The term was itself an abstraction — a label applied to a heterogeneous collection of people and positions.<a class="decode-link" href="https://en.wikipedia.org/wiki/Alt-right" target="_blank">→ Wikipedia: Alt-right</a></span></span>, <span class="decoder" id="dec-un"><button class="decoder-trigger" onclick="toggleDecoder('dec-un', this)">"The UN"</button><span class="decoder-panel"><span class="decode-label">Institution</span><span class="decode-term">United Nations</span>An intergovernmental organisation of 193 member states founded in 1945. In political shorthand, "The UN" becomes a monolith — either a global saviour or a corrupt bureaucracy depending on the speaker. The author uses it to illustrate how institutional labels erase the 44,000+ people who actually work there.<a class="decode-link" href="https://en.wikipedia.org/wiki/United_Nations" target="_blank">→ Wikipedia: United Nations</a></span></span>, "Russia", etc. etc. and believe that both we, and they, know what we mean by those terms.</p>
+
+      <p>But we don't... And, over the past year, I've begun to believe that this Blind Spot is collective. Nobody knows. Nobody can know.</p>
+
+      <p>Perhaps that last statement was a little too sweeping. Here's the precise version:</p>
+
+      <p>A) The United States of America is what? Well, the most accurate description would be - The 350+ million humans who live within the boundaries recognized by all the other humans on Earth as the territory controlled by the Federal Government of the United States of America. But let's be honest with ourselves here - that is not what we're thinking of when we say "The US" in political conversation. For most folks, "The US" is a nebulous amalgam of Stars, Stripes, Dollars, Presidents and Explosions. In fact, I would go as far as to say that to most folks "The US" conjures a very different picture in the mind than say, "Americans". This little <span class="decoder" id="dec-cogbias"><button class="decoder-trigger" onclick="toggleDecoder('dec-cogbias', this)">cognitive bias</button><span class="decoder-panel"><span class="decode-label">Psychology</span><span class="decode-term">Reification / Abstraction Bias</span>The tendency to treat abstract concepts (nations, institutions, movements) as concrete, unified agents with intentions and wills. Related to "essentialism" — the belief that categories have fixed, intrinsic natures. In politics, it lets us say "Russia wants X" without asking which of Russia's 144 million people want what.<a class="decode-link" href="https://en.wikipedia.org/wiki/Reification_(fallacy)" target="_blank">→ Wikipedia: Reification (fallacy)</a></span></span> can be seen quite elegantly in that there video where everybody is talking about these 'the US' and 'North Korea' as if they're... well... two dudes with weird names.</p>
+
+      <p>B) <button class="lb-trigger" onclick="openLightbox('lb-reduction')">This practice of reducing vast swathes of human beings</button> is so widespread and so deeply entrenched in our discussions of how the world works and how it came to work this way that even this blog post has done it several times, over and over and over again. What this does ensures that while my point is being made, I'm really not doing a very good job of Unblinding the Blind Spot. Because:</p>
+
+      <p>C) There are literal billions of human lives being lived every second, and our human brains can only track a few hundred at a time with any reliable accuracy. There is so much happening all the time that we have to condense and distill everything in order to even try making sense of it all.</p>
+
+      <p>And that is why People are the Blind Spot of Politics.</p>
+
+      <p>I've already been typing for way longer than I planned to when I started this post, but I have one last point to add before I nomad the fuck outta here for the next while.</p>
+
+      <h2>Here is What We Get Wrong About Politics:</h2>
+
+      <p>We forget that it's all just people trying to keep their lives going. Just people, each one of them squeezed or plucked from a womb, smacked in the face by the cold hard realities of a world they didn't build, thrust into that world with a powerful need to eats, shits and fucks as comfortably as they can, and each with a brain that, at least half the time, is working without thinking. No politician knows how their plans will work out, because no politician can possibly know all that their plan involves, because their plan will always involve other people, each with their own plan.</p>
+
+      <p>Does this mean we're fucked?</p>
+
+      <p>Probably.</p>
+
+      <p>But being fucked tends to make more people, who do more fucking.</p>
+
+      <p>Fucking people since before we were people.</p>
+
+      <p>Fuck.</p>
+
+      <hr>
+
+      <div class="sign-off">
+        <p>Peace, Love and a Little Madness</p>
+        <p>Nomad.</p>
+      </div>
+
+    </div><!-- /prose -->
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- TAB 2: THE BLIND SPOT -->
+<!-- ═══════════════════════════════════════════ -->
+<div id="tab-blindspot" class="tab-content">
+  <div class="page-wrap">
+
+    <div class="intro-note">
+      Why do we erase people from political discourse — and what happens when we put them back?
+    </div>
+
+    <div class="acc-section-title">Political Abstraction</div>
+
+    <div class="accordion-item">
+      <button class="accordion-trigger" onclick="toggleAccordion(this)">
+        <span class="accordion-trigger-text">What exactly is political abstraction, and why is it necessary?</span>
+        <span class="accordion-arrow">▾</span>
+      </button>
+      <div class="accordion-panel">
+        <p>Political abstraction is the cognitive practice of representing large, complex human collectives — nations, parties, movements, institutions — as unified agents with singular intentions. When we say "Germany decided" or "the left wants," we are abstracting.</p>
+        <p>It is necessary because without it, political discussion becomes computationally impossible. A human brain can maintain meaningful social tracking of roughly 150 people (see: <a href="https://en.wikipedia.org/wiki/Dunbar%27s_number" target="_blank">Dunbar's number</a>). Nations contain millions. Abstraction is the cognitive compression that allows us to reason about scale we cannot directly perceive.</p>
+        <p>The problem, as the essay argues, is when we forget we are compressing. The map becomes the territory. "The US" stops being a shorthand and starts feeling like a real entity with a unified will — even though no such thing exists.</p>
+      </div>
+    </div>
+
+    <div class="accordion-item">
+      <button class="accordion-trigger" onclick="toggleAccordion(this)">
+        <span class="accordion-trigger-text">What is the philosophical tradition behind "people first" politics?</span>
+        <span class="accordion-arrow">▾</span>
+      </button>
+      <div class="accordion-panel">
+        <p>The essay's thesis — that people are erased from political discourse — has deep roots in what philosophers call <strong>methodological individualism</strong>: the view that social phenomena must ultimately be explained in terms of individual human actions and motivations. Thinkers like F.A. Hayek and Karl Popper argued that treating collectives as agents ("the state wants," "the market decides") is not just imprecise but actively dangerous — it enables political violence by dehumanising targets.</p>
+        <p>On the left, <strong>liberation theology</strong> — the Catholic movement that emerged from Latin America in the 1960s–70s — made a parallel argument from the opposite direction. Theologians like Gustavo Gutiérrez insisted that God's concern is with specific, suffering, embodied people — not with abstract categories. The "preferential option for the poor" is not a policy prescription; it is an insistence that the poor are people, not statistics.</p>
+        <p>Both traditions converge on the essay's central point: abstraction in politics has costs paid by real human beings who never consented to becoming a data point.</p>
+      </div>
+    </div>
+
+    <div class="accordion-item">
+      <button class="accordion-trigger" onclick="toggleAccordion(this)">
+        <span class="accordion-trigger-text">How does language shape what we are able to think politically?</span>
+        <span class="accordion-arrow">▾</span>
+      </button>
+      <div class="accordion-panel">
+        <p>George Orwell's <em>Politics and the English Language</em> (1946) made the case that vague political language is not a failure of communication — it is a feature. Abstract language allows speakers to discuss mass atrocities without confronting their human content. "Population transfers" erases deportation; "collateral damage" erases dead civilians.</p>
+        <p>Linguist George Lakoff argues that political language works through <strong>framing</strong>: the conceptual structure you activate when you use a word shapes what conclusions feel natural. When you accept the frame "illegal alien," you have already done cognitive work that makes certain policy responses feel obvious. The frame erases a person and substitutes a legal status.</p>
+        <p>The essay's manoeuvre — leaving the word "people" out of a description of politics and watching readers not notice — is a live demonstration of Orwell and Lakoff's point. We hear the abstract and our brains supply the human. But the supplying is our work, not the speaker's. When the speaker controls the abstraction, they control what gets filled in.</p>
+      </div>
+    </div>
+
+    <div class="accordion-item">
+      <button class="accordion-trigger" onclick="toggleAccordion(this)">
+        <span class="accordion-trigger-text">What would politics look like if we kept people in view?</span>
+        <span class="accordion-arrow">▾</span>
+      </button>
+      <div class="accordion-panel">
+        <p>The essay does not prescribe — it diagnoses. But the tradition it brushes against does. <strong>Participatory democracy</strong> movements from Rousseau to Hannah Arendt argue that politics at human scale — the ward, the neighbourhood assembly, the workers' council — is structurally different from politics at the scale where abstraction becomes necessary. Small enough that you are reasoning about people you could, in principle, name.</p>
+        <p>Journalist and political theorist Rebecca Solnit argues in <em>A Paradise Built in Hell</em> that disasters — floods, earthquakes — temporarily restore this scale. When institutional abstractions fail, people act on behalf of specific other people they can see and touch. Mutual aid is politics before the abstraction sets in.</p>
+        <p>The honest answer, implied by the essay's final paragraphs, is that no political system solves this. Scale demands abstraction. The best we can do is remain suspicious of our own vocabulary — and remember, when we say "Russia" or "the markets," that we are choosing a frame, not stating a fact.</p>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- TAB 3: THE STAKES -->
+<!-- ═══════════════════════════════════════════ -->
+<div id="tab-stakes" class="tab-content">
+  <div class="page-wrap">
+
+    <div class="callout">
+      <span class="callout-label">When This Was Written</span>
+      September 2018. Two years into the Trump presidency. One year after Charlottesville. Six months after Cambridge Analytica. YouTube's political ecosystem was at peak radicalisation. The author, writing from outside the US on a blockchain blogging platform, was watching American politics as a spectacle — and noticing what the spectators couldn't see.
+    </div>
+
+    <div class="acc-section-title">The Historical Moment</div>
+
+    <div class="accordion-item">
+      <button class="accordion-trigger" onclick="toggleAccordion(this)">
+        <span class="accordion-trigger-text">What was happening to political discourse online in 2018?</span>
+        <span class="accordion-arrow">▾</span>
+      </button>
+      <div class="accordion-panel">
+        <p>By September 2018, YouTube had become the dominant pipeline for political content globally. The platform's recommendation algorithm, optimised for watch time, had spent years routing users toward increasingly extreme content. Researchers including Zeynep Tufekci (<em>We're Building a Dystopia Just to Make People Click on Ads</em>) and journalist Kevin Roose documented what they called the "YouTube radicalisation pipeline" — a path from mainstream political content to white nationalist videos that the algorithm navigated automatically.</p>
+        <p>The Cambridge Analytica scandal, which broke in March 2018, had just revealed that Facebook's data architecture had been weaponised for political micro-targeting. The concept of "the algorithm" as a political actor — shaping what people believed without their awareness — had entered mainstream consciousness for the first time.</p>
+        <p>The essay's irritated aside about "The Algorithm" reflects genuine bewilderment that was widely shared: the sense that what you could see was no longer a neutral product of your choices but a constructed environment shaped by unseen systems with their own agendas.</p>
+      </div>
+    </div>
+
+    <div class="accordion-item">
+      <button class="accordion-trigger" onclick="toggleAccordion(this)">
+        <span class="accordion-trigger-text">What was the significance of the North Korea story the author linked?</span>
+        <span class="accordion-arrow">▾</span>
+      </button>
+      <div class="accordion-panel">
+        <p>The June 2018 Singapore Summit between Donald Trump and Kim Jong-un was arguably the most vivid recent example of the essay's thesis in live action. Cable news coverage spent weeks discussing "the US" and "North Korea" as if they were characters in a drama — two powerful men, two nations with wills. The 25 million North Koreans living under the regime that was being negotiated over were largely absent from the frame.</p>
+        <p>The summit produced the Singapore Declaration — a vague commitment to "denuclearisation of the Korean Peninsula." Within months, satellite imagery showed North Korea continuing to build up its nuclear infrastructure. By 2024, North Korea had conducted more missile tests than in any previous year.</p>
+        <p>The episode illustrated the essay's point with precision: when you abstract "North Korea" into a single actor, you can negotiate with "it." When you remember that North Korea is 25 million people living under a surveillance state with a government that has systematically starved and imprisoned its own population, the diplomatic grammar becomes both more necessary and more obviously inadequate.</p>
+      </div>
+    </div>
+
+    <div class="accordion-item">
+      <button class="accordion-trigger" onclick="toggleAccordion(this)">
+        <span class="accordion-trigger-text">What happened to the concerns in this essay after 2018?</span>
+        <span class="accordion-arrow">▾</span>
+      </button>
+      <div class="accordion-panel">
+        <p>In the six years since this essay was posted, the dynamics it described have intensified rather than resolved. The COVID-19 pandemic (2020–22) produced exactly the kind of abstraction crisis the essay predicts: "the economy" vs "public health" debates that rarely named the specific people dying in ICUs, or the specific people losing their livelihoods. The political discourse proceeded as if "the economy" and "public health" were two characters in conflict — not 330 million Americans navigating an impossible situation.</p>
+        <p>The rise of large language models (2022–present) has added a new layer: political content can now be generated at scale without any human author. The abstraction the essay diagnoses — people erased from political language — can now proceed without people generating the language at all.</p>
+        <p>What has not changed: the essay's core observation that human brains are not built for the scale of modern politics remains as true as it was in 2018. The gap between what we can know (a few hundred relationships with any fidelity) and what we are asked to have opinions about (billions of people across dozens of nations) has not closed. It has widened.</p>
+      </div>
+    </div>
+
+    <div class="accordion-item">
+      <button class="accordion-trigger" onclick="toggleAccordion(this)">
+        <span class="accordion-trigger-text">What is Steemit, and why does the publishing context matter?</span>
+        <span class="accordion-arrow">▾</span>
+      </button>
+      <div class="accordion-panel">
+        <p><a href="https://steemit.com" target="_blank">Steemit</a> was a blockchain-based social blogging platform launched in 2016. Users earned cryptocurrency (STEEM tokens) based on upvotes. It attracted writers who were sceptical of traditional platforms — both because of concerns about censorship and because of the appeal of direct monetisation. By 2018 it had a significant community of political and philosophical writers outside the mainstream.</p>
+        <p>Publishing on Steemit rather than Medium or Substack positioned this essay outside the attention economy the essay critiques. Steemit's model rewarded engaged readers rather than viral amplification. The author's self-description as a "nomad" and the platform choice both signal a deliberate positioning outside the YouTube political discourse being discussed — watching it rather than participating in it.</p>
+        <p>The essay's conversational, exploratory tone ("I might do a post on that some other time. I might not. We'll see.") is characteristic of Steemit's culture: informal, personal, without the performed authority of mainstream political commentary.</p>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- TAB 4: FURTHER READING -->
+<!-- ═══════════════════════════════════════════ -->
+<div id="tab-reading" class="tab-content">
+  <div class="page-wrap">
+
+    <div class="reading-group-title">On Political Language & Abstraction</div>
+
+    <div class="reading-item">
+      <a href="https://www.orwellfoundation.com/the-orwell-foundation/orwell/essays-and-other-works/politics-and-the-english-language/" target="_blank">Politics and the English Language — George Orwell (1946)</a>
+      <div class="reading-desc"><span class="reading-tag">Essay</span>The foundational text on how vague political language enables atrocity by making it feel abstract. Still the clearest articulation of the problem the nomad-soul essay gestures at.</div>
+    </div>
+
+    <div class="reading-item">
+      <a href="https://en.wikipedia.org/wiki/Don%27t_Think_of_an_Elephant!" target="_blank">Don't Think of an Elephant — George Lakoff (2004)</a>
+      <div class="reading-desc"><span class="reading-tag">Book</span>Linguist's study of how political frames shape cognition. When you accept a frame, you've already done the work the speaker wanted.</div>
+    </div>
+
+    <div class="reading-item">
+      <a href="https://en.wikipedia.org/wiki/Reification_(fallacy)" target="_blank">Reification (Fallacy) — Wikipedia</a>
+      <div class="reading-desc"><span class="reading-tag">Reference</span>The logical fallacy of treating an abstraction as a concrete thing. The philosophical backbone of the essay's argument.</div>
+    </div>
+
+    <div class="reading-group-title">On Algorithms & Political Radicalisation</div>
+
+    <div class="reading-item">
+      <a href="https://www.nytimes.com/2019/03/29/technology/youtube-online-extremism.html" target="_blank">The Making of a YouTube Radical — New York Times (2019)</a>
+      <div class="reading-desc"><span class="reading-tag">Journalism</span>Kevin Roose's reconstruction of how a young man was radicalised through YouTube recommendations. The essay the nomad-soul post anticipated.</div>
+    </div>
+
+    <div class="reading-item">
+      <a href="https://en.wikipedia.org/wiki/Facebook%E2%80%93Cambridge_Analytica_data_scandal" target="_blank">Cambridge Analytica Data Scandal — Wikipedia</a>
+      <div class="reading-desc"><span class="reading-tag">Reference</span>Background on the 2018 scandal that crystallised public awareness of political data weaponisation — the "data-pocalypse" context.</div>
+    </div>
+
+    <div class="reading-group-title">On Liberation Theology & People-First Politics</div>
+
+    <div class="reading-item">
+      <a href="https://en.wikipedia.org/wiki/A_Theology_of_Liberation" target="_blank">A Theology of Liberation — Gustavo Gutiérrez (1971)</a>
+      <div class="reading-desc"><span class="reading-tag">Book</span>The foundational text of liberation theology. Its "preferential option for the poor" is a radical insistence that political and theological language must refer to actual, particular people — not categories.</div>
+    </div>
+
+    <div class="reading-item">
+      <a href="https://en.wikipedia.org/wiki/Oscar_Romero" target="_blank">Oscar Romero — Wikipedia</a>
+      <div class="reading-desc"><span class="reading-tag">Reference</span>Archbishop of San Salvador, assassinated 1980. His famous instruction: "In the name of God, stop the repression." Spoke to soldiers as people, not as instruments of a state.</div>
+    </div>
+
+    <div class="reading-group-title">On Scale, Complexity & Political Cognition</div>
+
+    <div class="reading-item">
+      <a href="https://en.wikipedia.org/wiki/Dunbar%27s_number" target="_blank">Dunbar's Number — Wikipedia</a>
+      <div class="reading-desc"><span class="reading-tag">Reference</span>Anthropologist Robin Dunbar's finding that humans can maintain stable social relationships with roughly 150 people. Everything beyond that requires abstraction. The cognitive ground floor of the essay's argument.</div>
+    </div>
+
+    <div class="reading-item">
+      <a href="https://en.wikipedia.org/wiki/A_Paradise_Built_in_Hell" target="_blank">A Paradise Built in Hell — Rebecca Solnit (2009)</a>
+      <div class="reading-desc"><span class="reading-tag">Book</span>Documents how disasters temporarily collapse political abstraction and reveal the mutual aid that underlies human sociality. People helping people — not institutions serving constituents.</div>
+    </div>
+
+    <div class="reading-item">
+      <a href="https://en.wikipedia.org/wiki/The_Open_Society_and_Its_Enemies" target="_blank">The Open Society and Its Enemies — Karl Popper (1945)</a>
+      <div class="reading-desc"><span class="reading-tag">Book</span>Popper's attack on "historicism" — political theories that treat collectives (classes, nations, races) as the real agents of history. The philosophical argument that the nomad-soul essay makes journalistically.</div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- LIGHTBOXES -->
+<!-- ═══════════════════════════════════════════ -->
+
+<div class="lightbox-overlay" id="lb-political-cycles" onclick="closeLightboxOnOverlay(event, 'lb-political-cycles')">
+  <div class="lightbox-box">
+    <div class="lightbox-header">
+      <span class="lightbox-title">Political Cycles & Discourse — What's Missing?</span>
+      <button class="lightbox-close" onclick="closeLightbox('lb-political-cycles')">✕</button>
+    </div>
+    <div class="lightbox-body">
+      <h3>The Standard Model of Political Discourse</h3>
+      <p>The paragraph the author quotes is a reasonable summary of how political science textbooks describe political systems: issues are created, disseminated, debated, and resolved. Groups form around interests. Groups affect other groups. It is mechanically accurate.</p>
+      <p>Read it again. Notice what is not there. The word "people" does not appear. The word "human" does not appear. Groups act on groups. Issues move through systems. The entire description could apply to, say, a colony of ants — or to a computer simulation. The humans are implicit, invisible, assumed.</p>
+      <h3>Why the Brain Fills In the Gap</h3>
+      <p>The essay's central trick is that most readers won't catch this. The brain is a prediction machine. It has encountered the word "groups" in political contexts thousands of times and knows that "groups" means "groups of people." It fills in the missing information automatically — the same way it fills in the anatomical blind spot in your retina.</p>
+      <p>This is not a failure of intelligence. It is efficient cognition. The problem is that it makes us vulnerable to language that exploits the gap — that talks about "groups" and "issues" in ways that systematically exclude the specific, suffering, particular people who are actually affected.</p>
+      <h3>The Liberation Theology Parallel</h3>
+      <p>The liberation theologians who emerged from Latin America in the 1960s–80s made a structurally identical argument about religious language. When the Church spoke of "the poor," it was often abstracting — a statistical category, a policy concern. Theologians like Gustavo Gutiérrez insisted on returning to the particular: this person, this village, this specific form of suffering. The "preferential option for the poor" was not a programme. It was an epistemological insistence on not letting abstraction erase personhood.</p>
+    </div>
+  </div>
+</div>
+
+<div class="lightbox-overlay" id="lb-reduction" onclick="closeLightboxOnOverlay(event, 'lb-reduction')">
+  <div class="lightbox-box">
+    <div class="lightbox-header">
+      <span class="lightbox-title">Reducing Vast Swathes of Human Beings</span>
+      <button class="lightbox-close" onclick="closeLightbox('lb-reduction')">✕</button>
+    </div>
+    <div class="lightbox-body">
+      <h3>The Scale of What Gets Erased</h3>
+      <p>When the author says "reducing vast swathes of human beings," consider the arithmetic. "The US" erases 335 million lives into a two-letter abbreviation. "Russia" erases 144 million. "The Global South" erases roughly 6 billion people — the majority of humanity — into a compass direction.</p>
+      <p>Each of those lives contains a complete interior world: relationships, losses, beliefs, plans for tomorrow, memories of childhood, fears about health, hopes for their children. Political discourse requires that this interior world be compressed to zero. The person becomes a data point in a demographic, a vote in a model, a body in a casualty count.</p>
+      <h3>When Reduction Becomes Violence</h3>
+      <p>The history of political violence is largely a history of this reduction working as intended. Genocide requires first that the target group be abstracted — stripped of individual humanity and re-described as a unified, threatening entity. Propaganda is the engineering of this abstraction at scale.</p>
+      <p>Hannah Arendt, in <em>The Origins of Totalitarianism</em> (1951), argued that stateless people — refugees, displaced persons — were most vulnerable precisely because they had been stripped of the political identity that gave abstraction a human anchor. Without a state to abstract them back into, they became purely individual — and in a world organised around political abstractions, purely individual meant invisible.</p>
+      <h3>The Author's Self-Implication</h3>
+      <p>What is honest about this essay is that it implicates itself. The author acknowledges that in making the argument, they too have been abstracting — using "politics," "pundits," "groups" as if these were real actors. The blind spot cannot be fully corrected from inside the language that creates it. It can only be noticed, and noticed again, and named, and named again.</p>
+    </div>
+  </div>
+</div>
+
+<script>
+// ─── TABS ───
+function switchTab(id, btn) {
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  btn.classList.add('active');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// ─── DECODERS ───
+function toggleDecoder(id, btn) {
+  const wrapper = document.getElementById(id);
+  const panel = wrapper.querySelector('.decoder-panel');
+  const isOpen = panel.classList.contains('open');
+
+  document.querySelectorAll('.decoder-panel.open').forEach(p => p.classList.remove('open'));
+  document.querySelectorAll('.decoder-trigger.open').forEach(b => b.classList.remove('open'));
+
+  if (!isOpen) {
+    panel.classList.add('open');
+    btn.classList.add('open');
+    const rect = panel.getBoundingClientRect();
+    if (rect.right > window.innerWidth - 16) {
+      panel.classList.add('flip-left');
+    } else {
+      panel.classList.remove('flip-left');
+    }
+  }
+}
+
+document.addEventListener('click', function(e) {
+  if (!e.target.closest('.decoder')) {
+    document.querySelectorAll('.decoder-panel.open').forEach(p => p.classList.remove('open'));
+    document.querySelectorAll('.decoder-trigger.open').forEach(b => b.classList.remove('open'));
+  }
+});
+
+// ─── LIGHTBOXES ───
+function openLightbox(id) {
+  document.getElementById(id).classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeLightbox(id) {
+  document.getElementById(id).classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+function closeLightboxOnOverlay(e, id) {
+  if (e.target === document.getElementById(id)) closeLightbox(id);
+}
+
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') {
+    document.querySelectorAll('.lightbox-overlay.open').forEach(el => {
+      el.classList.remove('open');
+    });
+    document.body.style.overflow = '';
+  }
+});
+
+// ─── ACCORDIONS ───
+function toggleAccordion(btn) {
+  const panel = btn.nextElementSibling;
+  const isOpen = btn.classList.contains('open');
+  document.querySelectorAll('.accordion-trigger.open').forEach(b => {
+    b.classList.remove('open');
+    b.nextElementSibling.classList.remove('open');
+  });
+  if (!isOpen) {
+    btn.classList.add('open');
+    panel.classList.add('open');
+  }
+}
+</script>
+</body>
+</html>
