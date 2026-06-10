@@ -1,12 +1,18 @@
 # Introductions
 
-The source for **JL Kruger's** personal site — an introduction of sorts. Multimedia maker, community builder, and assembler of words that occasionally argue with each other.
+WELCOME TO THE REPO FOR MY SITE BRO! - You _must_ be a curious cat.
+
+anyhoodle - I got an llm to generate the rest of the words that you read here. Figured I would put my stamp up here to say, hey I read it and adjusted what I didn't approve.
+
+---
+
+## What this is
 
 - **Live:** https://jlkruger.exopraxist.org/
 - **GitHub mirror:** https://jl-kruger.github.io/introductions
 - **Repo:** https://github.com/JL-Kruger/introductions
 
-## What this is
+The source for **JL Kruger's** personal site — an introduction of sorts. Multimedia maker, community builder, and assembler of words that occasionally argue with each other.
 
 A hand-built static website. No framework, no build server, no runtime — just HTML, CSS, and a sprinkle of vanilla JavaScript for the glow and the doodads. Open `index.html` in a browser and the whole thing works.
 
@@ -45,18 +51,6 @@ introductions
 ```
 
 A fuller annotated tree lives in [`SITEMAP.md`](SITEMAP.md).
-
-## Running it
-
-It's static. Pick whichever you like:
-
-```bash
-# just open it
-xdg-open index.html
-
-# or serve it
-python3 -m http.server 8000   # then visit http://localhost:8000
-```
 
 ## Building
 
