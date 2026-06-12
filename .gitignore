@@ -1,0 +1,16 @@
+# Python virtualenv (local-only; recreate from requirements)
+Toolbox/Python/.venv/
+**/.venv/
+
+# Python bytecode caches
+__pycache__/
+*.pyc
+*.pyo
+
+# Parity baseline — git-ignored per BUILD-ARCH §5 Step 0
+Toolbox/Python/.parity-baseline/
+
+# OS / editor cruft
+.DS_Store
+Thumbs.db
+*.swp
