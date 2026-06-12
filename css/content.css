@@ -12,10 +12,7 @@
 body {
   margin: 0;
   padding: 0;
-  background: url('../Media/SVG-Assets/jl-site-background-desktop.svg') no-repeat center center fixed,
-              linear-gradient(180deg, #010403 0%, #02130a 100%);
-  background-size: cover, auto;
-  background-attachment: fixed;
+  background: #010403; /* #sky handles the gradient; this is a dark fallback */
   color: var(--light);
   font-family: 'Overlock', serif;
   font-size: 18px;
@@ -103,8 +100,12 @@ a:visited    { color: var(--rust); }
 .mobile-nav-bar      { display: none; }
 .mobile-nav-dropdown { display: none; }
 
+/* ── Starfield canvas — see css/layers.css (centralized) ─────────────────── */
+
 /* ── Main scroll container ───────────────────────────────────────────────── */
 #scroll-container {
+  position: relative;
+  z-index: 1;         /* stacking context above starfield canvas */
   flex: 1;
   display: flex;
   min-height: 0;
@@ -417,12 +418,7 @@ a:visited    { color: var(--rust); }
 
   .frame-desktop { display: none; }
   .frame-mobile  { display: block; }
-
-  body {
-    background-image:
-      url('../Media/SVG-Assets/jl-site-background-mobile.svg'),
-      linear-gradient(180deg, #010403 0%, #02130a 100%);
-  }
+  /* body background: handled by #sky — no swap needed. */
 }
 
 /* ── Reduced motion ──────────────────────────────────────────────────────── */

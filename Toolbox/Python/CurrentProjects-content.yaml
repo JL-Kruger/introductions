@@ -1,0 +1,108 @@
+meta:
+  title: Current Projects
+  slug: CurrentProjects
+
+blocks:
+  
+  - type: heading
+    level: 1
+    text: "Current Projects"
+
+  - type: separator
+    svg: jl-site_separator1.svg
+
+  - type: special
+    text: >
+      Here's what I'm up to when I'm not helping clients solve interesting
+      problems and tackle dynamic challenges.
+
+  - type: image
+    src: /Media/Images/jl-site-thumbnail-endnotestart.webp
+
+  - type: separator
+    svg: jl-site-separator6.svg
+
+  - type: heading
+    level: 2
+    text: "3SC Foundations"
+
+  - type: paragraph
+    text: >
+      A system for teaching Safety, Sanity and Serenity through Caution, Courage
+      and Competence built for teaching useful skills to communities of all sizes.
+
+  - type: paragraph
+    text: >
+      The first piece is the **(: DON'T PANIC!:)** community safety course, which
+      teaches safety knowledge and practices at the intersection of smartphones,
+      the social internet, and AI.
+
+  - type: image
+    src: /Media/Images/WorkHistory-gallery/jl-site-gallery-workhistory22.webp
+    alt-text: "A flyer for the first round of prototypes"
+
+  - type: button
+    text: Visit 3SC — DON'T PANIC
+    href: https://jl-kruger.github.io/panic-not
+
+  - type: separator
+    svg: jl-site-separator4.svg
+
+  - type: heading
+    level: 2
+    text: "Singular Particular Space"
+
+  - type: paragraph
+    text: >
+      So, as I've been working with LLMs and AI systems, I have spent a 
+      considerable chunk of time on small projects intended to learn-by-doing.
+      Some of the outputs have made it here to this site, and the rest of them
+      live on my server in a singular, particular space.
+
+  - type: image
+    src: /Media/Images/jl-site-pic-space.webp
+
+  - type: button
+    text: Allons Y! Geronimo.
+    href: https://space.exopraxist.org/
+
+  - type: critter
+    svg: jl-site-critter3.svg
+
+  - type: link-row
+    links:
+      - text: Tools and Toys
+        href: https://space.exopraxist.org/ToolsnToys/toolsntoys.html
+      - text: Videos
+        href: https://space.exopraxist.org/Videos/index.html
+
+  - type: separator
+    svg: jl-site_separator4.svg
+
+
+  - type: heading
+    level: 2
+    text: "Cosmic Bashery"
+
+  - type: paragraph
+    text: >
+      A live-stage-and-online hybrid show, launching in and around Johannesburg
+      in the winter of 2026. Think Monty-Python, SNL, vaudeville and pulp
+      science-fiction had a baby born and raised in Jozi.
+
+  - type: image
+    src: /Media/Images/jl-site-thumbnail-politics.webp
+
+  - type: button
+    text: Tell Me More
+    href: 404.html
+
+  - type: link-row
+    links:
+      - text: View HGH Vid
+        href: 404.html
+      - text: Book Tickets
+        href: 404.html
+
+  - type: separator
+    svg: jl-site_separator4.svg

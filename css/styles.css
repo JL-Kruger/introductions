@@ -13,10 +13,7 @@
 body {
   margin: 0;
   padding: 0;
-  background: url('../Media/SVG-Assets/jl-site-background-desktop.svg') no-repeat center center fixed,
-              linear-gradient(180deg, #010403 0%, #010403 50%, #02130a 100%);
-  background-size: cover, auto;
-  background-attachment: fixed;
+  background: #010403; /* #sky handles the gradient; this is a dark fallback */
   color: var(--light);
   font-family: 'Overlock', serif;
   font-size: 20px;
@@ -101,8 +98,12 @@ a:visited    { color: var(--pigment); }
 .nav-links a        { color: var(--light); opacity: 0.85; }
 .nav-links a:hover  { color: var(--fire);  opacity: 1; }
 
+/* ── Starfield canvas — see css/layers.css (centralized) ─────────────────── */
+
 /* ── Main scroll container ───────────────────────────────────────────────── */
 #scroll-container {
+  position: relative;
+  z-index: 1;         /* stacking context above starfield canvas */
   flex: 1;
   display: flex;
   overflow-y: auto; /* mobile: scrolls; desktop: content fits so no scroll bar */
@@ -263,6 +264,7 @@ a:visited    { color: var(--pigment); }
     text-align: center;
   }
   .bento-col { align-items: center; }
+  /* body background: no swap needed — #sky handles it identically at all widths */
 
   .hero-buttons {
     flex-direction: column;
@@ -376,14 +378,7 @@ a:visited    { color: var(--pigment); }
   color: var(--pigment);
 }
 
-/* ── Mobile: swap to mobile background + frame ───────────────────────────── */
-@media (max-width: 1023px) {
-  body {
-    background-image:
-      url('../Media/SVG-Assets/jl-site-background-mobile.svg'),
-      linear-gradient(180deg, #010403 0%, #010403 50%, #02130a 100%);
-  }
-}
+/* Mobile background: handled by #sky (css/sky.css) — no swap needed. */
 
 /* ── Frame overlays (inlined SVG, replaces background-image frames) ─────── */
 .frame-overlay {

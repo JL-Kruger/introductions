@@ -1,0 +1,112 @@
+/* layers.css — canonical z-layer stacking system for jlsite.
+ *
+ * Z-stack (back → front):
+ *   sky (-1)      — css/sky.css. Fixed full-viewport CSS gradient. Zero JS.
+ *   starfield (0) — canvas particle field. Animated; pauses when hidden.
+ *   content (1)   — #scroll-container. Page content.
+ *   vines (50)    — .vine-decor. Phase-2 SVG corner decor (slot reserved).
+ *   nav (100)     — .sticky-nav. Sticky navigation bar.
+ *
+ * Stacking contexts:
+ *   Each motion layer carries isolation: isolate so descendants cannot
+ *   escape the layer boundary. Content and nav form contexts via
+ *   position + z-index (see per-page CSS). Sky carries isolation: isolate
+ *   in css/sky.css.
+ *
+ * Toggle points:
+ *   prefers-reduced-motion: reduce
+ *     Starfield: starfield.js draws a static frame and parks the rAF loop —
+ *       no CSS intervention required. The frozen particle snapshot persists.
+ *     Vines (Phase 2): stroke-dashoffset growth animation suppressed here.
+ *   body.low-power
+ *     Set by JS: document.body.classList.add('low-power')
+ *     Effect: canvas and vine layers hidden. The #sky gradient remains —
+ *       page is static but visually coherent with the night-sky background.
+ *     Note: body.low-power #starfield { display:none } also triggers the
+ *       existing IntersectionObserver in starfield.js (isIntersecting→false)
+ *       which calls reconcile() and cancels the rAF loop automatically.
+ */
+
+/* ── Z-index scale (CSS custom properties) ──────────────────────────────── */
+/* Phase 2.5.6: the sky split into a sandwich — night base, twinkle-star
+   canvas, campfire-glow wash — so the warm glow dims stars at the horizon. */
+:root {
+  --z-sky:     -3;  /* #sky      — night-sky base gradient   */
+  --z-stars:   -2;  /* #stars    — twinkle pinprick canvas   */
+  --z-skyglow: -1;  /* #sky-glow — campfire glow wash        */
+  --z-canvas:   0;  /* #starfield — ember/mote particles     */
+  --z-content:  1;  /* #scroll-container */
+  --z-vines:   50;  /* .vine-decor     */
+  --z-nav:    100;  /* .sticky-nav     */
+}
+
+/* ── Sky sandwich (backmost layers) ──────────────────────────────────────── */
+/* #sky and #sky-glow gradients defined in css/sky.css.
+   #stars canvas positioning is canonical here, like #starfield below. */
+#stars {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: var(--z-stars);  /* -2 — above night base, below campfire glow */
+  pointer-events: none;
+  display: block;
+}
+
+/* ── Starfield canvas ────────────────────────────────────────────────────── */
+/* Canonical location for #starfield positioning.
+   Do NOT redeclare in per-page CSS files (styles.css, content.css, etc.). */
+#starfield {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: var(--z-canvas);  /* 0 — above sky, below content */
+  isolation: isolate;        /* own stacking context; no descendant bleed */
+  pointer-events: none;
+  display: block;
+}
+
+/* ── Vine-decor layer (Phase-2 slot — reserved) ──────────────────────────── */
+/* Phase-2 will inject .vine-decor SVG corner pieces via the vine-decor
+   builder. z-index 50 seats vines above content (1) and below nav (100).
+   Vines are asymmetric, bottom-heavy — they do not collide with the
+   top-anchored nav bar. isolation: isolate confines vine composite ops. */
+.vine-decor {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-vines);  /* 50 — above content, below nav */
+  pointer-events: none;
+  isolation: isolate;
+  /* width / height / content set by Phase-2 vine implementation */
+}
+
+/* ── Toggle: prefers-reduced-motion ──────────────────────────────────────── */
+/* Starfield: js/starfield.js already handles reduced-motion — static frame
+   + rAF paused. No CSS visibility change needed for the canvas.
+   Vines (Phase 2): growth animation and any transitions suppressed here.
+   Phase-2 will also add stroke-dashoffset: 0 inside this block to show
+   the static end-state of the vine path. */
+@media (prefers-reduced-motion: reduce) {
+  .vine-decor,
+  .vine-decor * {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+/* ── Toggle: low-power / perf fallback ────────────────────────────────────── */
+/* Activate: document.body.classList.add('low-power')
+   Deactivate: document.body.classList.remove('low-power')
+   Hides canvas layers; #sky static gradient persists for visual coherence.
+   display: none on #starfield also cancels the rAF loop via the canvas's
+   IntersectionObserver (isIntersecting → false → reconcile() → cancelAnimationFrame). */
+body.low-power #starfield {
+  display: none;
+}
+body.low-power #stars {
+  display: none;
+}
+body.low-power .vine-decor {
+  display: none;
+}

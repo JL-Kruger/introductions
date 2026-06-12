@@ -1,0 +1,71 @@
+/* glow.css — pre-rendered radial-gradient glow primitive (Phase 1).
+   Zero per-frame blur cost: no feGaussianBlur, no shadowBlur.
+   Ember (warm) and spectral (cool) variants mirror the starfield particle families.
+
+   CSS usage  : add .glow-ember or .glow-spectral to any positioned HTML element.
+   SVG usage  : fill="url(#glow-ember-rg)" or "url(#glow-spectral-rg)"
+                on an aura <ellipse>/<rect> inside a symbol (defined in shared_defs_svg).
+   Canvas     : follow the glow() pattern in js/starfield.js (offscreen radialGradient + 'lighter').
+
+   All palette rgba values are the locked set from variables.yaml, with alpha. */
+
+/* ── Shimmer bridge (Phase 2.5.2, gate G2) ───────────────────────────────────
+   Sprite symbols stroke with var(--shimmer-X, url(#shimmer-X)). Custom
+   properties inherit into external-<use> shadow trees; these host-declared
+   urls resolve against THIS document's rotating gradient copies
+   (shared_defs_svg), reconnecting decor to the shimmer rAF. Without these,
+   the var falls back to sprite.svg's own static gradients (frozen look). */
+:root {
+  --shimmer-org-h:    url(#shimmer-org-h);
+  --shimmer-org-v:    url(#shimmer-org-v);
+  --shimmer-geo:      url(#shimmer-geo);
+  --shimmer-sta:      url(#shimmer-sta);
+  --shimmer-oth:      url(#shimmer-oth);
+  --shimmer-ember:    url(#shimmer-ember);
+  --shimmer-spectral: url(#shimmer-spectral);
+}
+
+.glow-ember,
+.glow-spectral {
+  position: relative;
+}
+
+/* Glow halo sits behind element content (z-index:-1), spread outside via negative inset. */
+.glow-ember::before,
+.glow-spectral::before {
+  content: '';
+  position: absolute;
+  inset: -0.6em;
+  border-radius: inherit;
+  pointer-events: none;
+  z-index: -1;
+}
+
+/* ember — sun #f2c62a → fire #eb7513 → rust #a52c16 → transparent */
+.glow-ember::before {
+  background: radial-gradient(ellipse at center,
+    rgba(242, 198,  42, .42)   0%,
+    rgba(235, 117,  19, .26)  38%,
+    rgba(165,  44,  22, .10)  68%,
+    transparent              100%
+  );
+}
+
+/* spectral — light #e8e2da → meadow #5e9a0e → forest #0e4d0e → transparent */
+.glow-spectral::before {
+  background: radial-gradient(ellipse at center,
+    rgba(232, 226, 218, .38)   0%,
+    rgba( 94, 154,  14, .22)  38%,
+    rgba( 14,  77,  14, .09)  68%,
+    transparent              100%
+  );
+}
+
+/* Reduced motion: keep glow visible but flatten it.
+   No animation to suppress here — this is a static pre-rendered primitive. */
+@media (prefers-reduced-motion: reduce) {
+  .glow-ember::before,
+  .glow-spectral::before {
+    opacity: 0.45;
+  }
+}

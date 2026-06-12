@@ -1,0 +1,76 @@
+/* vines.css — creeping-vine signature, planter pieces (Phase 2.5.4).
+   Pairs with the .vine-decor slot reserved in layers.css (z 50, fixed,
+   inset 0, pointer-events none, isolation isolate). No JS.
+
+   Two pieces (BL = planter3, BR = planter1 — Toolbox/Python/planter-extract.py),
+   each stacked as dual layers per label group:
+     .v-shimmer — gradient copy behind, offset like a thin drop shadow
+                  (the planter Glow layer pattern, minus the blur)
+     .v-line    — white skeleton on top (#e8e2da, locked light value)
+   Strokes are presentation attributes on the host <use> (set by the
+   vine_decor() emitter); growth = one stroke-dashoffset rule, normalised
+   by pathLength="100" in the sprite. Ongoing life = shimmer.js rotation. */
+
+.vine-piece { position: absolute; pointer-events: none; }
+
+/* ── Anchors + responsive sizing ─────────────────────────────────────────── */
+.vine--bl {
+  left: 0; bottom: 0;
+  height: clamp(380px, 56vh, 700px);
+  aspect-ratio: 263.25 / 752.48;
+  --pd: 0s;
+}
+.vine--br {
+  right: 0; bottom: 0;
+  height: clamp(280px, 40vh, 500px);
+  aspect-ratio: 81.53 / 584.1;
+  --pd: .4s;
+}
+
+/* ── Dual-layer offset ───────────────────────────────────────────────────────
+   The shimmer copy sits behind (markup order) and shifts up 2 units like the
+   planter sources' Glow layer (translate(0,-2)). Slightly translucent so the
+   white line stays the read. */
+.vine-piece .v-shimmer {
+  transform: translate(0, -2px);
+  opacity: .9;
+}
+
+/* ── Growth — hidden until drawn ─────────────────────────────────────────────
+   dasharray/dashoffset are inherited SVG presentation properties: set on the
+   <use>, they propagate into the external-<use> shadow tree (gate G1). */
+.vine-piece use { stroke-dasharray: 100; stroke-dashoffset: 100; }
+
+@keyframes v-draw { to { stroke-dashoffset: 0; } }
+
+/* Choreography — structure (statics+geometrics) rises first, the organic
+   vine grows over it; per-piece beat via --pd. One-shot, ease-out. */
+.vine-piece .v-struct {
+  animation: v-draw 1.4s cubic-bezier(.22, .61, .36, 1) forwards;
+  animation-delay: calc(.15s + var(--pd));
+}
+.vine-piece .v-vine {
+  animation: v-draw 2.2s cubic-bezier(.22, .61, .36, 1) forwards;
+  animation-delay: calc(.9s + var(--pd));
+}
+
+/* ── Responsive collapse ─────────────────────────────────────────────────────*/
+@media (max-width: 1023px) {
+  .vine--bl { height: clamp(300px, 44vh, 520px); }
+  .vine--br { height: clamp(220px, 30vh, 380px); }
+}
+@media (max-width: 639px) {
+  .vine--br { display: none; }
+  .vine--bl { height: clamp(220px, 34vh, 320px); opacity: .85; }
+}
+@media (orientation: landscape) and (max-height: 520px) {
+  .vine--bl { height: min(46vh, 320px); }
+  .vine--br { height: min(40vh, 280px); }
+}
+
+/* ── Reduced motion — show grown end-state; layers.css kills the animation ───*/
+@media (prefers-reduced-motion: reduce) {
+  .vine-piece use { stroke-dashoffset: 0; }
+}
+
+/* low-power: .vine-decor already hidden by layers.css — nothing needed here. */

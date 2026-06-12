@@ -1,0 +1,265 @@
+# site.yaml - global config consumed by all builder agents.
+# Edit this file directly. Run the relevant builder after changes.
+
+meta:
+  title: JL Site Manifests
+  slug: site-manifests
+  description: "Managing most stuff from like, three files."
+  tags: config global manifest human-authored
+
+site:
+  title: JL Kruger
+  slug: jl-kruger-introductions
+  description: "JL Kruger: Multimedia Maker and Community Builder"
+  url: https://jlkruger.exopraxist.org
+  github_pages_mirror: https://jl-kruger.github.io/introductions
+  author: JL Kruger
+
+# Top navbar - excluded from homepage
+
+navbar:
+  - label: Downloads
+    href: https://space.exopraxist.org/ToolsnToys/toolsntoys.html
+  - label: Explore
+    href: content.html
+  - label: Projects
+    href: /Content/Business/CurrentProjects.html
+  - label: Skills
+    href: /Content/Business/SkillsRates.html
+  - label: Work
+    href: /Content/Business/WorkHistory.html
+  - label: Contact
+    href: /Content/Business/ContactPage.html
+
+# homepage content for index.html
+#
+# Each page section is a `layout:` MAPPING whose keys are named regions
+# (navbar_home, frame_overlay, bento_left/center/right). Every bento item is a
+# single-key map whose key is its type: text | special | h1 | h2 | h3 | critter
+# | thumbnail | logo | card. The builder dispatches on that one key. `card`
+# values are a nested map (style, label, href, description, thumbnail).
+
+homepage:
+  layout:
+    navbar_home:
+      - label: Discover
+        href: /Content/Writings/MyArgument.html
+      - label: Engage
+        href: /Content/Business/SkillsRates.html
+      - label: Collaborate
+        href: /Content/Business/ContactPage.html
+
+    frame_overlay:
+      desktop_view: SVG-Assets/jl-site-frame-homepage-desktop.svg
+      mobile_view:  SVG-Assets/jl-site-frame-homepage-mobile.svg
+
+    bento_left:
+      - text: "Oh, hello there :) my name is"
+      - special: "JL Kruger"
+      - text: "Think of me as a"
+      - h1: "Multimedia Maker and Community Builder"
+      - text: "I build and make stuff, create and do things,"
+      - text: "online and in the world around me."
+      - thumbnail: /Media/Images/jl-site-thumbnail-portrait.webp
+
+    bento_center:
+      - logo: /SVG-Assets/jl-site-logo-homepage.svg
+
+    bento_right:
+      - text: "I work at the intersection of"
+      - special: "education, technology, art and community."
+      - text: "welcome to my piece of the internet"
+      - text: "Have a click around. You're smart."
+      - h2: "You know what's what and what isn't."
+      - text: "Or flick around and find out. Your choice."
+      - critter: jl-site-critter2.svg
+
+  featured_links:
+    - label: "Current Projects"
+      href: /Content/Business/CurrentProjects.html
+    - label: "Work History"
+      href: /Content/Business/WorkHistory.html
+    - label: "My Argument"
+      href: /Content/Writings/MyArgument.html
+    - label: "The Archive"
+      href: https://space.exopraxist.org/
+    - label: "Communities & Collaborators"
+      href: /Content/Business/CollaboratorsCommunities.html
+
+# contenthub content for content.html
+# Hub and placeholder use the global `navbar` (above); only the homepage
+# carries its own `navbar_home`.
+
+contenthub:
+  layout:
+    frame_overlay:
+      desktop_view: SVG-Assets/jl-site-frame-contenthub-desktop.svg
+      mobile_view:  SVG-Assets/jl-site-frame-contenthub-mobile.svg
+
+    bento_left:
+      - logo: /SVG-Assets/jl-site-logo-main.svg
+      - h3: "You found my"
+      - h1: "Content Index"
+      - text: "This is what is currently,"
+      - text: "available around the site"
+      - critter: jl-site-critter1.svg
+      - h2: "Business Pages"
+      - card:
+          style: static
+          label: "Current Projects"
+          href: /Content/Business/CurrentProjects.html
+          description: "My present preoccupations, in lieu of more pressing concerns and preferential commitments."
+          thumbnail: /Media/Images/jl-site-thumbnail-projects.webp
+      - card:
+          style: static
+          label: "Contact Information"
+          href: /Content/Business/ContactPage.html
+          description: "Let's Collaborate"
+          thumbnail: /Media/Images/jl-site-thumbnail-contact.webp
+      - card:
+          style: standard
+          label: "Skills & Rates"
+          href: /Content/Business/SkillsRates.html
+          description: "Looking to hire me? Here's what I do and what it costs."
+          thumbnail: /Media/Images/jl-site-thumbnail-skills.webp
+      - card:
+          style: static
+          label: "Work History"
+          href: /Content/Business/WorkHistory.html
+          description: "Looking for my Resume? Here it be."
+          thumbnail: /Media/Images/jl-site-thumbnail-workhistory.webp
+      - card:
+          style: static
+          label: "Communities & Collaborators"
+          href: /Content/Business/CollaboratorsCommunities.html
+          description: "The fine folks I have the frequent pleasure of working with fairly regularly."
+          thumbnail: /Media/Images/jl-site-thumbnail-communities.webp
+
+    bento_center:
+      - critter: jl-site-critter2.svg
+      - h2: "Writings"
+      - card:
+          style: featured
+          label: "In Favor of Working Together"
+          href: Content/Writings/MyArgument.html
+          description: "Wherein I make my personal case for the above."
+          thumbnail: /Media/Images/jl-site-thumbnail-portrait.webp
+      - special: "What may, in some savage and uncivilised quarters, be referred to as essays, provided the appropriate condescension is exorcised."
+      - card:
+          style: static
+          label: "Doomy McDoomface"
+          href: Content/Writings/doomy-mcdoomface.html
+          description: "OR: How we learned to stop questioning and accepted insanity."
+          thumbnail: /Media/Images/jl-site-thumbnail-doomy.webp
+      - card:
+          style: static
+          label: "A Note for the End of the Start"
+          href: Content/Writings/note-for-the-end.html
+          description: "Pandemical musings that have become somewhat more salient of late."
+          thumbnail: /Media/Images/jl-site-thumbnail-endnotestart.webp
+      - card:
+          style: static
+          label: "There is Nothing New About This Normal"
+          href: Content/Writings/nothing-new-about-normal.html
+          description: "A rant adjacent to a screed dressed up as a tyrade akin to a polemic against attempts to manufacture consent."
+          thumbnail: /Media/Images/jl-site-thumbnail-nnatn.webp
+      - card:
+          style: static
+          label: "What We Get Wrong About Politics"
+          href: Content/Writings/politics-annotated.html
+          description: "Tell me you're an anarchist, without telling me you're an anarchist."
+          thumbnail: /Media/Images/jl-site-thumbnail-politics.webp
+      - card:
+          style: static
+          label: "I AM AN ARGUMENT"
+          href: Content/Writings/IAMANARGUMENT.html
+          description: "Call a doctor if it starts to twitch."
+          thumbnail: /Media/Images/jl-site-thumbnail-arg.webp
+
+    bento_right:
+      - h3: "Selected fictions and flights of fancy."
+      - card:
+          style: static
+          label: "Escape"
+          href: Content/Writings/escape-annotated-v2.html
+          description: "It's a chase story. More than that will spoil it."
+          thumbnail: /Media/Images/jl-site-thumbnail-escape.webp
+      - card:
+          style: static
+          label: "Whoniverse Fanfic"
+          href: Content/Writings/whoniverse-annotated.html
+          description: "I went going through a phase many years back. Nonetheless, I think these hold up well, whether you're into Doctor Who or not."
+          thumbnail: /Media/Images/jl-site-thumbnail-drwho.webp
+      - card:
+          style: special
+          label: "Sky Fishing"
+          href: Content/Writings/SkyFishing_Annotated.html
+          description: "The story that birthed my DnD campaign setting."
+          thumbnail: /Media/Images/jl-site-thumbnail-skyfishing.webp
+      - card:
+          style: static
+          label: "Snacks"
+          href: Content/Writings/snacks-annotated.html
+          description: "A young writer who knew precious little about women, relationships, or romcoms. It has a charm though, in an early 2010s kinda way."
+          thumbnail: /Media/Images/jl-site-thumbnail-snacks.webp
+      - card:
+          style: static
+          label: "My Himitsu"
+          href: Content/Writings/my-himitsu.html
+          description: "A story that has followed me around since I wrote it 12 years ago."
+          thumbnail: /Media/Images/jl-site-thumbnail-himitsu.webp
+      - card:
+          style: static
+          label: "How to Build a Raft"
+          href: Content/Writings/HowToBuildARaft_Annotated.html
+          description: "A very strange little tale told when I was wrestling with my sense of faith in the face of the future."
+          thumbnail: /Media/Images/jl-site-thumbnail-raft.webp
+      - card:
+          style: standard
+          label: "Singular Particular Space"
+          href: https://space.exopraxist.org
+          description: "If you want more, there it is."
+          thumbnail: /Media/Images/jl-site-thumbnail-space.webp
+      - critter: jl-site-critter3.svg
+
+# placeholderpage content for 404.html
+
+placeholder:
+  layout:
+    frame_overlay:
+      desktop_view: SVG-Assets/jl-site-frame-contenthub-desktop.svg
+      mobile_view:  SVG-Assets/jl-site-frame-contenthub-mobile.svg
+
+    bento_left:
+      - logo: /SVG-Assets/jl-site-logo-main.svg
+      - h2: "Oops, you've found yourself somewhere'"
+      - h1: "UNDER CONSTRUCTION"
+      - critter: jl-site-critter2.svg
+      - card:
+          style: static
+          label: "Work History"
+          href: /Content/Business/WorkHistory.html
+          description: "Looking for my Resume? Here it be."
+          thumbnail: /Media/Images/jl-site-thumbnail-workhistory.webp
+
+    bento_center:
+      - special: "Writings"
+      - card:
+          style: featured
+          label: "In Favor of Working Together"
+          href: /Content/Writings/MyArgument.html
+          description: "Wherein I make my personal case for the above."
+          thumbnail: /Media/Images/jl-site-thumbnail-portrait.webp
+      - h3: "What may, in some savage and uncivilised quarters, be referred to as essays, provided the appropriate condescension is exorcised."
+
+    bento_right:
+      - card:
+          style: static
+          label: "Contact Information"
+          href: /Content/Business/ContactPage.html
+          description: "Let's Collaborate"
+          thumbnail: /Media/Images/jl-site-thumbnail-contact.webp
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Design tokens (colours, typography, gradients, animation, layout) now live in
+# Toolbox/Python/variables.yaml. This file owns content & structure only.

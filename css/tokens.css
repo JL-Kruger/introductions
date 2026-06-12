@@ -14,4 +14,28 @@
   --content-max-w:  680px;
   --content-pad-v:  42vh;
   --lh:             1.5;
+
+  /* Fluid type — clamp() steps, see LAYOUT-SPEC.md §3 */
+  --step--1: clamp(0.8333rem, 0.8061rem + 0.1212vw, 0.9rem);
+  --step-0: clamp(1rem, 0.9489rem + 0.2273vw, 1.125rem);
+  --step-1: clamp(1.2rem, 1.1156rem + 0.375vw, 1.4062rem);
+  --step-2: clamp(1.44rem, 1.31rem + 0.5778vw, 1.7578rem);
+  --step-3: clamp(1.728rem, 1.536rem + 0.8532vw, 2.1973rem);
+  --step-4: clamp(2.0736rem, 1.7983rem + 1.2236vw, 2.7466rem);
+  --step-5: clamp(2.4883rem, 2.1018rem + 1.718vw, 3.4332rem);
+  --step-6: clamp(2.986rem, 2.4519rem + 2.3737vw, 4.2915rem);
+
+  /* Vertical rhythm + spacing scale, see LAYOUT-SPEC.md §2 */
+  --rhythm: calc(var(--step-0) * var(--lh));
+  --space-3xs: calc(var(--rhythm) * 0.25);
+  --space-2xs: calc(var(--rhythm) * 0.5);
+  --space-xs: calc(var(--rhythm) * 0.75);
+  --space-s: calc(var(--rhythm) * 1);
+  --space-m: calc(var(--rhythm) * 1.5);
+  --space-l: calc(var(--rhythm) * 2);
+  --space-xl: calc(var(--rhythm) * 3);
+  --space-2xl: calc(var(--rhythm) * 4);
+  --space-3xl: calc(var(--rhythm) * 6);
+
+  --measure: 42rem;   /* ideal prose line length */
 }

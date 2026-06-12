@@ -14,7 +14,7 @@
  * IntersectionObserver — no scroll listener, no forced reflow.
  */
 
-import { prepareWithSegments, layoutWithLines } from '@chenglou/pretext'
+import { prepareWithSegments, layoutWithLines } from './vendor/pretext/pretext.mjs'
 
 // ── Configuration ─────────────────────────────────────────────────────────
 const CONFIG = {

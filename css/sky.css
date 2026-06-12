@@ -1,0 +1,51 @@
+/* sky.css — sky sandwich: night-sky base (#sky) + campfire glow wash (#sky-glow).
+   Phase 2.5.6: split into two fixed layers so the #stars twinkle canvas
+   (layers.css, z -2) renders BETWEEN them — the warm glow washes over stars
+   near the horizon. Pure CSS, zero JS in both layers.
+   (City-glow horizon band removed 2026-06-12 — Phase 2.5.1.)
+   Palette source: variables.yaml › colors › palette (--fire, --rust, --sun, --jungle).
+   Rgba stops are semitransparent versions of locked palette hex values. */
+
+/* ── Backmost: night-sky base — near-black above, jungle-green at horizon.
+      Six stops to keep transitions smooth (no banding).
+      Top  = #010403 (slightly-green near-black)
+      Base = var(--jungle) #073720 at horizon */
+#sky {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-sky, -3);
+  pointer-events: none;
+  isolation: isolate;
+  background: linear-gradient(
+    180deg,
+    #010403  0%,
+    #010c06 22%,
+    #011008 44%,
+    #021a0a 65%,
+    #042b0f 82%,
+    var(--jungle) 100%
+  );
+}
+
+/* ── Above the stars: campfire glow — warm ember pool below the frame,
+      bleeding upward. Center at 112% (below viewport edge) so only the
+      upper arc is visible. --fire=#eb7513, --sun=#f2c62a, --rust=#a52c16 */
+#sky-glow {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-skyglow, -1);
+  pointer-events: none;
+  isolation: isolate;
+  background: radial-gradient(
+    ellipse 90% 50% at 50% 112%,
+    rgba(235, 117,  19, 0.72)  0%,
+    rgba(242, 198,  42, 0.18) 26%,
+    rgba(165,  44,  22, 0.07) 50%,
+    transparent                65%
+  );
+}
+
+@media (prefers-reduced-motion: reduce) {
+  /* Both layers are static — nothing to suppress. Rule kept as an explicit
+     no-op so future edits with transitions added here know to check this. */
+}

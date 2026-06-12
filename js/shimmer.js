@@ -2,11 +2,13 @@
 // tags: shimmer animation gradient raf interaction
 
 const GRAD_IDS = [
-  { id: 'shimmer-org-h', off: 0   },
-  { id: 'shimmer-org-v', off: 90  },
-  { id: 'shimmer-geo',   off: 44  },
-  { id: 'shimmer-sta',   off: 88  },
-  { id: 'shimmer-oth',   off: 144 },
+  { id: 'shimmer-org-h',    off: 0   },
+  { id: 'shimmer-org-v',    off: 90  },
+  { id: 'shimmer-geo',      off: 44  },
+  { id: 'shimmer-sta',      off: 88  },
+  { id: 'shimmer-oth',      off: 144 },
+  { id: 'shimmer-ember',    off: 22  },   // warm: sun/fire/rust glow strokes
+  { id: 'shimmer-spectral', off: 110 },   // cool: light/meadow/forest glow strokes
 ]
 
 const GRAD_BASE  = 360 / 22    // 16.4 deg/s

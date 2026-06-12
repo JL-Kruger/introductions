@@ -1,0 +1,61 @@
+# tags: content-page, business, resume
+
+meta:
+  title: JL Kruger Contact Information
+  slug: ContactPage
+  description: "Let's Collaborate"
+
+blocks:
+  
+  - type: heading
+    level: 1
+    text: "Let's Collaborate"
+
+  - type: separator
+    svg: jl-site_separator1.svg
+
+  - type: special
+    text: >
+      I mean... I'm assuming you clicked here to reach out.
+
+  - type: image
+    src: /Media/Images/jl-site-pic-arg.webp
+
+  - type: heading
+    level: 2
+    text: "Here are some ways to find me and get my attention."
+
+  - type: button
+    text: WhatsApp
+    href: https://wa.me/+27840408857?text=%2AWebsite%20Enquiry%2A%20Please%20leave%20this%20line%20here%20so%20that%20I%20have%20context%20for%20your%20message.%0D%0A
+
+  - type: separator
+    svg: jl-site-separator4.svg
+
+  - type: image
+    src: /Media/Images/jl-site-pic-snacks.webp
+
+  - type: button
+    text: Email
+    href: mailto:jlkruger@3scfoundations.org?subject=Enquiry%20About%20Your%20Website%20-%20Source%20-%20Argument%20Page&body=Hi%20there.%20Thanks%20for%20reaching%20out.%20The%20more%20context%20you%20give%20me,%20the%20better%20I%20can%20understand%20how%20I%20may%20be%20of%20service.%20I%20also%20do%20not%20suffer%20from%20context%20rot,%20or%20context%20collapse.
+
+  - type: button
+    text: Another Email Address
+    href: mailto:julianlkruger@gmail.com?subject=Enquiry%20About%20Your%20Website%20-%20Source%20-%20Argument%20Page&body=Hi%20there.%20Thanks%20for%20reaching%20out.%20The%20more%20context%20you%20give%20me,%20the%20better%20I%20can%20understand%20how%20I%20may%20be%20of%20service.%20I%20also%20do%20not%20suffer%20from%20context%20rot,%20or%20context%20collapse.
+
+  - type: critter
+    svg: jl-site-critter3.svg
+
+  - type: button
+    text: Github
+    href: https://github.com/JL-Kruger
+
+  - type: button
+    text: Bluesky
+    href: https://bsky.app/profile/julian-l-kruger.bsky.social
+
+  - type: separator
+    svg: jl-site_separator4.svg
+
+  - type: image
+    src: /Media/Images/jl-site-logo-fancy.svg
