@@ -44,7 +44,7 @@ h2 { font-size: var(--step-3);
      color: var(--sun);
 }
 h3 { font-size: var(--step-2);
-     color: var(--rust);
+     color: var(--meadow);
 }
 h4, h5, h6 {
   font-family: 'Walter Turncoat', 'Noto Sans Symbols 2', 'Noto Emoji', cursive;
@@ -58,8 +58,8 @@ a:visited    { color: var(--rust); }
 
 .special {
   font-family: 'Protest Revolution', 'Noto Sans Symbols 2', 'Noto Emoji', sans-serif;
-  color: var(--forest);
-  font-size: var(--step-6);
+  color: var(--meadow);
+  font-size: var(--step-3);
   letter-spacing: 0.03em;
   line-height: 1.2;
 }
@@ -330,6 +330,13 @@ a:visited    { color: var(--rust); }
   }
   .mobile-nav-dropdown a:hover { color: var(--fire); opacity: 1; }
 }
+
+/* ── Hub column text — centre the column's own copy ─────────────────────── */
+/* Headings, intro paragraphs and the .special display line centre within each
+   column. Cards keep their authored left alignment — reassert it on .card-body
+   so the column centring doesn't cascade into them. */
+.hub-col { text-align: center; }
+.hub-col .card-body { text-align: left; }
 
 /* ── Hub column — keyboard focus (a11y, D5) ─────────────────────────────── */
 .hub-col:focus-visible {

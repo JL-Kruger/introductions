@@ -18,7 +18,7 @@ body {
   color: var(--light);
   font-family: 'Overlock', 'Noto Sans Symbols 2', 'Noto Emoji', serif;
   font-size: var(--step-0);     /* fluid 16→18 px; no static override */
-  line-height: var(--lh);       /* 1.5 everywhere; makes --rhythm the real line height */
+  line-height: var(--lh);
   font-feature-settings: "kern" 1, "liga" 1;
   text-rendering: optimizeLegibility;
   min-block-size: 100svh;       /* fill without clipping; page scrolls past this */
@@ -32,18 +32,27 @@ h1, h2, h3, h4, h5, h6 { margin: 0; hyphens: none; }
 h1 {
   font-family: 'Tagesschrift', 'Noto Sans Symbols 2', 'Noto Emoji', serif;
   color: var(--fire);
+  font-size: var(--step-2);
   line-height: 1.15;
   letter-spacing: 0.02em;
 }
-h2, h3 {
-  font-family: 'Walter Turncoat', 'Noto Sans Symbols 2', 'Noto Emoji', cursive;
+h2 {
+  font-family: 'Tagesschrift', 'Noto Sans Symbols 2', 'Noto Emoji', cursive;
   color: var(--meadow);
+  font-size: var(--step-2);
+  line-height: 1.15;
+  letter-spacing: 0.04em;
+}
+h3 {
+  font-family: 'Walter Turncoat', 'Noto Sans Symbols 2', 'Noto Emoji', cursive;
+  color: var(--rust);
+  font-size: var(--step-0);
   line-height: 1.25;
   letter-spacing: 0.04em;
 }
 h4, h5, h6 {
   font-family: 'Walter Turncoat', 'Noto Sans Symbols 2', 'Noto Emoji', cursive;
-  color: var(--rust);
+  color: var(--forest);
 }
 blockquote { color: var(--sun); }
 
@@ -54,9 +63,8 @@ a:visited    { color: var(--pigment); }
 .special {
   font-family: 'Protest Revolution', 'Noto Sans Symbols 2', 'Noto Emoji', sans-serif;
   color: var(--sun);
-  font-size: var(--step-6);    /* replaces the old inverted clamp(3.6rem,3.6vw,2.4rem) */
+  font-size: var(--step-2);    
   letter-spacing: 0.03em;
-  line-height: 1.2;
 }
 
 /* ── Sticky nav ──────────────────────────────────────────────────────────── */
@@ -195,12 +203,23 @@ a:visited    { color: var(--pigment); }
   cursor: pointer;
 }
 /* Homepage logo: scale the SVG to the column (it carries an intrinsic 904px
-   width). CSS sizing — never the invalid height="auto" SVG attribute. */
-.bento-center .logo-link { display: block; }
+   width). CSS sizing — never the invalid height="auto" SVG attribute.
+   The deliberate >100% overscale (below) makes the SVG wider than its column,
+   so it must be centred by axis, not by flow/flex justification (an over-wide
+   flex item escapes to the end instead of centring). left:50% + translateX
+   pins the SVG's centre to the column's centre at every width, so the overscale
+   bleeds symmetrically on both sides. */
+.bento-center .logo-link {
+  display: block;
+  width: 100%;
+}
 #logo-svg {
   width: min(132%, 30rem);
   height: auto;
   display: block;
+  position: relative;
+  left: 50%;
+  transform: translateX(-50%);
 }
 
 .thumbnail-wrap {

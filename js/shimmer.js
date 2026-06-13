@@ -15,10 +15,20 @@ const GRAD_BASE  = 360 / 22    // 16.4 deg/s
 const GRAD_HOVER = 360 / 8     // 45 deg/s
 const GRAD_CLICK = 360 / 0.88  // 409 deg/s
 
+// Repaint throttle: the angle is integrated every rAF frame (so speed stays
+// exact and interaction stays responsive), but the expensive writes — 7 SVG
+// gradientTransform mutations that repaint ALL gradient-referencing decor, plus
+// the --shimmer-deg property the starfield reads — fire only PAINT_HZ times a
+// second. At 16.4 deg/s base rotation the difference from 60fps is imperceptible
+// while the per-frame decor repaint cost roughly halves. (REVIEW.md rec ①.)
+const PAINT_HZ = 30
+const PAINT_MS = 1000 / PAINT_HZ
+
 let gradAngle  = 0
 let gradSpeed  = GRAD_BASE
 let gradTarget = GRAD_BASE
 let gradLast   = null
+let gradPaint  = null
 let rafId      = null
 
 let isReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
@@ -29,18 +39,22 @@ function gradTick(ts) {
   gradLast = ts
   gradSpeed += (gradTarget - gradSpeed) * Math.min(6 * dt, 1)
   gradAngle  = (gradAngle + gradSpeed * dt) % 360
-  GRAD_IDS.forEach(({ id, off }) => {
-    const a = (gradAngle + off) % 360
-    document.getElementById(id)
-      ?.setAttribute('gradientTransform', `rotate(${a.toFixed(2)},0.5,0.5)`)
-  })
-  document.documentElement.style.setProperty('--shimmer-deg', gradAngle.toFixed(2) + 'deg')
+  if (gradPaint === null || ts - gradPaint >= PAINT_MS) {
+    gradPaint = ts
+    GRAD_IDS.forEach(({ id, off }) => {
+      const a = (gradAngle + off) % 360
+      document.getElementById(id)
+        ?.setAttribute('gradientTransform', `rotate(${a.toFixed(2)},0.5,0.5)`)
+    })
+    document.documentElement.style.setProperty('--shimmer-deg', gradAngle.toFixed(2) + 'deg')
+  }
   rafId = requestAnimationFrame(gradTick)
 }
 
 function startShimmer() {
   if (!isReducedMotion && rafId === null) {
     gradLast = null
+    gradPaint = null
     rafId = requestAnimationFrame(gradTick)
   }
 }

@@ -13,7 +13,7 @@ const canvas=document.getElementById('starfield');
 if(canvas){
   const ctx=canvas.getContext('2d'),mq=window.matchMedia('(prefers-reduced-motion: reduce)');
   let reduced=mq.matches,visible=!document.hidden,onscreen=true;
-  let dpr=1,cssW=0,cssH=0,particles=[],sprites=new Map();
+  let dpr=1,cssW=0,cssH=0,particles=[],sprites=new Map(),mobile=false;
   let rafId=null,lastTs=null,resizeTimer=null;
   const rand=(a,b)=>a+Math.random()*(b-a);
   const pick=w=>{let r=Math.random();for(const[c,p]of w)if((r-=p)<=0)return c;return w[0][0];};
@@ -57,7 +57,11 @@ if(canvas){
     vx:rand(-10,10),vy:rand(-10,10),size:rand(8,22),baseAlpha:rand(.30,.65),
     alpha:0,phase:rand(0,7),freq:rand(.15,.5),sprite:glow(rgb)};};
 
-  const countTarget=()=>Math.max(24,Math.min(+(canvas.dataset.max||110),Math.round(cssW*cssH/12000)));
+  // Mobile-scale (REVIEW.md rec ②): the area formula already pins true phones
+  // near the floor, so the lever that matters is the upper cap — it bites on
+  // larger/foldable screens and on the DevTools 4× CPU fps gate. Tighten both
+  // the particle and twinkle caps on narrow viewports.
+  const countTarget=()=>Math.max(24,Math.min(+(canvas.dataset.max||(mobile?45:70)),Math.round(cssW*cssH/12000)));
 
   // ── twinkle layer (#stars, sky sandwich) ─────────────────────────────────
   const starsCv=document.getElementById('stars');
@@ -68,7 +72,7 @@ if(canvas){
     if(!starsCtx)return;
     starsCv.width=Math.round(cssW*dpr);starsCv.height=Math.round(cssH*dpr);
     starsCtx.setTransform(dpr,0,0,dpr,0,0);
-    const n=Math.max(120,Math.min(360,Math.round(cssW*cssH/4500)));
+    const n=Math.max(mobile?80:120,Math.min(mobile?180:360,Math.round(cssW*cssH/4500)));
     bgStars=[];
     for(let i=0;i<n;i++){
       const r=Math.random();
@@ -97,6 +101,7 @@ if(canvas){
   function resize(){
     dpr=Math.min(window.devicePixelRatio||1,1.5);
     cssW=canvas.clientWidth;cssH=canvas.clientHeight;
+    mobile=cssW<640;
     canvas.width=Math.round(cssW*dpr);canvas.height=Math.round(cssH*dpr);
     ctx.setTransform(dpr,0,0,dpr,0,0);
     const t=countTarget();
