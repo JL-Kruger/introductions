@@ -38,4 +38,5 @@
   --space-3xl: calc(var(--rhythm) * 6);
 
   --measure: 42rem;   /* ideal prose line length */
+  --measure-wide: 75rem;   /* hero/hub region cap */
 }

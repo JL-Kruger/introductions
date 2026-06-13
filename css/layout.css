@@ -1,0 +1,161 @@
+/* layout.css — reusable layout primitives: stack / center / grid.
+   Link after css/tokens.css in every builder that uses these primitives.
+   See LAYOUT-SPEC.md §5, §6, §9, §10.1 for rationale + container strategy. */
+
+/* Breakpoint strategy — plain @media (min-width: 52rem), NOT container queries.
+   A container query needs a container-type ancestor; the only viable one here
+   is body (the bento's own .hero/.hub element collapses to 0 under
+   container-type because it also carries margin-inline:auto from .center-wide).
+   But container-type applies layout containment, which makes that element the
+   containing block for position:fixed descendants — and the sky/star/glow
+   layers are fixed children of body. Containing them to body stretches the
+   gradients to full document height once the page scrolls, so the viewport
+   shows only the near-black top of the sky (flat black). Since body's
+   inline-size == the viewport, @media is exactly equivalent and side-effect
+   free. All 52rem rungs below use @media. */
+
+/* ── Stack — vertical rhythm between flow siblings ───────────────────────── */
+.stack { display: flow-root; }
+.stack > * { margin-block: 0; }
+.stack > * + * { margin-block-start: var(--stack-space, var(--space-s)); }
+
+.stack-xs { --stack-space: var(--space-xs); }
+.stack-m  { --stack-space: var(--space-m);  }
+.stack-l  { --stack-space: var(--space-l);  }
+
+.stack-split > :last-child { margin-block-start: auto; }
+
+/* ── Center — centred measure column ─────────────────────────────────────── */
+.center {
+  box-sizing: content-box;
+  max-inline-size: var(--measure);
+  margin-inline: auto;
+  padding-inline: var(--space-s);
+}
+/* Wide centred region for non-prose content (hero, hub bento).
+   Standalone sibling of .center — carries its own centering. */
+.center-wide {
+  box-sizing: content-box;
+  max-inline-size: var(--measure-wide);
+  margin-inline: auto;
+  padding-inline: var(--space-s);
+}
+
+/* ── Grid — intrinsically responsive grid ────────────────────────────────── */
+.grid {
+  display: grid;
+  gap: var(--grid-gap, var(--space-m));
+  grid-template-columns: repeat(auto-fit, minmax(min(var(--grid-min, 16rem), 100%), 1fr));
+}
+
+/* ── Hero region (homepage) — LAYOUT-SPEC.md §9.3, §10.1 ────────────────── */
+/* main.hero.center-wide: flex:1 fills the viewport below the sticky nav and
+   centres the bento on tall screens; never clips (no overflow:hidden, no
+   height:100dvh). The page scrolls naturally when content overflows.
+   position+z-index replaces the old #scroll-container stacking context.
+   align-content (not place-content) keeps justify-content at its default
+   "normal" = stretch, so the single implicit auto column fills the full
+   container width. The 52rem 3-col rung is a plain @media (see top note). */
+.hero {
+  flex: 1 1 auto;
+  display: grid;
+  align-content: center;
+  padding-block: var(--space-2xl);
+  position: relative;
+  z-index: var(--z-content);
+}
+
+/* Bento: 1-col (mobile-first). Exact 3-col at the 52rem page container rung. */
+.hero-bento {
+  --grid-min: 100%;
+  align-items: start;
+}
+@media (min-width: 52rem) {
+  /* minmax(0,1fr) — not 1fr (= minmax(auto,1fr)) — so an oversized item (the
+     scaled-up logo, width:min(132%,30rem)) overflows its track *visually*
+     instead of stretching the track and forcing the whole grid/page wider than
+     the viewport. The fixed viewport-width sky gradients can't cover horizontal
+     page overflow, so a blown-out track reads as a displaced background. */
+  .hero-bento { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+
+/* Column stack gap */
+.hero-col { --stack-space: var(--space-m); }
+
+/* Center column (logo): override flow-root with flex column to honour align-items. */
+.hero-col.bento-center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+/* Featured-links button row — sits below the bento. Mobile-first: a single
+   stacked column (flex-direction:column; buttons stretch full-width via the
+   default align-items:stretch). At the 52rem page rung it becomes one row
+   spanning the page — each button grows from its content width to share the
+   row (see styles.css .media-btn-wrap flex), wrapping only if the labels
+   genuinely cannot fit. */
+.hero-actions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-s);
+  margin-block-start: var(--space-xl);
+}
+@media (min-width: 52rem) {
+  .hero-actions {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+  }
+}
+
+/* ── Hub region (content hub) — LAYOUT-SPEC.md §9.3, §10.2 ──────────────── */
+/* main.hub.center-wide: flex:1 fills viewport below nav. align-content:center
+   centres the bento on mobile/short viewports (justify-content stays at its
+   default "normal" = stretch so the auto column fills full width — same fix
+   as .hero above). At 52rem a media query switches to align-content:stretch
+   so hub-bento fills the full hub height for per-column scroll. */
+.hub {
+  flex: 1 1 auto;
+  display: grid;
+  align-content: center;
+  padding-block: var(--space-xl);
+  position: relative;
+  z-index: var(--z-content);
+}
+@media (min-width: 52rem) {
+  .hub { align-content: stretch; }
+}
+
+/* Bento: 1-col (mobile-first). Exact 3-col at the 52rem page container rung.
+   No 2-up intermediate — the three columns are semantic groups (Business /
+   Writings / Fiction). */
+.hub-bento {
+  --grid-min: 100%;
+  --grid-gap: var(--space-l);
+  align-items: start;
+}
+@media (min-width: 52rem) {
+  /* Three-column layout + per-column independent scroll. */
+  .hub-bento {
+    grid-template-columns: repeat(3, minmax(0, 1fr));  /* see .hero-bento note */
+    align-items: stretch;
+    /* 4rem ≈ nav height (0.9rem×2 padding + step-2 at median × 1.5 lh);
+       if the nav is restyled this value should be updated here. */
+    max-block-size: calc(100svh - 4rem - 2 * var(--space-xl));
+  }
+  .hub-col {
+    min-block-size: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    /* Scroll, but no visible scrollbar chrome — Firefox, legacy Edge, WebKit. */
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  .hub-col::-webkit-scrollbar { display: none; }
+}
+
+/* Column stack gap — cards within each column spaced at --space-m */
+.hub-col { --stack-space: var(--space-m); }

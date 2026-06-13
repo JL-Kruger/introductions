@@ -3,7 +3,7 @@
  * Z-stack (back → front):
  *   sky (-1)      — css/sky.css. Fixed full-viewport CSS gradient. Zero JS.
  *   starfield (0) — canvas particle field. Animated; pauses when hidden.
- *   content (1)   — #scroll-container. Page content.
+ *   content (1)   — main.hero / main.hub. Page content.
  *   vines (50)    — .vine-decor. Phase-2 SVG corner decor (slot reserved).
  *   nav (100)     — .sticky-nav. Sticky navigation bar.
  *
@@ -35,7 +35,7 @@
   --z-stars:   -2;  /* #stars    — twinkle pinprick canvas   */
   --z-skyglow: -1;  /* #sky-glow — campfire glow wash        */
   --z-canvas:   0;  /* #starfield — ember/mote particles     */
-  --z-content:  1;  /* #scroll-container */
+  --z-content:  1;  /* main.hero (homepage) / main.hub (hub) */
   --z-vines:   50;  /* .vine-decor     */
   --z-nav:    100;  /* .sticky-nav     */
 }

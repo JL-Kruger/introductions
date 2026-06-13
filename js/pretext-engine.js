@@ -141,7 +141,6 @@ export class PretextEngine {
   // init(containerEl, scrollEl, blocks, svgs, commonSvgs) → void
   // Called once per page. Awaits fonts, then builds DOM and starts IO.
   init(containerEl, scrollEl, blocks, svgs, commonSvgs) {
-    this._fontsP   = document.fonts.ready
     this.container = containerEl
     this.scrollEl  = scrollEl
     this.blocks    = blocks
@@ -157,19 +156,43 @@ export class PretextEngine {
       if (!this.svgs[h]) this.svgs[h] = _common[k]
     })
 
-    this.colWidth = 0
+    this.colWidth       = 0
+    this._roReady       = false
+    this._fontsResolved = false
+
+    // The first build wants real font metrics, but a stuck document.fonts.ready
+    // must never hang the page (silent gate B). Race it against a 1500ms cap;
+    // whichever settles first unblocks the first build. If the timeout wins and
+    // the real fonts arrive later, rebuild once — a font swap changes text
+    // metrics and the RO width-delta path won't catch it.
+    const fontsReady = document.fonts.ready
+    this._firstFontsP = Promise.race([
+      fontsReady,
+      new Promise(res => setTimeout(res, 1500))
+    ])
+    fontsReady.then(() => {
+      this._fontsResolved = true
+      if (this._roReady) { this.buildDOM(); this._observeRichLines() }
+    })
+
+    // Build exactly once, gated on the first positive width AND the fonts race.
+    const tryFirstBuild = w => {
+      if (this._roReady || !(w > 0)) return
+      this._firstFontsP.then(() => {
+        if (this._roReady || !(w > 0)) return
+        this.colWidth = w
+        this.buildDOM()
+        this._observeRichLines()
+        this._roReady = true
+        document.dispatchEvent(new CustomEvent('pretext:done'))
+      })
+    }
 
     new ResizeObserver(entries => {
       const w = entries[0].contentRect.width
       if (w <= 0) return
       if (!this._roReady) {
-        this._fontsP.then(() => {
-          this.colWidth = w
-          this.buildDOM()
-          this._observeRichLines()
-          this._roReady = true
-          document.dispatchEvent(new CustomEvent('pretext:done'))
-        })
+        tryFirstBuild(w)
       } else if (Math.abs(w - this.colWidth) > 5) {
         this.colWidth = w
         this.buildDOM()
@@ -177,17 +200,17 @@ export class PretextEngine {
       }
     }).observe(containerEl)
 
-    const w0 = containerEl.getBoundingClientRect().width
-    if (w0 > 0 && !this._roReady) {
-      this._fontsP.then(() => {
-        if (this._roReady) return
-        this.colWidth = w0
-        this.buildDOM()
-        this._observeRichLines()
-        this._roReady = true
-        document.dispatchEvent(new CustomEvent('pretext:done'))
-      })
-    }
+    tryFirstBuild(containerEl.getBoundingClientRect().width)
+
+    // Watchdog: if the first build hasn't run within 3s, name the blocking gate
+    // so this can never fail silently again. No-ops on healthy pages.
+    setTimeout(() => {
+      if (this._roReady) return
+      const w = this.container.getBoundingClientRect().width
+      console.warn('[pretext] buildDOM has not run after 3s — ' + (w > 0
+        ? `width OK (${Math.round(w)}px); fonts.ready ${this._fontsResolved ? 'resolved (build pending)' : 'still pending'}`
+        : 'container width is still 0 (layout/geometry gate — check the .reading-col/#content-area chain)'))
+    }, 3000)
   }
 
   // ── DOM build ──────────────────────────────────────────────────────────

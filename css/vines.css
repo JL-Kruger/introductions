@@ -1,63 +1,89 @@
-/* vines.css — creeping-vine signature, planter pieces (Phase 2.5.4).
+/* vines.css — creeping-vine signature, planter pieces (Phase 2.5.4 → 3.5.6).
    Pairs with the .vine-decor slot reserved in layers.css (z 50, fixed,
    inset 0, pointer-events none, isolation isolate). No JS.
 
-   Two pieces (BL = planter3, BR = planter1 — Toolbox/Python/planter-extract.py),
-   each stacked as dual layers per label group:
-     .v-shimmer — gradient copy behind, offset like a thin drop shadow
-                  (the planter Glow layer pattern, minus the blur)
-     .v-line    — white skeleton on top (#e8e2da, locked light value)
-   Strokes are presentation attributes on the host <use> (set by the
-   vine_decor() emitter); growth = one stroke-dashoffset rule, normalised
-   by pathLength="100" in the sprite. Ongoing life = shimmer.js rotation. */
+   Combo [2,1] (Phase 3.5.6): BL = planter2, BR = planter1 (enlarged).
+   planter-extract.py emits per-path symbols (vine-{bl,br}-pNN, bottom-up draw
+   order) + per-label glow group symbols; vine_decor() stacks two layers:
+     .v-glow  — three grouped <use> (one per label), the rotating shimmer copy
+                behind, offset like a thin drop shadow; fades in AFTER the
+                skeleton finishes drawing.
+     .v-line  — one <use> PER PATH (white #e8e2da, locked light value), drawn
+                in sequence bottom-up via a per-path --i stagger; reversed
+                paths (.v-rev) draw from their far end.
+   Strokes are presentation attributes on the host <use> (set by vine_decor());
+   growth = one stroke-dashoffset rule, normalised by pathLength="100" in the
+   sprite. Ongoing life = shimmer.js rotation. */
+
+:root {
+  /* Sequenced-draw timing (single source of truth; vine_decor() bakes only the
+     per-piece path count --n and per-path index --i — the seconds live here). */
+  --vine-step: .09s;       /* delay between consecutive paths */
+  --vine-draw-dur: .55s;   /* one path's draw time */
+  --vine-glow-fade: .8s;   /* glow bloom-in after the skeleton completes */
+}
 
 .vine-piece { position: absolute; pointer-events: none; }
 
-/* ── Anchors + responsive sizing ─────────────────────────────────────────── */
+/* ── Anchors + responsive sizing ─────────────────────────────────────────────
+   aspect-ratio matches each piece's source viewBox (BL=planter2 134×584.1,
+   BR=planter1 81.53×584.1). --pd staggers the two pieces' draw beats.
+   --vine-total = this piece's full draw time, derived from --pd, --n (baked per
+   piece by vine_decor) and the :root step/duration tokens; drives the glow fade. */
+.vine-piece {
+  --vine-total: calc(var(--pd) + (var(--n) - 1) * var(--vine-step)
+                     + var(--vine-draw-dur));
+}
 .vine--bl {
   left: 0; bottom: 0;
   height: clamp(380px, 56vh, 700px);
-  aspect-ratio: 263.25 / 752.48;
+  aspect-ratio: 134.00005 / 584.09772;
   --pd: 0s;
 }
 .vine--br {
   right: 0; bottom: 0;
-  height: clamp(280px, 40vh, 500px);
-  aspect-ratio: 81.53 / 584.1;
+  height: clamp(330px, 48vh, 580px);   /* enlarged one step (combo [2,1]) */
+  aspect-ratio: 81.531886 / 584.09772;
   --pd: .4s;
 }
 
-/* ── Dual-layer offset ───────────────────────────────────────────────────────
-   The shimmer copy sits behind (markup order) and shifts up 2 units like the
-   planter sources' Glow layer (translate(0,-2)). Slightly translucent so the
-   white line stays the read. */
-.vine-piece .v-shimmer {
-  transform: translate(0, -2px);
-  opacity: .9;
-}
-
-/* ── Growth — hidden until drawn ─────────────────────────────────────────────
+/* ── Growth base — every host <use> hidden until drawn ────────────────────────
    dasharray/dashoffset are inherited SVG presentation properties: set on the
-   <use>, they propagate into the external-<use> shadow tree (gate G1). */
+   host <use>, they propagate through the per-path (and glow group → per-path)
+   shadow trees (gate G1). CSS selectors don't reach the cloned shadow content,
+   so this matches only the host <use> elements vine_decor() emits. */
 .vine-piece use { stroke-dasharray: 100; stroke-dashoffset: 100; }
 
-@keyframes v-draw { to { stroke-dashoffset: 0; } }
+@keyframes v-draw     { to { stroke-dashoffset: 0; } }
+/* reverse: with dasharray 100, offset 200 ≡ 0 mod 200 (visually full), but the
+   reveal sweeps from the opposite end — used where the trigger node (bottom) is
+   the path's END vertex. */
+@keyframes v-draw-rev { to { stroke-dashoffset: 200; } }
 
-/* Choreography — structure (statics+geometrics) rises first, the organic
-   vine grows over it; per-piece beat via --pd. One-shot, ease-out. */
-.vine-piece .v-struct {
-  animation: v-draw 1.4s cubic-bezier(.22, .61, .36, 1) forwards;
-  animation-delay: calc(.15s + var(--pd));
+/* ── Line layer — per-path sequenced draw (bottom-up; left wins ties) ─────────*/
+.vine-piece .v-line {
+  animation: v-draw var(--vine-draw-dur) cubic-bezier(.22, .61, .36, 1) forwards;
+  animation-delay: calc(var(--pd) + var(--i) * var(--vine-step));
 }
-.vine-piece .v-vine {
-  animation: v-draw 2.2s cubic-bezier(.22, .61, .36, 1) forwards;
-  animation-delay: calc(.9s + var(--pd));
+.vine-piece .v-line.v-rev { animation-name: v-draw-rev; }
+
+/* ── Glow layer — drawn full, blooms in behind the finished skeleton ──────────
+   The group <use> sit behind (markup order) and shift like a thin drop shadow.
+   Pinned drawn (dashoffset 0) and held at opacity 0 until the piece's whole
+   skeleton has drawn, then a single fade reveals the rotating shimmer. */
+.vine-piece .v-glow {
+  stroke-dashoffset: 0;
+  opacity: 0;
+  transform: translate(var(--vine-glow-dx, 2px), var(--vine-glow-dy, -4px));
+  animation: v-glow-in var(--vine-glow-fade) ease forwards;
+  animation-delay: var(--vine-total);
 }
+@keyframes v-glow-in { to { opacity: .95; } }
 
 /* ── Responsive collapse ─────────────────────────────────────────────────────*/
 @media (max-width: 1023px) {
   .vine--bl { height: clamp(300px, 44vh, 520px); }
-  .vine--br { height: clamp(220px, 30vh, 380px); }
+  .vine--br { height: clamp(260px, 36vh, 440px); }
 }
 @media (max-width: 639px) {
   .vine--br { display: none; }
@@ -65,12 +91,15 @@
 }
 @media (orientation: landscape) and (max-height: 520px) {
   .vine--bl { height: min(46vh, 320px); }
-  .vine--br { height: min(40vh, 280px); }
+  .vine--br { height: min(42vh, 300px); }
 }
 
-/* ── Reduced motion — show grown end-state; layers.css kills the animation ───*/
+/* ── Reduced motion — show the grown, glowing end-state statically ───────────*/
 @media (prefers-reduced-motion: reduce) {
   .vine-piece use { stroke-dashoffset: 0; }
+  .vine-piece .v-line,
+  .vine-piece .v-glow { animation: none; }
+  .vine-piece .v-glow { opacity: .95; }
 }
 
 /* low-power: .vine-decor already hidden by layers.css — nothing needed here. */

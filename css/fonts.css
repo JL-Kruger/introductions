@@ -53,3 +53,21 @@
   font-display: swap;
   unicode-range: U+0020-007E, U+00A0, U+2013-2014, U+2018-201F, U+2022, U+2026;
 }
+
+@font-face {
+  font-family: 'Noto Sans Symbols 2';
+  src: url('fonts/noto-sans-symbols2-subset.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+2039-203A, U+25B4, U+25B6, U+25BE, U+25C0, U+25C8, U+2605, U+2630, U+26A0-26A1, U+270E, U+2715, U+2726-2727, U+2767, U+2B50, U+1F3DD, U+1F5DD, U+1F6B2, U+1F6D6, U+1F6E0-1F6E1, U+1FA90;
+}
+
+@font-face {
+  font-family: 'Noto Emoji';
+  src: url('fonts/noto-emoji-subset.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+2694, U+2699, U+26F0, U+270A, U+2728, U+FE0F, U+1F300, U+1F31F, U+1F480, U+1F4A0, U+1F525, U+1F595-1F596, U+1F608, U+1F60B, U+1F60E, U+1F636, U+1F63C, U+1F648, U+1F64A, U+1F680, U+1F682, U+1F918, U+1F91F, U+1F9ED;
+}

@@ -52,13 +52,25 @@ function stopShimmer() {
   }
 }
 
-// Scroll contribution — adds to rotation angle on scroll
-document.getElementById('scroll-container')?.addEventListener('scroll', e => {
+// Scroll contribution — adds to rotation angle on scroll. Essay pages scroll
+// inside #scroll-container; home/hub scroll the window (Phase 3 removed the
+// container there), so fall back to window.scrollY when it is absent (D7,
+// Phase 3.5.4). Same dy → gradAngle math, passive either way.
+function scrollNudge(y) {
   if (isReducedMotion) return
-  const dy = e.target.scrollTop - (window._lastScrollY || 0)
-  window._lastScrollY = e.target.scrollTop
+  const dy = y - (window._lastScrollY || 0)
+  window._lastScrollY = y
   gradAngle = (gradAngle + dy * 0.025) % 360
-}, { passive: true })
+}
+
+const _scrollContainer = document.getElementById('scroll-container')
+if (_scrollContainer) {
+  _scrollContainer.addEventListener('scroll',
+    e => scrollNudge(e.target.scrollTop), { passive: true })
+} else {
+  window.addEventListener('scroll',
+    () => scrollNudge(window.scrollY), { passive: true })
+}
 
 // OS motion preference changes
 window.matchMedia('(prefers-reduced-motion: reduce)').addEventListener('change', e => {

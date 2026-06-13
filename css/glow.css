@@ -9,21 +9,23 @@
 
    All palette rgba values are the locked set from variables.yaml, with alpha. */
 
-/* ── Shimmer bridge (Phase 2.5.2, gate G2) ───────────────────────────────────
-   Sprite symbols stroke with var(--shimmer-X, url(#shimmer-X)). Custom
-   properties inherit into external-<use> shadow trees; these host-declared
-   urls resolve against THIS document's rotating gradient copies
-   (shared_defs_svg), reconnecting decor to the shimmer rAF. Without these,
-   the var falls back to sprite.svg's own static gradients (frozen look). */
-:root {
-  --shimmer-org-h:    url(#shimmer-org-h);
-  --shimmer-org-v:    url(#shimmer-org-v);
-  --shimmer-geo:      url(#shimmer-geo);
-  --shimmer-sta:      url(#shimmer-sta);
-  --shimmer-oth:      url(#shimmer-oth);
-  --shimmer-ember:    url(#shimmer-ember);
-  --shimmer-spectral: url(#shimmer-spectral);
-}
+/* The Phase-2.5.2 shimmer bridge (`:root { --shimmer-X: url(#shimmer-X) }` +
+   `stroke:var(--shimmer-X, url(#shimmer-X))` baked into sprite shapes) is GONE
+   as of Phase 3.5.5. Gate G2 failed in-browser (cross-document url() out of an
+   external sprite is an interop dead zone); all decor now uses F2a — per-layer
+   symbols stroked by presentation attributes on the host <use>, resolving
+   against shared_defs_svg's rotating copies. No sprite shape carries a shimmer
+   url any more, so the custom properties are unused and removed. */
+
+/* ── F2a shimmer "glow" layer (critters + separators) ────────────────────────
+   The animated colour stroke that reads alongside the white skeleton. The
+   sprite path carries vector-effect:non-scaling-stroke and NO width of its own,
+   so this width is honoured in *screen* pixels regardless of how small/large
+   the decor renders — the same boldness on a tiny critter and a full-width
+   separator. Tune --glow-w to taste (logos keep their own inline width and are
+   unaffected; their fill+outline proportions were dialled in at 3.5.4). */
+:root { --glow-w: 3px; }
+.sh-glow { stroke-width: var(--glow-w); }
 
 .glow-ember,
 .glow-spectral {

@@ -1,0 +1,170 @@
+{
+  "bl": {
+    "viewBox": "0 0 134.00005 584.09772",
+    "count": 20,
+    "paths": [
+      {
+        "sym": "vine-bl-p00",
+        "reverse": false
+      },
+      {
+        "sym": "vine-bl-p01",
+        "reverse": false
+      },
+      {
+        "sym": "vine-bl-p02",
+        "reverse": false
+      },
+      {
+        "sym": "vine-bl-p03",
+        "reverse": true
+      },
+      {
+        "sym": "vine-bl-p04",
+        "reverse": false
+      },
+      {
+        "sym": "vine-bl-p05",
+        "reverse": false
+      },
+      {
+        "sym": "vine-bl-p06",
+        "reverse": false
+      },
+      {
+        "sym": "vine-bl-p07",
+        "reverse": false
+      },
+      {
+        "sym": "vine-bl-p08",
+        "reverse": false
+      },
+      {
+        "sym": "vine-bl-p09",
+        "reverse": false
+      },
+      {
+        "sym": "vine-bl-p10",
+        "reverse": false
+      },
+      {
+        "sym": "vine-bl-p11",
+        "reverse": false
+      },
+      {
+        "sym": "vine-bl-p12",
+        "reverse": false
+      },
+      {
+        "sym": "vine-bl-p13",
+        "reverse": false
+      },
+      {
+        "sym": "vine-bl-p14",
+        "reverse": false
+      },
+      {
+        "sym": "vine-bl-p15",
+        "reverse": false
+      },
+      {
+        "sym": "vine-bl-p16",
+        "reverse": false
+      },
+      {
+        "sym": "vine-bl-p17",
+        "reverse": false
+      },
+      {
+        "sym": "vine-bl-p18",
+        "reverse": false
+      },
+      {
+        "sym": "vine-bl-p19",
+        "reverse": false
+      }
+    ],
+    "groups": [
+      {
+        "sym": "vine-bl-sta",
+        "shimmer": "shimmer-sta"
+      },
+      {
+        "sym": "vine-bl-geo",
+        "shimmer": "shimmer-geo"
+      },
+      {
+        "sym": "vine-bl-org",
+        "shimmer": "shimmer-org-v"
+      }
+    ]
+  },
+  "br": {
+    "viewBox": "0 0 81.531886 584.09772",
+    "count": 11,
+    "paths": [
+      {
+        "sym": "vine-br-p00",
+        "reverse": true
+      },
+      {
+        "sym": "vine-br-p01",
+        "reverse": false
+      },
+      {
+        "sym": "vine-br-p02",
+        "reverse": true
+      },
+      {
+        "sym": "vine-br-p03",
+        "reverse": false
+      },
+      {
+        "sym": "vine-br-p04",
+        "reverse": false
+      },
+      {
+        "sym": "vine-br-p05",
+        "reverse": false
+      },
+      {
+        "sym": "vine-br-p06",
+        "reverse": false
+      },
+      {
+        "sym": "vine-br-p07",
+        "reverse": false
+      },
+      {
+        "sym": "vine-br-p08",
+        "reverse": false
+      },
+      {
+        "sym": "vine-br-p09",
+        "reverse": false
+      },
+      {
+        "sym": "vine-br-p10",
+        "reverse": false
+      }
+    ],
+    "groups": [
+      {
+        "sym": "vine-br-sta",
+        "shimmer": "shimmer-sta"
+      },
+      {
+        "sym": "vine-br-geo",
+        "shimmer": "shimmer-geo"
+      },
+      {
+        "sym": "vine-br-org",
+        "shimmer": "shimmer-org-v"
+      }
+    ]
+  },
+  "combo": {
+    "bl": 2,
+    "br": 1
+  }
+}

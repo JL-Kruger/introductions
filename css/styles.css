@@ -1,9 +1,10 @@
 /* styles.css — JL Kruger Homepage
-   tags: homepage layout desktop-fit mobile shimmer responsive */
+   tags: homepage typography nav buttons shimmer responsive */
 
 /* ── Tokens ─────────────────────────────────────────────────────────────── */
 /* Palette + layout custom properties live in /css/tokens.css, generated from
-   Toolbox/Python/variables.yaml and linked before this file. Edit colours there. */
+   Toolbox/Python/variables.yaml and linked before this file. Edit colours there.
+   Layout primitives (stack/center/grid/hero) live in /css/layout.css. */
 
 /* ── Reset ───────────────────────────────────────────────────────────────── */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -15,12 +16,12 @@ body {
   padding: 0;
   background: #010403; /* #sky handles the gradient; this is a dark fallback */
   color: var(--light);
-  font-family: 'Overlock', serif;
-  font-size: 20px;
-  line-height: 1.25;
+  font-family: 'Overlock', 'Noto Sans Symbols 2', 'Noto Emoji', serif;
+  font-size: var(--step-0);     /* fluid 16→18 px; no static override */
+  line-height: var(--lh);       /* 1.5 everywhere; makes --rhythm the real line height */
   font-feature-settings: "kern" 1, "liga" 1;
   text-rendering: optimizeLegibility;
-  min-height: 100%;
+  min-block-size: 100svh;       /* fill without clipping; page scrolls past this */
   display: flex;
   flex-direction: column;
 }
@@ -29,19 +30,19 @@ body {
 h1, h2, h3, h4, h5, h6 { margin: 0; hyphens: none; }
 
 h1 {
-  font-family: 'Tagesschrift', serif;
+  font-family: 'Tagesschrift', 'Noto Sans Symbols 2', 'Noto Emoji', serif;
   color: var(--fire);
   line-height: 1.15;
   letter-spacing: 0.02em;
 }
 h2, h3 {
-  font-family: 'Walter Turncoat', cursive;
+  font-family: 'Walter Turncoat', 'Noto Sans Symbols 2', 'Noto Emoji', cursive;
   color: var(--meadow);
   line-height: 1.25;
   letter-spacing: 0.04em;
 }
 h4, h5, h6 {
-  font-family: 'Walter Turncoat', cursive;
+  font-family: 'Walter Turncoat', 'Noto Sans Symbols 2', 'Noto Emoji', cursive;
   color: var(--rust);
 }
 blockquote { color: var(--sun); }
@@ -51,9 +52,9 @@ a:hover      { color: var(--fire); }
 a:visited    { color: var(--pigment); }
 
 .special {
-  font-family: 'Protest Revolution', sans-serif;
+  font-family: 'Protest Revolution', 'Noto Sans Symbols 2', 'Noto Emoji', sans-serif;
   color: var(--sun);
-  font-size: clamp(3.6rem, 3.6vw, 2.4rem);
+  font-size: var(--step-6);    /* replaces the old inverted clamp(3.6rem,3.6vw,2.4rem) */
   letter-spacing: 0.03em;
   line-height: 1.2;
 }
@@ -92,70 +93,27 @@ a:visited    { color: var(--pigment); }
 }
 
 .nav-links {
-  font-family: 'Walter Turncoat', cursive;
-  font-size: clamp(1.4rem, 2vw, 2.1rem);
+  font-family: 'Walter Turncoat', 'Noto Sans Symbols 2', 'Noto Emoji', cursive;
+  font-size: var(--step-2);     /* ~1.44→1.76 rem; replaces clamp(1.4rem,2vw,2.1rem) */
 }
 .nav-links a        { color: var(--light); opacity: 0.85; }
 .nav-links a:hover  { color: var(--fire);  opacity: 1; }
 
 /* ── Starfield canvas — see css/layers.css (centralized) ─────────────────── */
 
-/* ── Main scroll container ───────────────────────────────────────────────── */
-#scroll-container {
-  position: relative;
-  z-index: 1;         /* stacking context above starfield canvas */
-  flex: 1;
-  display: flex;
-  overflow-y: auto; /* mobile: scrolls; desktop: content fits so no scroll bar */
-  min-height: 0;
-}
-
-/* ── Hero / bento layout ─────────────────────────────────────────────────── */
-.hero-content {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  padding: 2rem;
-  min-height: 0;
-}
-
-.bento-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 2rem;
-  flex: 1;
-  min-height: 0;
-  align-items: start;
-  padding: 8% 8%;
-}
-
-.bento-col {
-  display: flex;
-  flex-direction: column;
-  gap: 1.2rem;
-  min-height: 0;
-}
-
-.bento-center {
-  align-items: center;
-  text-align: center;
-}
-.bento-right {
-  text-align: right;
-}
-
-/* ── Feature buttons row ─────────────────────────────────────────────────── */
-.hero-buttons {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.75rem;
-  margin-top: 1.5rem;
-  justify-content: center;
-  flex-shrink: 0;
-  max-width: 66vw;
-  margin-left: auto;
-  margin-right: auto;
-  margin-bottom: 1.5rem;
+/* ── Hero column text alignment ──────────────────────────────────────────── */
+/* Mobile-first: every hero column centres its text. At the 52rem page rung the
+   side columns split to left / right; the centre column keeps the centring set
+   on .hero-col.bento-center in layout.css (specificity 0,2,0 beats the desktop
+   .hero-col rule below, so it is untouched). */
+.hero-col { text-align: center; }
+@media (min-width: 52rem) {
+  .hero-col              { text-align: left; }
+  .hero-col.bento-right  { text-align: right; }
+  /* Desktop hero copy is short display text in a 3-col bento, not long-form
+     prose — tighten from the 1.5 body rhythm to 1.25. Mobile (single column)
+     keeps 1.5, and content/hub pages are unaffected (this is .hero-scoped). */
+  .hero p { line-height: 1.25; }
 }
 
 /* ── Button component ────────────────────────────────────────────────────── */
@@ -184,14 +142,16 @@ a:visited    { color: var(--pigment); }
 .media-btn {
   display: inline-flex;
   align-items: center;
+  justify-content: center;   /* centre label when the button is stretched */
+  width: 100%;               /* fill the wrap: full-width stacked / shared row */
   height: 100%;
   padding: 0 1.4em;
   background: transparent;
   border: none;
   border-radius: 3px;
   color: var(--light);
-  font-family: 'Walter Turncoat', cursive;
-  font-size: clamp(0.9rem, 1.1vw, 1.1rem);
+  font-family: 'Walter Turncoat', 'Noto Sans Symbols 2', 'Noto Emoji', cursive;
+  font-size: var(--step-0);    /* replaces clamp(0.9rem,1.1vw,1.1rem) */
   cursor: pointer;
   transition: color 0.25s ease;
   white-space: nowrap;
@@ -199,90 +159,12 @@ a:visited    { color: var(--pigment); }
   text-decoration: none;
 }
 
-/* ── Paragraph sizing ────────────────────────────────────────────────────── */
-.hero-content p {
-  font-size: clamp(1.25rem, 1.2vw, 1.15rem);
-  margin: 0;
-  max-width: 65ch;
-}
-
-/* ── Desktop: scale-to-fit viewport (no scroll) ──────────────────────────── */
-@media (min-width: 1024px) {
-  html, body {
-    height: 100dvh;
-    overflow: hidden; /* body clips to viewport */
-  }
-
-  #scroll-container {
-    overflow: hidden; /* content is sized to fit — no scrollbar needed */
-  }
-
-  .hero-content {
-    justify-content: space-between;
-  }
-
-  .bento-grid {
-    grid-template-columns: repeat(3, 1fr);
-    align-items: center;
-  }
-
-  /* Desktop: render headings prettier on Desktop */
-  .hero-content h1,
-  .hero-content h2,
-  .hero-content h3 {
-    font-size: clamp(1.25rem, 1.2vw, 1.1rem);
-    letter-spacing: normal;
-    line-height: 1.15;
-  }
-  .hero-content h1         { font-size: clamp(1.5rem, 1.4vw, 1.5rem);         color: var(--fire);   }
-  .hero-content h2,
-  .hero-content h3         { font-style: italic; color: var(--meadow); }
-  .hero-content .special   { font-style: italic; color: var(--sun);
-                             font-size: clamp(1.75rem, 1.2vw, 1.1rem); }
-
-  /* Tighten button row for the full-row 5-up layout */
-  .hero-buttons {
-    flex-wrap: nowrap;
-    gap: 1rem;
-    margin-top: 1rem;
-  }
-  .media-btn-wrap {
-    flex: 1;
-    max-width: 280px;
-  }
-  .media-btn {
-    width: 100%;
-    justify-content: center;
-  }
-}
-
-/* ── Mobile / narrow ─────────────────────────────────────────────────────── */
-@media (max-width: 1023px) {
-  .bento-grid {
-    grid-template-columns: 1fr;
-    align-items: center;
-    text-align: center;
-  }
-  .bento-col { align-items: center; }
-  /* body background: no swap needed — #sky handles it identically at all widths */
-
-  .hero-buttons {
-    flex-direction: column;
-    align-items: stretch;
-  }
-
-  .hero-content .special,
-  .hero-content p  { text-align: center; }
-
-  .media-btn-wrap {
-    display: flex;
-    width: 100%;
-    height: 3rem;
-  }
-  .media-btn {
-    width: 100%;
-    justify-content: center;
-  }
+/* Desktop row: each button grows from its content width to share the row so
+   the group spans the page. flex-basis:auto (not 0) keeps every track at least
+   as wide as its label — no nowrap overflow — while flex-grow distributes the
+   slack. On mobile the wrap stays full-width (parent column, align-items:stretch). */
+@media (min-width: 52rem) {
+  .hero-actions .media-btn-wrap { flex: 1 1 auto; }
 }
 
 /* ── Reduced motion ──────────────────────────────────────────────────────── */
@@ -316,8 +198,7 @@ a:visited    { color: var(--pigment); }
    width). CSS sizing — never the invalid height="auto" SVG attribute. */
 .bento-center .logo-link { display: block; }
 #logo-svg {
-  width: 110%;
-  max-width: 110%;
+  width: min(132%, 30rem);
   height: auto;
   display: block;
 }
@@ -376,24 +257,4 @@ a:visited    { color: var(--pigment); }
 .media-btn-wrap:hover .media-btn,
 .media-btn-wrap:focus-within .media-btn {
   color: var(--pigment);
-}
-
-/* Mobile background: handled by #sky (css/sky.css) — no swap needed. */
-
-/* ── Frame overlays (inlined SVG, replaces background-image frames) ─────── */
-.frame-overlay {
-  position: fixed;
-  inset: 1%;
-  width: 98%;
-  height: 98%;
-  pointer-events: none;
-  z-index: 10;
-  margin: 8px 8px 8px 8px;
-}
-.frame-desktop { display: block; }
-.frame-mobile  { display: none;  }
-
-@media (max-width: 1023px) {
-  .frame-desktop { display: none;  }
-  .frame-mobile  { display: block; }
 }
